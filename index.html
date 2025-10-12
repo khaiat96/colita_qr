@@ -1,270 +1,168 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colita de Rana - Tu Ciclo Personalizado</title>
-    <meta name="description" content="Descubre el patrón elemental de tu ciclo menstrual">
-    <link rel="stylesheet" href="style.css">
-    <script defer src="app.js"></script>
-</head>
-<body>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <p>Cargando tu experiencia personalizada...</p>
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Colita de rana — Salud menstrual personalizada</title>
+    <meta
+      name="description"
+      content="Haz el quiz y recibe tu plan personalizado para tu ciclo. Educación energética y consejos prácticos."
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/" aria-label="Inicio">
+          <span class="brand-mark">colita de rana</span>
+        </a>
+
+        <!-- Progress bar (hidden on landing) -->
+        <div class="progress-container" aria-hidden="true">
+          <div class="progress-bar" style="width: 0%"></div>
+          <div class="progress-label">0%</div>
         </div>
-    </div>
+      </div>
+    </header>
 
-    <!-- Error Message -->
-    <div id="error-message" class="error-message hidden" role="alert" aria-live="polite">
-        <div class="error-content">
-            <h3>Algo salió mal</h3>
-            <p id="error-text"></p>
-            <button class="btn btn--primary" onclick="window.location.reload()">Intentar de nuevo</button>
+    <main id="main">
+      <!-- ===== LANDING ===== -->
+      <section id="landing-page" class="screen active">
+        <div class="container">
+          <!-- HERO -->
+          <div class="hero-section card">
+            <h1 id="hero-title" class="hero-title">
+              Colita de rana… pero ahora personalizada.
+            </h1>
+            <p id="hero-subtitle" class="hero-subtitle">
+              Estamos desarrollando el primer sistema de plantas medicinales
+              personalizado para la salud menstrual. Cada mujer tiene un
+              patrón único de síntomas que merece un trato único.
+            </p>
+
+            <div class="hero-ctas">
+              <a id="start-btn" class="btn btn--primary btn--lg" href="/quiz"
+                >Descubre tu tipo de ciclo</a
+              >
+              <a class="btn btn--ghost btn--lg" href="#waitlist"
+                >Unirme a la lista de espera</a
+              >
+            </div>
+          </div>
+
+          <!-- ELEMENTOS -->
+          <section class="elements-section" aria-labelledby="elements-title">
+            <h2 id="elements-title" class="elements-title">Conoce los elementos</h2>
+            <p class="elements-intro">
+              Nuestro sistema clasifica patrones en cuatro fuerzas de la
+              naturaleza. Tu tipo combina síntomas en una lógica energética
+              sencilla.
+            </p>
+
+            <div class="elements-grid">
+              <article class="element-card">
+                <div class="element-emoji" aria-hidden="true">🌬️</div>
+                <h3 class="element-name">Aire</h3>
+                <p class="element-text">
+                  Movimiento y nervio. Se refleja en cambios bruscos, espasmos o mente
+                  acelerada.
+                </p>
+              </article>
+
+              <article class="element-card">
+                <div class="element-emoji" aria-hidden="true">🔥</div>
+                <h3 class="element-name">Fuego</h3>
+                <p class="element-text">
+                  Calor e intensidad. Puede verse como inflamación, irritabilidad o
+                  sangrado abundante.
+                </p>
+              </article>
+
+              <article class="element-card">
+                <div class="element-emoji" aria-hidden="true">💧</div>
+                <h3 class="element-name">Agua</h3>
+                <p class="element-text">
+                  Fluidos y ritmo. A veces retención, pesadez o coágulos.
+                </p>
+              </article>
+
+              <article class="element-card">
+                <div class="element-emoji" aria-hidden="true">🌱</div>
+                <h3 class="element-name">Tierra</h3>
+                <p class="element-text">
+                  Sustento y tono. Cuando falta, hay sequedad; cuando sobra, hay lentitud.
+                </p>
+              </article>
+            </div>
+
+            <div class="elements-cta">
+              <a id="start-btn-2" class="btn btn--secondary btn--lg" href="/quiz"
+                >Hacer el quiz</a
+              >
+            </div>
+          </section>
+
+          <!-- WAITLIST -->
+          <section id="waitlist" class="waitlist-section card">
+            <h2 class="waitlist-title">
+              ✨ ¡Sé la primera en recibir tu medicina personalizada!
+            </h2>
+            <ul class="waitlist-benefits">
+              <li>💸 20% de descuento como miembro fundadora</li>
+              <li>🔔 Notificaciones exclusivas de lanzamiento</li>
+              <li>🎯 Acceso prioritario a tu fórmula personalizada</li>
+              <li>📚 Guías gratuitas de salud menstrual</li>
+            </ul>
+
+            <form id="waitlist-form" class="waitlist-form" novalidate>
+              <label class="sr-only" for="name">Nombre</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                class="input"
+                placeholder="Tu nombre"
+                required
+                autocomplete="name"
+              />
+
+              <label class="sr-only" for="email">Correo electrónico</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                class="input"
+                placeholder="tu@email.com"
+                required
+                autocomplete="email"
+                inputmode="email"
+              />
+
+              <button type="submit" class="btn btn--primary">Unirme</button>
+
+              <p class="form-note">
+                No es consejo médico. Puedes darte de baja cuando quieras.
+              </p>
+              <p
+                id="waitlist-status"
+                class="form-status"
+                role="status"
+                aria-live="polite"
+              ></p>
+            </form>
+
+            <p class="launch-note">Lanzamiento previsto: Primavera 2026</p>
+          </section>
         </div>
-    </div>
+      </section>
+    </main>
 
-    <!-- Main Application -->
-    <div id="app" class="app hidden">
-        <!-- Header -->
-        <header class="header">
-            <div class="container">
-                <div class="header-content">
-                    <h1 class="brand-logo">
-                        <span class="brand-name">colita de rana</span>
-                    </h1>
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progress-bar">
-                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                        </div>
-                        <span class="progress-text" id="progress-text">0%</span>
-                    </div>
-                </div>
-            </div>
-        </header>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p class="footer-copy">© Colita de rana · Hecho con amor y herbolaria</p>
+      </div>
+    </footer>
 
-        <!-- Landing Page -->
-        <section id="landing-page" class="screen active">
-            <div class="container">
-                <div class="hero-section">
-                    <h1 id="hero-title" class="hero-title"></h1>
-                    <p id="hero-subtitle" class="hero-subtitle"></p>
-                    <button id="start-btn" class="btn btn--primary btn--lg">
-                        <span id="start-btn-text"></span>
-                    </button>
-                </div>
-
-                <div class="value-prop-section">
-                    <h2 id="value-prop-title"></h2>
-                    <div class="benefits-grid" id="benefits-grid">
-                        <!-- Benefits loaded from JSON -->
-                    </div>
-                </div>
-
-                <div class="how-it-works">
-                    <h2>¿Cómo funciona?</h2>
-                    <div class="steps-grid">
-                        <div class="step">
-                            <div class="step-number">1</div>
-                            <h3>Responde</h3>
-                            <p>Cuéntanos sobre tu ciclo y síntomas</p>
-                        </div>
-                        <div class="step">
-                            <div class="step-number">2</div>
-                            <h3>Descubre</h3>
-                            <p>Conoce tu patrón energético</p>
-                        </div>
-                        <div class="step">
-                            <div class="step-number">3</div>
-                            <h3>Equilibra</h3>
-                            <p>Recibe tu plan personalizado</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Survey Version Selection -->
-        <section id="version-selection" class="screen">
-            <div class="container">
-                <div class="version-selection">
-                    <h2>Elige tu evaluación</h2>
-                    <p class="section-subtitle">Ambas versiones te darán resultados personalizados</p>
-                    
-                    <div class="version-cards">
-                        <div class="version-card" data-version="regular">
-                            <div class="version-header">
-                                <h3>Evaluación Rápida</h3>
-                                <span class="version-time">3-5 minutos</span>
-                            </div>
-                            <ul class="version-features">
-                                <li>✓ Análisis de síntomas principales</li>
-                                <li>✓ Identificación de patrón elemental</li>
-                                <li>✓ Recomendaciones básicas</li>
-                                <li>✓ Recomendaciones específicas por fase</li>
-                            </ul>
-                            <button class="btn btn--outline btn--full-width">Comenzar</button>
-                        </div>
-                        
-                        <div class="version-card version-card--recommended" data-version="pro">
-                            <div class="version-badge">Recomendado</div>
-                            <div class="version-header">
-                                <h3>Evaluación Completa</h3>
-                                <span class="version-time">5-7 minutos</span>
-                            </div>
-                            <ul class="version-features">
-                                <li>✓ Todo lo de la evaluación rápida</li>
-                                <li>✓ Análisis detallado del sangrado</li>
-                                <li>✓ Factores de estilo de vida</li>
-                            </ul>
-                            <button class="btn btn--primary btn--full-width">Comenzar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Survey Questions -->
-        <section id="survey-screen" class="screen">
-            <div class="container">
-                <div class="survey-content">
-                    <div class="question-container">
-                        <div class="question-header">
-                            <h2 id="question-title"></h2>
-                            <p id="question-subtitle" class="question-subtitle"></p>
-                        </div>
-                        
-                        <div class="question-content" id="question-content">
-                            <!-- Dynamic question content -->
-                        </div>
-                        
-                        <div class="question-help" id="question-help"></div>
-                    </div>
-                    
-                    <div class="survey-navigation">
-                        <button id="back-btn" class="btn btn--outline">← Atrás</button>
-                        <button id="next-btn" class="btn btn--primary">Continuar →</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Email Collection -->
-        <section id="email-collection" class="screen">
-            <div class="container">
-                <div class="email-form-container">
-                    <h2>¡Ya casi terminamos!</h2>
-                    <p>Ingresa tu información para recibir tus resultados personalizados por email</p>
-                    
-                    <form id="email-form" class="email-form">
-                        <div class="form-group">
-                            <label for="user-name" class="form-label">Nombre *</label>
-                            <input type="text" id="user-name" name="name" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="user-email" class="form-label">Email *</label>
-                            <input type="email" id="user-email" name="email" class="form-control" required>
-                        </div>
-                        
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="consent-results" required>
-                                <span class="checkmark"></span>
-                                Acepto recibir mis resultados por email
-                            </label>
-                        </div>
-                        
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="consent-waitlist">
-                                <span class="checkmark"></span>
-                                Quiero recibir notificaciones sobre el lanzamiento de productos
-                            </label>
-                        </div>
-                        
-                        <button type="submit" class="btn btn--primary btn--full-width">Ver mis resultados</button>
-                    </form>
-                    
-                    <div class="privacy-note">
-                        <p><small>🔒 Tus respuestas se guardan de forma segura y puedes darte de baja en cualquier momento.</small></p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Results Page -->
-        <section id="results-screen" class="screen">
-            <div class="container">
-                <div class="results-content">
-                    <div class="results-header">
-                        <div class="element-badge" id="element-badge">
-                            <span id="element-icon"></span>
-                            <span id="element-name"></span>
-                        </div>
-                        <h2 id="results-title"></h2>
-                        <p id="results-summary"></p>
-                    </div>
-                    
-                    <div class="results-sections">
-                        <div class="result-section">
-                            <h3>¿Por qué este resultado?</h3>
-                            <p id="results-explanation"></p>
-                        </div>
-                        
-                        <div class="result-section">
-                            <h3>Recomendaciones por fase del ciclo</h3>
-                            <div class="cycle-phases" id="cycle-phases">
-                                <!-- Dynamic phases content -->
-                            </div>
-                        </div>
-                        
-                        <div class="result-section">
-                            <h3>¿Qué incluiría tu medicina personalizada?"</h3>
-                            <div class="herbal-actions" id="herbal-actions">
-                                <!-- Dynamic herbal actions -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="results-actions">
-                        <button id="retake-survey" class="btn btn--outline">Repetir evaluación</button>
-                        <button id="share-results" class="btn btn--secondary">Compartir resultados</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Waitlist Section -->
-        <section id="waitlist-section" class="waitlist-section">
-            <div class="container">
-                <div class="waitlist-content">
-                    <h2 id="waitlist-title"></h2>
-                    <div class="waitlist-benefits" id="waitlist-benefits">
-                        <!-- Benefits loaded from JSON -->
-                    </div>
-                    <p class="launch-date" id="launch-date"></p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Medical Disclaimer -->
-        <div class="medical-disclaimer">
-            <div class="container">
-                <p><strong>Aviso importante:</strong> Este contenido es informativo y no sustituye atención médica. Consulta siempre con un profesional de la salud.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div id="success-modal" class="modal hidden">
-        <div class="modal-content">
-            <h3>¡Resultados enviados!</h3>
-            <p>Revisa tu email en los próximos minutos. Si no lo encuentras, verifica tu carpeta de spam.</p>
-            <button class="btn btn--primary" onclick="closeSuccessModal()">Entendido</button>
-        </div>
-    </div>
-</body>
+    <script src="./app.js"></script>
+  </body>
 </html>
