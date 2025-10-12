@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Colita QR</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .qr-container {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .qr-display {
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border: 3px solid var(--primary-color);
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        #qrcode {
+            margin: 20px auto;
+        }
+        
+        .url-input {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        
+        .instructions {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .instructions h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 QR Code Generator</h1>
+            <p class="subtitle">Easy Access to Menstrual Health Survey</p>
+        </header>
+
+        <div class="qr-container">
+            <div class="instructions">
+                <h3>How to Use This QR Code:</h3>
+                <ol>
+                    <li>Open the survey at: <strong id="surveyUrl">index.html</strong></li>
+                    <li>Copy the full URL from your browser</li>
+                    <li>Paste the URL in the input below</li>
+                    <li>Click "Generate QR Code"</li>
+                    <li>Download and share the QR code</li>
+                    <li>Participants can scan the code to access the survey instantly</li>
+                </ol>
+            </div>
+
+            <div class="form-group url-input">
+                <label for="surveyUrlInput">Survey URL:</label>
+                <input type="url" id="surveyUrlInput" placeholder="https://your-domain.com/index.html" required>
+            </div>
+
+            <button onclick="generateQR()" class="btn-primary">Generate QR Code</button>
+
+            <div id="qrDisplay" class="qr-display" style="display: none;">
+                <h3>Scan to Access Survey</h3>
+                <div id="qrcode"></div>
+                <button onclick="downloadQR()" class="btn-secondary">Download QR Code</button>
+            </div>
+
+            <div class="instructions" style="margin-top: 40px;">
+                <h3>Why Use QR Codes?</h3>
+                <p>QR codes provide several benefits:</p>
+                <ul>
+                    <li><strong>Easy Access:</strong> Participants can quickly access the survey by scanning with their phone</li>
+                    <li><strong>No Typing:</strong> Eliminates the need to type long URLs</li>
+                    <li><strong>Professional:</strong> Adds a modern, tech-savvy touch to your outreach</li>
+                    <li><strong>Trackable:</strong> Can be used in different locations and materials</li>
+                    <li><strong>Versatile:</strong> Print on flyers, posters, business cards, or display on screens</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Colita QR - Personalized Herbal Medicine for Menstrual Health</p>
+            <p><a href="index.html" style="color: var(--primary-color);">← Back to Survey</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        let qrCode = null;
+
+        function generateQR() {
+            const urlInput = document.getElementById('surveyUrlInput');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                alert('Please enter a valid URL (including https://)');
+                return;
+            }
+            
+            // Clear previous QR code
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            
+            // Generate new QR code
+            qrCode = new QRCode(qrcodeDiv, {
+                text: url,
+                width: 256,
+                height: 256,
+                colorDark: "#6B8E23",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Show QR code display
+            document.getElementById('qrDisplay').style.display = 'block';
+            
+            // Scroll to QR code
+            document.getElementById('qrDisplay').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.download = 'menstrual-health-survey-qr.png';
+                a.href = url;
+                a.click();
+            }
+        }
+
+        // Auto-fill with current page URL if accessed from same domain
+        window.addEventListener('DOMContentLoaded', function() {
+            const currentUrl = window.location.href;
+            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+            const suggestedUrl = baseUrl + '/index.html';
+            
+            document.getElementById('surveyUrlInput').placeholder = suggestedUrl;
+            document.getElementById('surveyUrl').textContent = suggestedUrl;
+        });
+    </script>
+</body>
+</html>

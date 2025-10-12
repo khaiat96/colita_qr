@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menstrual Health Survey - Colita QR</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 Personalized Herbal Medicine Survey</h1>
+            <p class="subtitle">Introduction to Comprehensive Menstrual Health Care</p>
+        </header>
+
+        <form id="surveyForm" class="survey-form">
+            <!-- Personal Information -->
+            <section class="form-section">
+                <h2>Personal Information</h2>
+                
+                <div class="form-group">
+                    <label for="name">Name (Optional):</label>
+                    <input type="text" id="name" name="name" placeholder="Your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age: <span class="required">*</span></label>
+                    <input type="number" id="age" name="age" min="12" max="60" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email (Optional):</label>
+                    <input type="email" id="email" name="email" placeholder="your.email@example.com">
+                </div>
+            </section>
+
+            <!-- Menstrual Cycle Information -->
+            <section class="form-section">
+                <h2>Menstrual Cycle Information</h2>
+                
+                <div class="form-group">
+                    <label for="cycleLength">Average Cycle Length (days): <span class="required">*</span></label>
+                    <input type="number" id="cycleLength" name="cycleLength" min="21" max="45" required>
+                    <small>Typical range: 21-35 days</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="periodDuration">Period Duration (days): <span class="required">*</span></label>
+                    <input type="number" id="periodDuration" name="periodDuration" min="2" max="10" required>
+                    <small>Typical range: 3-7 days</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="flowIntensity">Flow Intensity: <span class="required">*</span></label>
+                    <select id="flowIntensity" name="flowIntensity" required>
+                        <option value="">Select...</option>
+                        <option value="light">Light</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="heavy">Heavy</option>
+                        <option value="very_heavy">Very Heavy</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="regularity">Cycle Regularity: <span class="required">*</span></label>
+                    <select id="regularity" name="regularity" required>
+                        <option value="">Select...</option>
+                        <option value="regular">Regular (consistent timing)</option>
+                        <option value="irregular">Irregular (varies by more than 7 days)</option>
+                        <option value="very_irregular">Very Irregular</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Symptoms -->
+            <section class="form-section">
+                <h2>Symptoms</h2>
+                
+                <div class="form-group">
+                    <label>Common Menstrual Symptoms (check all that apply):</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="symptoms" value="cramps"> Cramps</label>
+                        <label><input type="checkbox" name="symptoms" value="bloating"> Bloating</label>
+                        <label><input type="checkbox" name="symptoms" value="headaches"> Headaches</label>
+                        <label><input type="checkbox" name="symptoms" value="mood_swings"> Mood Swings</label>
+                        <label><input type="checkbox" name="symptoms" value="fatigue"> Fatigue</label>
+                        <label><input type="checkbox" name="symptoms" value="breast_tenderness"> Breast Tenderness</label>
+                        <label><input type="checkbox" name="symptoms" value="back_pain"> Back Pain</label>
+                        <label><input type="checkbox" name="symptoms" value="nausea"> Nausea</label>
+                        <label><input type="checkbox" name="symptoms" value="none"> None</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="painLevel">Pain Level During Period: <span class="required">*</span></label>
+                    <select id="painLevel" name="painLevel" required>
+                        <option value="">Select...</option>
+                        <option value="none">None</option>
+                        <option value="mild">Mild (manageable without medication)</option>
+                        <option value="moderate">Moderate (manageable with medication)</option>
+                        <option value="severe">Severe (interferes with daily activities)</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Lifestyle & Health -->
+            <section class="form-section">
+                <h2>Lifestyle & Health Background</h2>
+                
+                <div class="form-group">
+                    <label for="stressLevel">Current Stress Level: <span class="required">*</span></label>
+                    <select id="stressLevel" name="stressLevel" required>
+                        <option value="">Select...</option>
+                        <option value="low">Low</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="high">High</option>
+                        <option value="very_high">Very High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sleepQuality">Sleep Quality: <span class="required">*</span></label>
+                    <select id="sleepQuality" name="sleepQuality" required>
+                        <option value="">Select...</option>
+                        <option value="excellent">Excellent (7-9 hours, restful)</option>
+                        <option value="good">Good (6-7 hours, mostly restful)</option>
+                        <option value="fair">Fair (5-6 hours, sometimes restless)</option>
+                        <option value="poor">Poor (less than 5 hours or very restless)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseFrequency">Exercise Frequency: <span class="required">*</span></label>
+                    <select id="exerciseFrequency" name="exerciseFrequency" required>
+                        <option value="">Select...</option>
+                        <option value="daily">Daily</option>
+                        <option value="3-5_weekly">3-5 times per week</option>
+                        <option value="1-2_weekly">1-2 times per week</option>
+                        <option value="rarely">Rarely</option>
+                        <option value="never">Never</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="diet">Dietary Preference: <span class="required">*</span></label>
+                    <select id="diet" name="diet" required>
+                        <option value="">Select...</option>
+                        <option value="omnivore">Omnivore</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="pescatarian">Pescatarian</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Medical History -->
+            <section class="form-section">
+                <h2>Medical History</h2>
+                
+                <div class="form-group">
+                    <label>Pre-existing Conditions (check all that apply):</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="conditions" value="pcos"> PCOS (Polycystic Ovary Syndrome)</label>
+                        <label><input type="checkbox" name="conditions" value="endometriosis"> Endometriosis</label>
+                        <label><input type="checkbox" name="conditions" value="fibroids"> Fibroids</label>
+                        <label><input type="checkbox" name="conditions" value="anemia"> Anemia</label>
+                        <label><input type="checkbox" name="conditions" value="thyroid"> Thyroid Issues</label>
+                        <label><input type="checkbox" name="conditions" value="none"> None</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="medications">Current Medications/Supplements:</label>
+                    <textarea id="medications" name="medications" rows="3" placeholder="List any medications or supplements you're currently taking"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Are you allergic to any herbs or plants? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="allergies" value="no" required> No</label>
+                        <label><input type="radio" name="allergies" value="yes" required> Yes (please specify below)</label>
+                    </div>
+                    <textarea id="allergyDetails" name="allergyDetails" rows="2" placeholder="Please list any known herb/plant allergies"></textarea>
+                </div>
+            </section>
+
+            <!-- Goals & Preferences -->
+            <section class="form-section">
+                <h2>Goals & Preferences</h2>
+                
+                <div class="form-group">
+                    <label>What are your primary goals? (check all that apply): <span class="required">*</span></label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="goals" value="reduce_pain" required> Reduce menstrual pain</label>
+                        <label><input type="checkbox" name="goals" value="regulate_cycle"> Regulate cycle</label>
+                        <label><input type="checkbox" name="goals" value="reduce_heavy_flow"> Reduce heavy flow</label>
+                        <label><input type="checkbox" name="goals" value="improve_mood"> Improve mood and emotional well-being</label>
+                        <label><input type="checkbox" name="goals" value="increase_energy"> Increase energy levels</label>
+                        <label><input type="checkbox" name="goals" value="reduce_bloating"> Reduce bloating</label>
+                        <label><input type="checkbox" name="goals" value="overall_wellness"> Overall menstrual wellness</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="herbalExperience">Previous Experience with Herbal Medicine: <span class="required">*</span></label>
+                    <select id="herbalExperience" name="herbalExperience" required>
+                        <option value="">Select...</option>
+                        <option value="none">No experience</option>
+                        <option value="some">Some experience</option>
+                        <option value="experienced">Experienced user</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="preferences">Herbal Remedy Preferences:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="preferences" value="teas"> Herbal Teas</label>
+                        <label><input type="checkbox" name="preferences" value="capsules"> Capsules/Tablets</label>
+                        <label><input type="checkbox" name="preferences" value="tinctures"> Tinctures</label>
+                        <label><input type="checkbox" name="preferences" value="topical"> Topical Applications</label>
+                        <label><input type="checkbox" name="preferences" value="no_preference"> No Preference</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalNotes">Additional Notes or Questions:</label>
+                    <textarea id="additionalNotes" name="additionalNotes" rows="4" placeholder="Any additional information you'd like to share about your menstrual health or questions about herbal medicine"></textarea>
+                </div>
+            </section>
+
+            <!-- Consent -->
+            <section class="form-section">
+                <div class="form-group">
+                    <label class="consent-label">
+                        <input type="checkbox" name="consent" id="consent" required>
+                        <span>I understand that this survey is for informational purposes only and does not replace professional medical advice. I consent to the collection and use of this information for providing personalized herbal medicine recommendations. <span class="required">*</span></span>
+                    </label>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Submit Survey</button>
+                <button type="reset" class="btn-secondary">Clear Form</button>
+            </div>
+        </form>
+
+        <div id="successMessage" class="success-message" style="display: none;">
+            <h2>✓ Thank You!</h2>
+            <p>Your survey has been submitted successfully. We'll analyze your responses to provide personalized herbal medicine recommendations for your menstrual health.</p>
+            <button onclick="location.reload()" class="btn-primary">Submit Another Response</button>
+        </div>
+
+        <footer>
+            <p>© 2025 Colita QR - Personalized Herbal Medicine for Menstrual Health</p>
+            <p class="disclaimer">Disclaimer: This survey is for educational and informational purposes only. Always consult with a healthcare professional before starting any new health regimen.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
