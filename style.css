@@ -1735,19 +1735,3 @@ p {
     border-width: 3px;
   }
 }
-
-/* === Append-only: tiny waitlist tweaks, safely scoped === */
-#waitlist .waitlist-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-}
-
-#waitlist .input {
-  min-width: 220px;           /* compact on mobile, roomy on desktop */
-}
-
-#waitlist .form-status {
-  min-height: 1em;            /* avoid layout jump on status text */
-}
