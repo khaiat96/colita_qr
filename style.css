@@ -1,0 +1,93 @@
+/* Brand: purple/green with pink/black accents — WCAG-aware */
+:root{
+  --bg:#fff;
+  --fg:#141414;
+  --muted:#5d5d66;
+  --brand:#4b2e83;       /* deep purple */
+  --brand-2:#2f7d62;     /* herbal green */
+  --accent:#e94b86;      /* soft pink */
+  --ok:#1b9e77;
+  --warn:#c77d1e;
+  --err:#c0392b;
+  --card:#faf9ff;        /* subtle purple tint */
+  --focus:#ffbf47;       /* high-contrast focus */
+  --ring: 3px solid var(--focus);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+  color:var(--fg);
+  background:var(--bg);
+}
+.container{max-width:880px;margin-inline:auto;padding:1.25rem}
+.site-header{border-bottom:1px solid #eee;background:linear-gradient(90deg,var(--brand),#3c256a 60%,#231942)}
+.site-header .container{display:flex;align-items:center;gap:.75rem}
+.logo{width:44px;height:44px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.18))}
+.site-footer{border-top:1px solid #eee;background:#f8faf9}
+
+/* Cards & layout */
+.card{
+  background:var(--card);
+  border:1px solid #e6e0ff;
+  border-radius:18px;
+  padding:1rem;
+  box-shadow:0 10px 30px rgba(30,10,80,.06);
+}
+.stack{display:grid;gap:1rem}
+.row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+.center{text-align:center}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+/* Buttons */
+button,.btn{
+  appearance:none;border:0;border-radius:14px;padding:.8rem 1rem;font-weight:600;
+  background:var(--brand);color:white;cursor:pointer;transition:transform .02s ease,opacity .2s ease;
+}
+button.secondary{background:var(--brand-2)}
+button.ghost{background:transparent;color:var(--brand);outline:1px solid var(--brand)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:active{transform:scale(.99)}
+a.btn{text-decoration:none;display:inline-block}
+
+/* Inputs */
+label{font-weight:600}
+input[type="text"],input[type="email"]{
+  width:100%;padding:.75rem;border:1.5px solid #e1e1ea;border-radius:12px;background:white
+}
+input[type="checkbox"]{transform:scale(1.2)}
+fieldset{border:0;padding:0;margin:0}
+legend{font-size:1.15rem;font-weight:800;margin-bottom:.25rem}
+
+/* Option chips */
+.option{
+  border:1.5px solid #dcd6ff;background:white;color:#1a1330;border-radius:999px;
+  padding:.6rem .9rem;cursor:pointer;user-select:none;outline-offset:3px
+}
+.option[aria-checked="true"],.option.selected{background:var(--brand);border-color:var(--brand);color:white}
+
+/* Progress */
+.progress{height:10px;background:#eee;border-radius:999px;overflow:hidden}
+.progress > div{height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-2));width:0%}
+
+/* Focus & a11y */
+:focus{outline:var(--ring);outline-offset:2px}
+.sr-only{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+
+/* Alerts */
+.alert{padding:.75rem 1rem;border-radius:12px;border:1px solid #eee}
+.alert.warn{background:#fff8ea;border-color:#ffe2ab;color:#5e4100}
+.alert.err{background:#fff0f0;border-color:#ffd1d1;color:#7c1e1e}
+.alert.ok {background:#eefaf5;border-color:#cdeee1;color:#0c5e40}
+
+/* Sticky footer waitlist */
+#footerBlock{padding:1.25rem}
+.footer-card{background:#f0fbf6;border:1px solid #d8f2e6;border-radius:16px;padding:1rem}
+.footer-card h3{margin:.25rem 0}
+.footer-benefits{display:grid;gap:.25rem;margin:.5rem 0 0 0;padding:0;list-style:none}
+
+/* Tiny helpers */
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mt-3{margin-top:1.5rem}
+.mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:1rem}.mb-3{margin-bottom:1.5rem}

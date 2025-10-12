@@ -1,0 +1,287 @@
+{
+  "meta": {
+    "version": "landing-v1.4",
+    "language": "es-MX",
+    "brand": "colita de rana",
+    "seo": {
+      "title": "Colita de Rana — Medicina herbal personalizada para tu ciclo",
+      "description": "Toma nuestro quiz para descubrir tu tipo de período y cómo nuestro programa de herbolaria personalizada puede ayudarte cuando lancemos en 2026.",
+      "keywords": [
+        "herbología personalizada",
+        "salud menstrual",
+        "ciclo menstrual",
+        "colita de rana",
+        "medicina natural",
+        "quiz menstrual",
+        "tipos de ciclo",
+        "herbolaria tradicional"
+      ],
+      "canonical_url": "https://www.colitaderana.club/"
+    },
+    "analytics": {
+      "enabled": true,
+      "events": [
+        "hero_seen",
+        "value_prop_seen",
+        "cta_quiz_click",
+        "cta_waitlist_click",
+        "cta_waitlist_submit",
+        "waitlist_submit_success",
+        "waitlist_submit_error"
+      ]
+    },
+    "structured_data": {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "Colita de rana",
+          "url": "https://www.colitaderana.club/",
+          "logo": "https://cdn.colitaderana.mx/brand/logo-colita-de-rana.svg",
+          "sameAs": [
+            "https://instagram.com/colitaderana"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "name": "Colita de rana",
+          "url": "https://www.colitaderana.club/",
+          "potentialAction": {
+            "@type": "SubscribeAction",
+            "target": "https://www.colitaderana.club/api/waitlist"
+          }
+        }
+      ]
+    },
+    "schema_version": "1.0",
+    "compat": {
+      "min_app": "1.0.0",
+      "tested_up_to": "1.0.0"
+    },
+    "content_safety": {
+      "blocklist": [
+        "gotas",
+        "cápsulas",
+        "dosis",
+        "mg",
+        "mL",
+        "miligramos",
+        "mililitros"
+      ],
+      "regex_blocklist": []
+    }
+  },
+  "branding": {
+    "voice": "cercano, cálido, ancestral-moderno",
+    "colors": {
+      "primary": "#304f40",
+      "secondary": "#ffd550",
+      "accent": "#4cb051",
+      "text": "#2b3d36",
+      "background": "#fdf6e8"
+    },
+    "logo": {
+      "src": "https://cdn.colitaderana.mx/brand/logo-colita-de-rana.svg",
+      "alt": "Logo colita de rana",
+      "width": 180,
+      "height": 48,
+      "local_hint": "./assets/logo-colita-de-rana.svg",
+      "variants": {
+        "dark_bg": "https://cdn.colitaderana.mx/brand/logo-colita-de-rana-white.svg",
+        "favicon": "https://cdn.colitaderana.mx/brand/favicon.png",
+        "favicon_local_hint": "./assets/favicon.png"
+      }
+    }
+  },
+  "performance": {
+    "preload": {
+      "images": [
+        {
+          "href": "https://cdn.colitaderana.mx/hero/hero-menstrual-personalizado.jpg",
+          "as": "image",
+          "fetchpriority": "high"
+        }
+      ],
+      "fonts": []
+    }
+  },
+  "layout": {
+    "sections_order": [
+      "hero",
+      "value_prop",
+      "quiz_teaser",
+      "how_it_works",
+      "waitlist"
+    ],
+    "container_max_width_px": 920,
+    "style_preset": "paper-cards" 
+  },
+  "hero": {
+    "eyebrow": "Colita de Rana — ahora personalizada",
+    "title_lines": [
+      "Tu ciclo es único.",
+      "Tu medicina también debería serlo."
+    ],
+    "subtitle": "Conoce los elementos que se mueven en tu cuerpo y cómo equilibrarlos.",
+    "body": "Nuestro quiz analiza los patrones energéticos de tu ciclo —calor, frío, tensión, humedad o sequedad— y te muestra cómo pequeños desequilibrios crean síntomas repetidos. Aprenderás a leer tu cuerpo desde la herbolaria vitalista, combinando sabiduría ancestral y ciencia moderna.",
+    "primary_cta": {
+      "label": "Descubre tu tipo de ciclo",
+      "href": "/quiz",
+      "event": "cta_quiz_click",
+      "style": "solid",
+      "icon": "sparkles",
+      "aria_label": "Ir al quiz para descubrir tu tipo de ciclo"
+    },
+    "secondary_cta": {
+      "label": "Únete a la lista de espera del lanzamiento 2026",
+      "href": "#waitlist",
+      "event": "cta_waitlist_click",
+      "style": "secondary",
+      "icon": "bell",
+      "aria_label": "Ir a la sección para unirte a la lista de espera"
+    },
+    "media": {
+      "type": "image",
+      "src": "https://cdn.colitaderana.mx/hero/hero-menstrual-personalizado.jpg",
+      "alt": "Ilustración de ciclo menstrual con plantas y símbolos de elementos (fuego, agua, aire, tierra)",
+      "focus": "center",
+      "shape": "rounded"
+    },
+    "a11y": {
+      "h1": "Tu ciclo es único. Tu medicina también debería serlo."
+    },
+    "style": {
+      "card": true,
+      "badge_as_brand": true
+    }
+  },
+  "value_prop": {
+    "title": "Medicina herbolaria personalizada, inspirada en los elementos",
+    "paragraphs": [
+      "Unimos la sabiduría ancestral de la herbolaria con la ciencia moderna para personalizar tu medicina menstrual.",
+      "Identificamos tu patrón energético y te brindamos educación clara por fase de tu ciclo."
+    ],
+    "bullets": [
+      "Diagnóstico energético: identifica tu patrón (calor, frío, humedad, sequedad o tensión, y combinaciones mixtas)",
+      "Explicación clara: por qué tus síntomas se agrupan y qué los equilibra",
+      "Guías por fase del ciclo: hábitos, descanso y alimentos",
+      "Transparencia: entendimiento de la lógica herbolaria sin revelar fórmulas",
+      "Planes que evolucionan contigo a lo largo del año y tus cambios hormonales"
+    ],
+    "badge": {
+      "text": "Lanzamiento 2026",
+      "tone": "highlight"
+    },
+    "style": {
+      "card": "inset"
+    }
+  },
+  "quiz_teaser": {
+    "title": "Descubre tu tipo de ciclo",
+    "copy": "En 3–5 minutos descubre qué elemento domina tu cuerpo y cómo equilibrarlo. Recibirás una lectura personalizada con consejos por fase y una vista previa de la medicina que podrías recibir en 2026.",
+    "cta": {
+      "label": "Haz el quiz ahora",
+      "href": "/quiz",
+      "event": "cta_quiz_click",
+      "style": "solid"
+    },
+    "aside": {
+      "label": "Tiempo estimado",
+      "value": "≈3–5 minutos"
+    },
+    "style": {
+      "card": true
+    }
+  },
+  "how_it_works": {
+    "title": "¿Cómo funciona?",
+    "steps": [
+      {
+        "title": "1) Haz el quiz",
+        "text": "Descubre tu patrón elemental (Fuego, Agua, Aire o Tierra) y sus manifestaciones en tu cuerpo."
+      },
+      {
+        "title": "2) Recibe tu lectura",
+        "text": "Entiende por qué se agrupan tus síntomas y qué hábitos los equilibran en cada fase."
+      },
+      {
+        "title": "3) Únete a la lista",
+        "text": "Cuando lancemos en 2026, accederás al sistema completo y a tu medicina herbolaria personalizada."
+      }
+    ],
+    "disclaimer": "La información es educativa y no sustituye consejo médico.",
+    "style": {
+      "card": "inset",
+      "grid_steps": true
+    }
+  },
+  "waitlist": {
+    "id": "waitlist",
+    "title": "🌟 ¡Sé la Primera en Recibir Tu Medicina Personalizada!",
+    "description": "Únete a nuestra lista de espera y recibe acceso temprano al primer sistema de herbologia personalizada para tu ciclo menstrual, además de un descuento especial como miembro fundador.",
+    "benefits": [
+      "💰 20% de descuento como miembro fundador",
+      "🔔 Notificaciones exclusivas de lanzamiento",
+      "🎯 Acceso prioritario a tu fórmula personalizada",
+      "📚 Guías gratuitas de salud menstrual"
+    ],
+    "launch_date": "Lanzamiento previsto: Primavera 2026",
+    "form": {
+      "fields": [
+        {
+          "id": "email",
+          "label": "Correo electrónico",
+          "type": "email",
+          "required": true,
+          "placeholder": "tu@email.com"
+        }
+      ],
+      "consent": {
+        "id": "opt_in",
+        "label": "Acepto recibir correos sobre el lanzamiento y contenidos educativos.",
+        "required": true,
+        "privacy_note": "Tus datos serán usados solo para notificarte del lanzamiento y enviar material educativo. Consulta nuestra política de privacidad."
+      },
+      "cta": {
+        "label": "Quiero unirme",
+        "event": "cta_waitlist_submit"
+      },
+      "success_message": "¡Gracias! Te avisaremos cuando estemos listas.",
+      "error_message": "Hubo un problema con tu registro. Intenta de nuevo."
+    },
+    "style": {
+      "card": true
+    }
+  },
+  "experiments": {
+    "faq_enabled": false,
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "items": [
+        {
+          "q": "¿El contenido es médico?",
+          "a": "No. Es educativo y no sustituye consejo médico."
+        },
+        {
+          "q": "¿Cuánto dura el quiz?",
+          "a": "Aproximadamente 3–5 minutos."
+        },
+        {
+          "q": "¿Cuándo lanzan?",
+          "a": "Previsto para 2026. La lista de espera recibe noticias primero."
+        }
+      ]
+    }
+  },
+  "telemetry": {
+    "enabled": true,
+    "schema_version": "1.0",
+    "session_fields": [
+      "app_version",
+      "build",
+      "locale",
+      "mode"
+    ]
+  },
+  "assets_note": "Coloca el logo en ./assets/logo-colita-de-rana.svg y el favicon en ./assets/favicon.png. El frontend intentará usar esos archivos locales; si no existen, usará las URLs del CDN definidas en 'branding.logo.src' y 'branding.logo.variants.favicon'."
+}

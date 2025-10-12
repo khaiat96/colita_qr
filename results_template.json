@@ -1,0 +1,876 @@
+{
+  "meta": {
+    "version": "result_templates-v5.6.json",
+    "language": "es-MX",
+    "brand_voice": "colita de rana — cercano, cálido, ancestral-moderno",
+    "description": "Resultados educativos por patrón menstrual con tips personalizados.",
+    "disclaimer": "Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.",
+    "schema_version": "1.0",
+    "compat": {
+      "min_app": "1.0.0",
+      "tested_up_to": "1.0.0"
+    },
+    "content_safety": {
+      "blocklist": [
+        "gotas",
+        "cápsulas",
+        "dosis",
+        "mg",
+        "mL",
+        "miligramos",
+        "mililitros"
+      ],
+      "regex_blocklist": []
+    }
+  },
+  "common": {
+    "phase_labels": {
+      "antes": "Antes del periodo (PMS)",
+      "durante": "Durante",
+      "despues": "Después",
+      "entre": "Entre periodos"
+    },
+    "safety_notes": {
+      "heavy": "Si cambias tu toalla/tampón cada <1h en días intensos, considera una valoración clínica.",
+      "pain": "Si el dolor es 9–10/10, busca apoyo profesional.",
+      "low_flow": "Si el sangrado es muy escaso por varios meses, consulta apoyo profesional para descartar causas."
+    }
+  },
+  "layout": {
+    "sections_order": [
+      "header",
+      "summary",
+      "element",
+      "element_explainer",
+      "pattern_card",
+      "mixed_synergy",
+      "how_herbs_work",
+      "phase",
+      "care_tips",
+      "support_signals",
+      "advisories",
+      "unique_system",
+      "footer",
+      "disclaimer"
+    ]
+  },
+  "header": {
+    "title_single": "Tu perfil energético",
+    "title_mixed": "Tu perfil energético (mixto)",
+    "subtitle_hint_from_P1": true
+  },
+  "summary": {
+    "single": "Tipo de ciclo: {{label_top}}",
+    "mixed": "Tipos principales: {{label_top_1}} + {{label_top_2}}",
+    "tension_tendency_label": "Tendencia a tensión",
+    "mixed_id_template": "{{label_top_1}}_{{label_top_2}}"
+  },
+  "element": {
+    "title": "Elemento:",
+    "by_pattern": {
+      "tension": [
+        "Viento/Aire 🌬️"
+      ],
+      "calor": [
+        "Fuego 🔥"
+      ],
+      "frio": [
+        "Fuego deficiente ❄️"
+      ],
+      "humedad": [
+        "Agua 💧"
+      ],
+      "sequedad": [
+        "Agua deficiente 🌵"
+      ],
+      "calor_humedad": [
+        "Fuego + Agua (calor con estancamiento suave)"
+      ],
+      "frio_humedad": [
+        "Fuego deficiente + Agua (frío con retención y pesadez)"
+      ],
+      "calor_sequedad": [
+        "Fuego + Agua deficiente (calor con consumo de fluidos)"
+      ],
+      "frio_sequedad": [
+        "Fuego deficiente + Agua deficiente (frío con contracción y rigidez)"
+      ],
+      "tension_calor": [
+        "Viento + Fuego (energía inquieta y caliente)"
+      ],
+      "tension_humedad": [
+        "Viento + Agua densa (presión con lentitud y retención)"
+      ]
+    }
+  },
+  "element_explainer": {
+    "by_pattern": {
+      "tension": [
+        "El viento en tu cuerpo no es solo una metáfora: es una fuerza real que puedes sentir como tensión muscular y en la respiración. En equilibrio da flexibilidad; en exceso causa contracciones irregulares, humor variable y síntomas cambiantes."
+      ],
+      "calor": [
+        "El Fuego es energía transformadora que, cuando se desborda, inflama y agota reservas. En equilibrio brinda vitalidad y claridad; en exceso genera irritabilidad, calor e hipermetabolismo."
+      ],
+      "frio": [
+        "Falta de Fuego vital: se enfría la circulación y baja la chispa interna. En equilibrio sostiene metabolismo y digestión; en deficiencia hay lentitud, frío y baja energía."
+      ],
+      "humedad": [
+        "El Agua nutre y lubrica; en exceso se estanca y pesa. En equilibrio permite fluir; en exceso hay retención, hinchazón y lentitud metabólica."
+      ],
+      "sequedad": [
+        "Deficiencia de Agua: se pierde fluidez y nutrición. En equilibrio hidrata; en deficiencia hay sequedad, rigidez y agotamiento."
+      ]
+    }
+  },
+  "pattern_card": {
+    "single": {
+      "tension": {
+        "pattern_explainer": "Exceso de Viento con espasmo uterino y nervioso; síntomas que ‘se mueven’.",
+        "characteristics": [
+          "Dolor cólico o punzante (espasmos)",
+          "Síntomas irregulares/cambiantes",
+          "Ansiedad, hipervigilancia",
+          "Sensibilidad al estrés",
+          "Respiración entrecortada con dolor"
+        ],
+        "p1_notes": {
+          "regular": "Ciclo regular con viento activo: relajar y estabilizar.",
+          "irregular": "El viento altera el ritmo: nervinas + antiespasmódicas ayudan.",
+          "no_cycle": "Aunque no sangres, calmar mente y músculo equilibra el sistema."
+        }
+      },
+      "calor": {
+        "pattern_explainer": "Exceso de Fuego: calor interno, sangrado abundante, irritabilidad.",
+        "characteristics": [
+          "Flujo rojo brillante/abundante",
+          "Sensación de calor/sed/enrojecimiento",
+          "Irritabilidad premenstrual",
+          "Sueño ligero",
+          "Digestión rápida/acidez"
+        ],
+        "p1_notes": {
+          "regular": "Enfriamiento suave + descanso reparador.",
+          "irregular": "Refrescar ayuda a estabilizar el ritmo.",
+          "no_cycle": "Bajar calor e hidratar tejidos sigue siendo clave."
+        }
+      },
+      "frio": {
+        "pattern_explainer": "Deficiencia de Fuego: circulación lenta y retrasos.",
+        "characteristics": [
+          "Flujo escaso/retrasos",
+          "Manos/pies fríos; mejora con calor",
+          "Cansancio y digestión lenta",
+          "Dolor sordo que mejora con calor",
+          "Preferencia por bebidas/comidas calientes"
+        ],
+        "p1_notes": {
+          "regular": "Tibieza diaria y comidas calientes.",
+          "irregular": "Calor suave + movimiento constante.",
+          "no_cycle": "Templar y activar microcirculación suavemente."
+        }
+      },
+      "humedad": {
+        "pattern_explainer": "Exceso de Agua: pesadez, retención, coágulos.",
+        "characteristics": [
+          "Hinchazón/pesadez",
+          "Coágulos o flujo espeso",
+          "Digestión lenta de grasas",
+          "Letargo postcomida",
+          "Mejoría con movimiento suave"
+        ],
+        "p1_notes": {
+          "regular": "Drenaje suave diario.",
+          "irregular": "Ligereza digestiva + movimiento rítmico.",
+          "no_cycle": "Drenar y aligerar para mayor claridad."
+        }
+      },
+      "sequedad": {
+        "pattern_explainer": "Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga.",
+        "characteristics": [
+          "Sangrado muy escaso o ausente",
+          "Sed y sequedad",
+          "Cansancio, sueño no reparador",
+          "Rigidez articular",
+          "Irritabilidad por agotamiento"
+        ],
+        "p1_notes": {
+          "regular": "Hidratación con electrolitos naturales + grasas saludables.",
+          "irregular": "Reponer fluidos y aceites para estabilizar.",
+          "no_cycle": "Nutrir y humectar para restaurar reservas."
+        }
+      }
+    },
+    "mixed_pairs": {
+      "calor_humedad": {
+        "pattern_explainer": "Intensidad con estancamiento: calor que espesa y humedad que retiene.",
+        "characteristics": [
+          "Calor con pesadez",
+          "Coágulos/flujo espeso",
+          "Irritabilidad + letargo",
+          "Empeora con frituras/alcohol",
+          "Alivio con frescor y movimiento"
+        ],
+        "p1_notes": {
+          "regular": "Enfriar suavemente + drenar.",
+          "irregular": "Comidas ligeras + constancia en movimiento.",
+          "no_cycle": "Refrescar y drenar mejora el confort."
+        }
+      },
+      "frio_humedad": {
+        "pattern_explainer": "Fuego bajo + agua acumulada: pesadez y dolor que mejora con calor.",
+        "characteristics": [
+          "Retención y pesadez",
+          "Dolor alivia con calor/movimiento",
+          "Coágulos frecuentes",
+          "Digestión lenta",
+          "Cansancio postcomidas"
+        ],
+        "p1_notes": {
+          "regular": "Tibieza diaria + drenaje ligero.",
+          "irregular": "Calor suave + caminatas constantes.",
+          "no_cycle": "Templar y drenar apoya energía."
+        }
+      },
+      "calor_sequedad": {
+        "pattern_explainer": "Calor con poca humedad: irritación + sed/sequedad.",
+        "characteristics": [
+          "Calor con labios/mucosas secas",
+          "Flujo escaso/oscuro al inicio o final",
+          "Sueño inquieto",
+          "Mejora con alimentos jugosos"
+        ],
+        "p1_notes": {
+          "regular": "Enfriar + humectar sostenido.",
+          "irregular": "Bajar calor y reponer fluidos.",
+          "no_cycle": "Refrescar y humectar mejora vitalidad."
+        }
+      },
+      "frio_sequedad": {
+        "pattern_explainer": "Baja temperatura y humedad: rigidez, cansancio, flujo muy escaso.",
+        "characteristics": [
+          "Flujo escaso o ausente",
+          "Frío y baja energía",
+          "Piel/mucosas secas",
+          "Rigidez que mejora con calor/aceites"
+        ],
+        "p1_notes": {
+          "regular": "Nutrición tibia e hidratación constante.",
+          "irregular": "Tibieza + aceites para estabilizar.",
+          "no_cycle": "Reponer calor y fluidos."
+        }
+      },
+      "tension_calor": {
+        "pattern_explainer": "Espasmo con inflamación: viento agita el fuego y viceversa.",
+        "characteristics": [
+          "Cólicos apretados con calor",
+          "Irritabilidad/reactividad",
+          "Sueño inquieto",
+          "Alivio con calma y frescor"
+        ],
+        "p1_notes": {
+          "regular": "Descanso + enfriamiento suave.",
+          "irregular": "Relajar + refrescar estabiliza.",
+          "no_cycle": "Soltar tensión y enfriar mejora el descanso."
+        }
+      },
+      "tension_humedad": {
+        "pattern_explainer": "Nudos con pesadez: espasmo atrapado en medio denso.",
+        "characteristics": [
+          "Congestión pélvica",
+          "Hinchazón/pesadez",
+          "Dolor migrante",
+          "Alivio con caminata y respiración"
+        ],
+        "p1_notes": {
+          "regular": "Drenaje ligero + pausas activas.",
+          "irregular": "Antiespasmódicas + descongestivas.",
+          "no_cycle": "Mover y drenar libera tensión."
+        }
+      }
+    }
+  },
+  "why_cluster": {
+    "title": "¿Por qué se agrupan tus síntomas?",
+    "by_pattern": {
+      "tension": [
+        "El ‘viento’ sobre-estimula nervios y músculo liso: se forman espasmos que aprietan vasos y mueven el dolor; por eso hay punzadas y síntomas cambiantes."
+      ],
+      "calor": [
+        "El Fuego acelera perfusión y metabolismo: sube la temperatura e irrita tejidos (rojo brillante, sed, acidez, irritabilidad)."
+      ],
+      "frio": [
+        "Fuego bajo enlentece circulación y tono: sangre avanza despacio, dolor sordo que mejora con calor; pueden retrasarse los periodos."
+      ],
+      "humedad": [
+        "Exceso de Agua estanca linfa y venas: los fluidos se espesan y retienen (pesadez, coágulos, hinchazón)."
+      ],
+      "sequedad": [
+        "Falta de Agua reduce lubricación y resiliencia: tejidos rígidos, reservas bajas, flujo escaso y cansancio."
+      ],
+      "calor_humedad": [
+        "El calor espesa y la humedad retiene: intensidad con estancamiento (coágulos, pesadez, calor interno)."
+      ],
+      "frio_humedad": [
+        "Fuego bajo no evapora ni mueve líquidos: humedad se acumula; alivia con tibieza y movimiento suave."
+      ],
+      "calor_sequedad": [
+        "Fuego sostenido consume fluidos: irritación con poca humedad, sed y sueño ligero."
+      ],
+      "frio_sequedad": [
+        "Poco fuego y poca agua: rigidez, fatiga y flujo muy escaso que mejora con calor y aceites."
+      ],
+      "tension_calor": [
+        "Viento mueve el Fuego y el Fuego agita al Viento: espasmo con inflamación (cólicos apretados, enrojecimiento, irritabilidad)."
+      ],
+      "tension_humedad": [
+        "La tensión queda atrapada en un medio denso: nudos y dolor migrante con pesadez e hinchazón; mejora al drenar y mover."
+      ]
+    }
+  },
+  "mixed_synergy": {
+    "title": "Cómo interactúan tus patrones",
+    "pairs": {
+      "calor_humedad": "Calor espesa los fluidos → Enfriar + drenar.",
+      "calor_sequedad": "Fuego sostenido seca tejidos → Enfriar + humectar.",
+      "frio_humedad": "Lentitud impide drenaje → Templar + mover.",
+      "frio_sequedad": "Frío + poca humedad → Templar + nutrir.",
+      "tension_calor": "Espasmo inflamatorio → Relajar + refrescar.",
+      "tension_humedad": "Nudos con pesadez → Relajar + drenar."
+    }
+  },
+  "phase": {
+    "title": "Cuidado por fase del ciclo (personalizado)",
+    "render_rules": {
+      "merge_strategy": "generic_plus_primary_pattern",
+      "primary_pattern": "{{label_top}}",
+      "if_mixed_use": "label_top_1_first_then_label_top_2",
+      "dedupe_arrays": true,
+      "max_items_per_list": 6
+    },
+    "generic": {
+      "menstruacion": {
+        "label": "Menstruación (1–7)",
+        "about": "Descarga y reinicio. Bajar ritmo para favorecer el flujo y la claridad.",
+        "foods": [
+          "Caldos y sopas nutritivas",
+          "Verduras cocidas de hoja oscura",
+          "Proteína de fácil digestión",
+          "Infusiones templadas"
+        ],
+        "do": [
+          "Descanso profundo y sueño regular",
+          "Calor local suave si alivia",
+          "Escritura/reflexión: define 1–2 metas del ciclo"
+        ],
+        "avoid": [
+          "Entrenamiento muy intenso los primeros 1–2 días",
+          "Ayunos prolongados",
+          "Exceso de cafeína"
+        ],
+        "movement": [
+          "Caminata suave",
+          "Movilidad pélvica/respiración diafragmática"
+        ],
+        "work_focus": [
+          "Tareas en solitario",
+          "Revisión y cierre de pendientes"
+        ],
+        "social": [
+          "Círculos íntimos",
+          "Límites suaves con la agenda"
+        ]
+      },
+      "folicular": {
+        "label": "Fase folicular (8–14)",
+        "about": "Reconstrucción y arranque. Sube la energía y la plasticidad cognitiva.",
+        "foods": [
+          "Verduras frescas y crujientes",
+          "Granos integrales ligeros",
+          "Proteína magra",
+          "Fermentos suaves"
+        ],
+        "do": [
+          "Inicia proyectos nuevos",
+          "Planifica y prototipa",
+          "Prueba hábitos/horarios"
+        ],
+        "avoid": [
+          "Sobreagendarse el primer día con energía",
+          "Saltarse comidas base"
+        ],
+        "movement": [
+          "Cardio moderado",
+          "Fuerza progresiva técnica"
+        ],
+        "work_focus": [
+          "Ideación/brainstorm",
+          "Aprendizaje acelerado"
+        ],
+        "social": [
+          "Networking ligero",
+          "Reuniones creativas"
+        ]
+      },
+      "ovulacion": {
+        "label": "Ovulación (15–17)",
+        "about": "Pico de energía, claridad verbal y sociabilidad.",
+        "foods": [
+          "Ensaladas completas con proteína",
+          "Frutas jugosas",
+          "Hidratación constante"
+        ],
+        "do": [
+          "Presenta/negocia",
+          "Colabora y lidera",
+          "Sesiones de creatividad en grupo"
+        ],
+        "avoid": [
+          "Desvelos por sobreproductividad",
+          "Exceso de estímulos tarde-noche"
+        ],
+        "movement": [
+          "Entrenamientos completos con técnica",
+          "Movilidad torácica y cadera"
+        ],
+        "work_focus": [
+          "Pitching y comunicación",
+          "Tareas que requieren carisma"
+        ],
+        "social": [
+          "Eventos/clases",
+          "Colaboraciones"
+        ]
+      },
+      "lutea": {
+        "label": "Fase lútea (18–28)",
+        "about": "Afinar detalles, nutrir y preparar el aterrizaje.",
+        "foods": [
+          "Comidas tibias/estables",
+          "Fibra suficiente",
+          "Grasas saludables"
+        ],
+        "do": [
+          "Checklist y rutinas",
+          "Autocuidado estructurado",
+          "Higiene del sueño"
+        ],
+        "avoid": [
+          "Cenas muy tardías/pesadas",
+          "Exceso de azúcar refinada"
+        ],
+        "movement": [
+          "Caminatas diarias",
+          "Fuerza técnica sin llegar a fallo"
+        ],
+        "work_focus": [
+          "QA, documentación y cierres",
+          "Organización/entregables"
+        ],
+        "social": [
+          "Agenda medida",
+          "Espacios de descanso"
+        ]
+      }
+    },
+    "overrides_by_pattern": {
+      "calor": {
+        "menstruacion": {
+          "about_add": "Disipa calor e irritabilidad.",
+          "foods_add": [
+            "Pepino, menta, agua de jamaica sin azúcar",
+            "Frutos rojos y cítricos",
+            "Verduras de hoja ligeras"
+          ],
+          "do_add": [
+            "Paños frescos si alivian",
+            "Evitar saunas/calor excesivo"
+          ],
+          "avoid_add": [
+            "Chiles/picantes, alcohol, frituras"
+          ]
+        },
+        "folicular": {
+          "foods_add": [
+            "Amargos suaves (rúcula, berros) para ‘liberar calor’ hepático"
+          ],
+          "do_add": [
+            "Hidratación con pizca de sal/limón si hay sed fácil"
+          ]
+        },
+        "ovulacion": {
+          "do_add": [
+            "Respiración refrescante (exhalación larga) entre reuniones"
+          ],
+          "avoid_add": [
+            "Cafeína alta pre-presentaciones"
+          ]
+        },
+        "lutea": {
+          "foods_add": [
+            "Caldos claros y frutas jugosas"
+          ],
+          "do_add": [
+            "Dormir en cuarto fresco"
+          ],
+          "avoid_add": [
+            "Ejercicio en horas de mayor calor ambiental"
+          ]
+        }
+      },
+      "frio": {
+        "menstruacion": {
+          "about_add": "Tibieza constante para aliviar contracción fría.",
+          "foods_add": [
+            "Caldos concentrados, jengibre en infusión",
+            "Avena caliente"
+          ],
+          "do_add": [
+            "Compresa tibia en abdomen bajo",
+            "Calcetines calientes"
+          ],
+          "avoid_add": [
+            "Bebidas heladas"
+          ]
+        },
+        "folicular": {
+          "foods_add": [
+            "Especias suaves: canela, cardamomo",
+            "Desayunos tibios regulares"
+          ],
+          "do_add": [
+            "Ducha tibia→templada para ‘despertar térmico’"
+          ]
+        },
+        "ovulacion": {
+          "do_add": [
+            "Calentamiento prolongado antes de entrenar"
+          ],
+          "avoid_add": [
+            "Aire acondicionado directo"
+          ]
+        },
+        "lutea": {
+          "foods_add": [
+            "Sopas espesas y estofados ligeros"
+          ],
+          "do_add": [
+            "Caminata poscomida para activar circulación"
+          ]
+        }
+      },
+      "humedad": {
+        "menstruacion": {
+          "about_add": "Facilita el drenaje y evita estancamiento.",
+          "foods_add": [
+            "Amargos suaves (rúcula), té de diente de león",
+            "Proteína magra y sal moderada"
+          ],
+          "do_add": [
+            "Caminatas 10–15 min si hay pesadez"
+          ],
+          "avoid_add": [
+            "Lácteos en exceso y ultraprocesados"
+          ]
+        },
+        "folicular": {
+          "foods_add": [
+            "Fermentos suaves (kimchi ligero, chucrut)"
+          ],
+          "do_add": [
+            "Romper sedentarismo cada hora (2–3 min)"
+          ]
+        },
+        "ovulacion": {
+          "do_add": [
+            "Hidratación en sorbos regulares",
+            "Torsiones suaves para linfa"
+          ],
+          "avoid_add": [
+            "Comidas muy grasosas en eventos"
+          ]
+        },
+        "lutea": {
+          "foods_add": [
+            "Fibra suficiente (legumbres bien cocidas)"
+          ],
+          "do_add": [
+            "Piernas elevadas 10–15 min si hay hinchazón"
+          ]
+        }
+      },
+      "sequedad": {
+        "menstruacion": {
+          "about_add": "Conserva y repone líquidos.",
+          "foods_add": [
+            "Caldos gelatinosos, frutas jugosas (pera, uva)",
+            "Aceite de oliva extra virgen"
+          ],
+          "do_add": [
+            "Hidratación con electrolitos naturales"
+          ],
+          "avoid_add": [
+            "Ambientes muy secos y saunas prolongadas"
+          ]
+        },
+        "folicular": {
+          "foods_add": [
+            "Semillas (chía/linaza remojadas)"
+          ],
+          "do_add": [
+            "Humidificador nocturno si hay sequedad"
+          ]
+        },
+        "ovulacion": {
+          "do_add": [
+            "Pausas para beber agua y estirar",
+            "Nervinas nutritivas en la tarde (infusión de avena)"
+          ],
+          "avoid_add": [
+            "Jornadas sin pausas que deshidratan"
+          ]
+        },
+        "lutea": {
+          "foods_add": [
+            "Estofados y verduras ‘jugosas’ (calabaza, betabel)"
+          ],
+          "do_add": [
+            "Dormir temprano para reparar reservas"
+          ]
+        }
+      },
+      "tension": {
+        "menstruacion": {
+          "about_add": "Bajar espasmo y permitir flujo sin nudos.",
+          "foods_add": [
+            "Magnesio dietario (verdes, semillas)",
+            "Infusiones relajantes templadas"
+          ],
+          "do_add": [
+            "Respiración 4–6 (exhalación más larga)",
+            "Movimientos ondulantes pélvicos"
+          ],
+          "avoid_add": [
+            "Estímulos intensos (noticias, pantallas nocturnas)"
+          ]
+        },
+        "folicular": {
+          "do_add": [
+            "Micropausas cada 60–90 min (2–3 min de respiración/estiramiento)"
+          ],
+          "avoid_add": [
+            "Sobrecarga de cafeína al arrancar"
+          ]
+        },
+        "ovulacion": {
+          "do_add": [
+            "Chequeo de tensión en mandíbula/cuello",
+            "Automasaje de trapecios 2–3 min"
+          ],
+          "avoid_add": [
+            "Reuniones ‘espalda con espalda’"
+          ]
+        },
+        "lutea": {
+          "foods_add": [
+            "Carbohidratos complejos estables (quinoa, camote)"
+          ],
+          "do_add": [
+            "Rutina pre-sueño constante (luces bajas, lectura)"
+          ]
+        }
+      }
+    }
+  },
+  "care_tips": {
+    "title": "Mini-hábitos por patrón (entre fases)",
+    "render_rules": {
+      "merge_strategy": "primary_then_secondary_then_mixed",
+      "if_mixed_use": "label_top_1_first_then_label_top_2",
+      "dedupe_arrays": true,
+      "max_items_per_list": 3
+    },
+    "by_pattern": {
+      "tension": [
+        "Respiración 5–7 min/día",
+        "Estiramientos pélvicos",
+        "Limitar cafeína tarde-noche"
+      ],
+      "calor": [
+        "Hidratación inteligente",
+        "Evitar picantes/alcohol",
+        "Dormir en cuarto fresco"
+      ],
+      "frio": [
+        "Caldos/infusiones tibias",
+        "Calor suave abdominal",
+        "Evitar bebidas heladas"
+      ],
+      "humedad": [
+        "Romper sedentarismo cada hora",
+        "Fibra + amargos suaves",
+        "Piernas elevadas si hay pesadez"
+      ],
+      "sequedad": [
+        "Sorbos frecuentes + electrolitos",
+        "Grasas saludables",
+        "Dormir temprano"
+      ]
+    },
+    "by_mixed": {
+      "calor_humedad": [
+        "Hidratación ligera y continua",
+        "Evitar frituras/alcohol; amargos suaves",
+        "Caminatas 10–15 min + torsiones suaves"
+      ],
+      "frio_humedad": [
+        "Tibieza constante (infusiones, capas)",
+        "Caminatas poscomida 10 min",
+        "Fermentos suaves y sal moderada"
+      ],
+      "calor_sequedad": [
+        "Enfriar y humectar: agua con pizca de sal/limón",
+        "Frutas jugosas y caldos claros",
+        "Limitar sauna/sol en horas pico"
+      ],
+      "frio_sequedad": [
+        "Bebidas templadas frecuentes",
+        "Estofados y grasas saludables",
+        "Humidificador nocturno + sueño temprano"
+      ],
+      "tension_calor": [
+        "Respiración 4–6 entre tareas",
+        "Estirar cuello/mandíbula 2–3×/día",
+        "Limitar cafeína tarde"
+      ],
+      "tension_humedad": [
+        "Pausas activas 2–3 min/h",
+        "Fibra + amargos diarios",
+        "Piernas elevadas 10 min si hay pesadez"
+      ]
+    }
+  },
+  "how_herbs_work": {
+    "title": "¿Qué incluiría tu medicina personalizada?",
+    "by_pattern": {
+      "tension": {
+        "mechanism": [
+          "Antiespasmódicas → relajan músculo liso uterino",
+          "Nervinas suaves → bajan reactividad y mejoran el descanso"
+        ],
+        "combo_logic": "Relajar + calmar permite que la sangre fluya sin nudos; sumar carminativas si hay espasmo digestivo."
+      },
+      "calor": {
+        "mechanism": [
+          "Enfriantes/antiinflamatorias → moderan calor tisular",
+          "Astringentes suaves → favorecen tono vascular"
+        ],
+        "combo_logic": "Enfriar + tonificar vasculatura estabiliza la intensidad; amargos ligeros ayudan a ‘liberar’ calor."
+      },
+      "frio": {
+        "mechanism": [
+          "Calentadoras aromáticas → activan microcirculación pélvica",
+          "Circulatorias → mueven estasis sin sobreestimular"
+        ],
+        "combo_logic": "Templar + mover reduce dolor por contracción fría."
+      },
+      "humedad": {
+        "mechanism": [
+          "Drenantes/linfáticas → movilizan líquidos",
+          "Digestivas/coleréticas suaves → mejoran tránsito de grasas/residuos"
+        ],
+        "combo_logic": "Drenar + activar digestión aligera pesadez y coágulos."
+      },
+      "sequedad": {
+        "mechanism": [
+          "Demulcentes → hidratan mucosas",
+          "Tróficas/minerales → reponen ‘jugos’ tisulares"
+        ],
+        "combo_logic": "Humectar + nutrir restaura reservas y regulariza el flujo."
+      }
+    }
+  },
+  "support_signals": {
+    "title": "Señales útiles a observar",
+    "items": [
+      "Color del flujo (brillante/oscuro/marrón/rosado)",
+      "Coágulos >~2.5 cm: consúltalo",
+      "Volumen/duración: >80 mL o >7 días suele considerarse abundante",
+      "Qué te alivia (calor/movimiento/descanso)",
+      "Indicadores de sequedad (sed, boca/vagina seca)"
+    ]
+  },
+  "advisories": {
+    "title": "Notas de seguridad",
+    "items": [
+      {
+        "id": "adv_heavy",
+        "show": "Si cambias toalla/tampón cada <1 h en días intensos, considera valoración clínica."
+      },
+      {
+        "id": "adv_pain",
+        "show": "Si el dolor es 9–10/10 o incapacitante, busca apoyo profesional."
+      },
+      {
+        "id": "adv_low_flow",
+        "show": "Flujo muy escaso por varios meses puede indicar amenorrea. Revisa nuestras guías educativas."
+      },
+      {
+        "id": "adv_no_cycle_6m",
+        "when": {
+          "question_id": "P1",
+          "equals": "No tengo sangrado actualmente"
+        },
+        "show": "Si llevas ≥6 meses sin sangrado, considera revisión médica o de laboratorio."
+      }
+    ]
+  },
+  "unique_system": {
+    "title": "🧬 ¿Qué hace único nuestro sistema?",
+    "differentiators": [
+      {
+        "title": "Herbolaria tradicional occidental + estados de tejido",
+        "description": "Integramos energética vitalista con lectura de cómo los elementos se manifiestan en tu cuerpo."
+      },
+      {
+        "title": "Personalización elemental",
+        "description": "Ajustamos acciones herbales y la guía por fases al patrón exacto (y mixtos) de cada persona."
+      },
+      {
+        "title": "Sinergias transparentes",
+        "description": "Explicamos la lógica (relajar/enfriar/drenar/nutrir) sin revelar fórmulas propietarias."
+      },
+      {
+        "title": "Ajustes mensuales",
+        "description": "Tu plan evoluciona contigo según estaciones y cambios."
+      }
+    ]
+  },
+  "footer": {
+    "title": "🌟 Únete a la lista de espera",
+    "description": "Recibe acceso temprano al primer sistema de herbolaria personalizada para tu ciclo menstrual en México.",
+    "benefits": [
+      "💰 Descuento de miembro fundador",
+      "🔔 Notificaciones de lanzamiento",
+      "🎯 Acceso prioritario a tu kit personalizado",
+      "📚 Guías gratuitas de salud menstrual"
+    ],
+    "launch_date": "Lanzamiento previsto: Primavera 2026"
+  },
+  "labels": {
+    "tension": "Tensión",
+    "calor": "Calor",
+    "frio": "Frío",
+    "humedad": "Retención (Humedad)",
+    "sequedad": "Sequedad"
+  },
+  "telemetry": {
+    "enabled": true,
+    "schema_version": "1.0",
+    "session_fields": [
+      "app_version",
+      "build",
+      "locale",
+      "mode"
+    ]
+  }
+}

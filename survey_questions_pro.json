@@ -1,0 +1,401 @@
+  "survey_questions-pro-v5.2.1.json": {
+    "meta": {
+      "version": "survey_questions-pro-v5.2.1.json",
+      "language": "es-MX",
+      "description": "Pro v5.2.1: sin cambios funcionales (ya tenía P2q_margen_calor_humedad suavemente obligatoria)",
+      "est_duration_minutes": 5,
+      "content_safety": {
+        "blocklist": [
+          "1:3",
+          "1:5",
+          "gotas",
+          "cápsulas",
+          "dosis",
+          "mg",
+          "mG",
+          "ML",
+          "mL",
+          "miligramos",
+          "mililitros"
+        ],
+        "regex_blocklist": [
+          "\\b[A-Z][a-z]+\\s[a-z]+\\b"
+        ]
+      },
+      "qa": {
+        "template_lints": {
+          "max_words_per_section": 220,
+          "fail_on_blocked_token": true
+        }
+      }
+    },
+    "variables": [
+      "tension",
+      "calor",
+      "frio",
+      "humedad",
+      "sequedad"
+    ],
+    "ui_rules": {
+      "mode_selector": {
+        "enabled": true,
+        "default": "pro",
+        "labels": {
+          "regular": "Encuesta rápida",
+          "pro": "Survey Pro (mejor precisión)"
+        },
+        "subtitle": "Estás en Survey Pro. ¿Tienes prisa? Cambia a la rápida cuando quieras."
+      },
+      "cta_switch_to_regular": {
+        "top_bar_button": {
+          "enabled": true,
+          "label": "Cambiar a rápida",
+          "action": "switch_to_regular"
+        },
+        "state_persistence": {
+          "preserve_answers_on_mode_switch": true
+        },
+        "telemetry": {
+          "log_events": [
+            "mode_switched_to_regular"
+          ]
+        },
+        "toasts": {
+          "on_switch": "Listo. Guardamos tus respuestas y cambiamos a la encuesta rápida."
+        }
+      },
+      "resurface_questions": [
+        {
+          "question_id": "P8b_sequedad_detalle",
+          "when": {
+            "all": [
+              {
+                "question_id": "P2",
+                "includes": [
+                  "Sangrado escaso o ausente"
+                ]
+              },
+              {
+                "question_id": "P2z2_preferencia_termica_bebidas",
+                "equals": "bebidas_calientes"
+              }
+            ]
+          },
+          "soft_required": true,
+          "soft_required_message": "Ayúdanos a precisar señales de sequedad: ¿boca/ojos/vagina seca o sed nocturna?"
+        }
+      ],
+      "telemetry": {
+        "log_events": [
+          "resurface_P8b_seen",
+          "resurface_P8b_confirmed"
+        ]
+      }
+    },
+    "questions": [
+      {
+        "inherit": "P0_contraception"
+      },
+      {
+        "inherit": "P1"
+      },
+      {
+        "inherit": "P1a_motivo_no_ciclo"
+      },
+      {
+        "inherit": "P1a2_amenorrea_contexto"
+      },
+      {
+        "inherit": "P1b_onset_timing"
+      },
+      {
+        "inherit": "P1b_no_cycle_desde_cuando"
+      },
+      {
+        "inherit": "P1c_intervalo_irregular"
+      },
+      {
+        "inherit": "P2"
+      },
+      {
+        "id": "P2d_spotting_frecuencia",
+        "type": "single_choice",
+        "title": "Si tuviste manchado, ¿con qué frecuencia? 📍",
+        "help_text": "Opcional (afina lectura).",
+        "visible_if": {
+          "question_id": "P2",
+          "includes": [
+            "Manchado entre reglas"
+          ]
+        },
+        "options": [
+          {
+            "label": "1–2 veces / 3 ciclos",
+            "value": "spot_ocasional"
+          },
+          {
+            "label": "3–4 veces / 3 ciclos",
+            "value": "spot_a_veces"
+          },
+          {
+            "label": "≥5 veces / 3 ciclos",
+            "value": "spot_frecuente"
+          }
+        ]
+      },
+      {
+        "id": "P2e_spotting_context",
+        "type": "single_choice",
+        "title": "En días con manchado, ¿hubo calor/irritabilidad? 🌡️",
+        "help_text": "Opcional. Identifica contexto de calor.",
+        "visible_if": {
+          "question_id": "P2",
+          "includes": [
+            "Manchado entre reglas"
+          ]
+        },
+        "options": [
+          {
+            "label": "Sí, calor o irritabilidad",
+            "value": "si_calor_irritabilidad"
+          },
+          {
+            "label": "No",
+            "value": "no"
+          },
+          {
+            "label": "No estoy segura",
+            "value": "no_seguro"
+          }
+        ]
+      },
+      {
+        "inherit": "P2q_cantidad"
+      },
+      {
+        "inherit": "P2q_color"
+      },
+      {
+        "inherit": "P2q_margen_calor_humedad",
+        "validation": {
+          "soft_required": true,
+          "soft_required_message": "Ayúdanos a precisar: ¿calor/sed o pesadez/hinchazón?"
+        }
+      },
+      {
+        "inherit": "P2q_textura"
+      },
+      {
+        "id": "P2q_coagulo_tamano",
+        "type": "single_choice",
+        "title": "Si hay coágulos, ¿qué tamaño? 🧈",
+        "help_text": "Aproximado.",
+        "visible_if": {
+          "question_id": "P2q_textura",
+          "includes": [
+            "coagulos"
+          ]
+        },
+        "options": [
+          {
+            "label": "Pequeños (<1 cm)",
+            "value": "<1cm"
+          },
+          {
+            "label": "Medianos (1–2.4 cm)",
+            "value": "1–2.4cm"
+          },
+          {
+            "label": "Grandes (>2.4 cm)",
+            "value": ">2.4cm"
+          }
+        ]
+      },
+      {
+        "inherit": "P2q_productos_por_dia"
+      },
+      {
+        "inherit": "P2b_abundancia"
+      },
+      {
+        "inherit": "P2c_escaso_frecuencia"
+      },
+      {
+        "inherit": "P2s_dolor_severidad"
+      },
+      {
+        "inherit": "P2a_dolor_alivio"
+      },
+      {
+        "inherit": "P2a2_dolor_empeora"
+      },
+      {
+        "inherit": "P2s_hinchazon_severidad"
+      },
+      {
+        "inherit": "P2s_fatiga_severidad"
+      },
+      {
+        "inherit": "P2s_animo_severidad"
+      },
+      {
+        "inherit": "P2z2_preferencia_termica_bebidas"
+      },
+      {
+        "inherit": "P3"
+      },
+      {
+        "inherit": "P8b_sequedad_detalle",
+        "validation": {
+          "soft_required_when": {
+            "all": [
+              {
+                "question_id": "P2",
+                "includes": [
+                  "Sangrado escaso o ausente"
+                ]
+              },
+              {
+                "question_id": "P2z2_preferencia_termica_bebidas",
+                "equals": "bebidas_calientes"
+              }
+            ],
+            "message": "Ayúdanos a precisar señales de sequedad: ¿boca/ojos/vagina seca o sed nocturna?"
+          }
+        }
+      },
+      {
+        "id": "P8c_que_alivia_sequedad",
+        "type": "multi_select",
+        "title": "Cuando hay sequedad, ¿qué te alivia? 💦 (opcional)",
+        "visible_if": {
+          "any": [
+            {
+              "question_id": "P3",
+              "includes": [
+                "Sequedad (piel, mucosas)"
+              ]
+            },
+            {
+              "question_id": "P2",
+              "includes": [
+                "Sangrado escaso o ausente",
+                "Fatiga o cansancio extremo"
+              ]
+            }
+          ]
+        },
+        "options": [
+          {
+            "label": "Sopas o caldos",
+            "value": "sopas_caldos"
+          },
+          {
+            "label": "Frutas jugosas",
+            "value": "frutas_jugosas"
+          },
+          {
+            "label": "Grasas saludables",
+            "value": "grasas_saludables"
+          },
+          {
+            "label": "Agua con electrolitos",
+            "value": "agua_electrolitos"
+          }
+        ],
+        "validation": {
+          "min_selected": 0,
+          "max_selected": 4
+        }
+      },
+      {
+        "id": "P8d_contexto_sequedad",
+        "type": "multi_select",
+        "title": "¿Qué empeora tu sequedad? 🌬️ (opcional)",
+        "options": [
+          {
+            "label": "Clima muy seco",
+            "value": "clima_seco"
+          },
+          {
+            "label": "Aire acondicionado prolongado",
+            "value": "aire_acondicionado"
+          },
+          {
+            "label": "Altitud",
+            "value": "altitud"
+          },
+          {
+            "label": "Viajes frecuentes",
+            "value": "viajes_frecuentes"
+          }
+        ],
+        "validation": {
+          "min_selected": 0,
+          "max_selected": 4
+        }
+      },
+      {
+        "inherit": "P3a_hinchazon_modificador"
+      },
+      {
+        "inherit": "P3b_quick_test_frio_sequedad"
+      },
+      {
+        "inherit": "P4"
+      },
+      {
+        "inherit": "P5"
+      },
+      {
+        "inherit": "P6"
+      },
+      {
+        "inherit": "P7"
+      },
+      {
+        "inherit": "P7b_durante"
+      },
+      {
+        "id": "P9_sueno_calidad",
+        "type": "slider",
+        "title": "Calidad de sueño (últimos 7 días) 😴",
+        "help_text": "0 = pésima; 10 = excelente.",
+        "min": 0,
+        "max": 10,
+        "step": 1
+      },
+      {
+        "inherit": "P9_estres"
+      },
+      {
+        "inherit": "P9_ejercicio"
+      },
+      {
+        "inherit": "P9_cafeina"
+      },
+      {
+        "id": "P9_alcohol",
+        "type": "single_choice",
+        "title": "¿Cuántas bebidas alcohólicas por semana? 🍷",
+        "help_text": "Aproximado.",
+        "options": [
+          {
+            "label": "Ninguna",
+            "value": "0_sem"
+          },
+          {
+            "label": "1–3 por semana",
+            "value": "1–3_sem"
+          },
+          {
+            "label": "4 o más por semana",
+            "value": ">=4_sem"
+          }
+        ]
+      },
+      {
+        "inherit": "P8_signos_corporales"
+      }
+    ]
+  }

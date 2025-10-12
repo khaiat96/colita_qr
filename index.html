@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <title>colita de rana — encuesta de salud menstrual</title>
+    <link rel="stylesheet" href="./style.css" />
+    <!-- Favicons/Manifest (optional) -->
+    <meta name="theme-color" content="#4b2e83" />
+  </head>
+  <body>
+    <header class="site-header" role="banner">
+      <div class="container">
+        <img src="./logo.png" alt="Logo de colita de rana" class="logo" aria-hidden="true" />
+        <h1 id="appTitle" class="sr-only">colita de rana — encuesta</h1>
+      </div>
+    </header>
+
+    <main id="app" role="main" class="container" aria-live="polite">
+      <!-- The app renders here from JSON (landing, survey, results). -->
+      <noscript>Activa JavaScript para usar la encuesta.</noscript>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="container" id="footerBlock" aria-live="polite">
+        <!-- Footer waitlist block is injected from copy.json.footer and appended on every screen -->
+      </div>
+    </footer>
+
+    <!-- App config & scripts -->
+    <script>
+      // Integration constants (public-safe)
+      const DATA_PATH = "./";
+      const SUPABASE_URL = "https://eithnnxevoqckkzhvnci.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig";
+      const FORMSPREE_ENDPOINT = "https://formspree.io/f/xldppdop";
+      const GENERIC_WAITLIST_WEBHOOK = "https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20";
+      // Feature flags (optional serverless email)
+      const USE_SERVER_EMAIL = false; // set true if you add /api/send-email
+    </script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
