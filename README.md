@@ -1,1 +1,0 @@
-# colita_qr

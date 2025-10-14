@@ -1,620 +1,604 @@
-/*
- * Colita de rana – Menstrual Health Survey
- *
- * This vanilla JS file powers a single‑page survey application. It reads all
- * display strings and questions from JSON files in the `data/` folder so
- * translations or copy changes can be made without touching code. The
- * application flows from a welcome screen into a multi‑step survey,
- * collects name/email at the end, calculates a personalized elemental
- * “tipo de ciclo”, saves the response to Supabase and Formspree, and
- * finally displays results along with gentle lifestyle/nutrition tips.
- *
- * Accessibility features include keyboard navigable options (chips), focus
- * outlines, and semantic form elements. No medical claims are made.
- */
+// Configuration
+const CONFIG = {
+    SUPABASE_URL: 'https://eithnnxevoqckkzhvnci.supabase.co',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig',
+    FORMSPREE_ENDPOINT: 'https://formspree.io/f/xldppdop',
+    WAITLIST_WEBHOOK: 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20'
+};
 
-// Define endpoints and constants. Supabase and webhook keys are public anon
-// keys suitable for client‑side use. Do not expose any secret keys here.
-const DATA_PATH = './data/';
-const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xldppdop';
-const GENERIC_WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
+// Initialize Supabase
+const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-// Global state
-let copyData = null;        // Strings for UI
-let questionsData = null;    // Questions for current survey
-let scoringData = null;      // Weights for scoring
-let resultsData = null;      // Texts for results
-let currentMode = 'regular'; // 'regular' or 'pro'
+// Survey Questions
+const SURVEY_QUESTIONS = [
+    {
+        id: 'P0_contraception',
+        title: '¿Usas anticoncepción actualmente? 🛡️',
+        type: 'single_choice',
+        options: [
+            { label: 'Píldora/anillo/parche', value: 'hormonal_sistemica' },
+            { label: 'Implante/inyección', value: 'hormonal_larga' },
+            { label: 'DIU hormonal', value: 'diu_hormonal' },
+            { label: 'DIU de cobre', value: 'diu_cobre' },
+            { label: 'Ninguna', value: 'ninguna' },
+            { label: 'Otro', value: 'otro' }
+        ]
+    },
+    {
+        id: 'P1',
+        title: '¿Cómo ha sido tu ciclo en los últimos 3 meses? ⏱️',
+        type: 'single_choice',
+        options: [
+            { label: 'Regular (24–35 días)', value: 'Regular (24–35 días)' },
+            { label: 'Irregular (varía >7 días entre ciclos)', value: 'Irregular (varía >7 días entre ciclos)' },
+            { label: 'No tengo sangrado actualmente', value: 'No tengo sangrado actualmente' }
+        ]
+    },
+    {
+        id: 'P2',
+        title: 'En los últimos 3 ciclos, ¿qué síntomas aplican? 🩸',
+        type: 'multi_select',
+        max_selected: 3,
+        options: [
+            { label: 'Manchado entre reglas (spotting)', value: 'Manchado entre reglas' },
+            { label: 'Sangrado después de relaciones', value: 'Sangrado después de relaciones' },
+            { label: 'Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)', value: 'Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)' },
+            { label: 'Sangrado abundante (prolongado, con coágulos/espeso, sensación de pesadez)', value: 'Sangrado abundante (prolongado, con coágulos/espeso, sensación de pesadez)' },
+            { label: 'Sangrado escaso o ausente', value: 'Sangrado escaso o ausente' },
+            { label: 'Dolor o cólicos', value: 'Dolor o cólicos' },
+            { label: 'Cambios de humor / ansiedad', value: 'Cambios de humor / ansiedad' },
+            { label: 'Hinchazón o retención de líquidos', value: 'Hinchazón o retención de líquidos' },
+            { label: 'Fatiga o cansancio extremo', value: 'Fatiga o cansancio extremo' },
+            { label: 'Ninguna de las anteriores', value: 'Ninguna de las anteriores' }
+        ]
+    },
+    {
+        id: 'P3',
+        title: '¿Cuáles de estas señales corporales notas? 🔍',
+        type: 'multi_select',
+        options: [
+            { label: 'Calor, enrojecimiento', value: 'Calor, enrojecimiento' },
+            { label: 'Frío en manos/pies', value: 'Frío en manos/pies' },
+            { label: 'Lengua hinchada', value: 'Lengua hinchada' },
+            { label: 'Lengua pálida', value: 'Lengua pálida' },
+            { label: 'Punta de la lengua roja', value: 'Punta de la lengua roja' },
+            { label: 'Hinchazón, pesadez, retención', value: 'Hinchazón, pesadez, retención' },
+            { label: 'Sequedad (piel, mucosas)', value: 'Sequedad (piel, mucosas)' }
+        ]
+    }
+];
+
+// Element Patterns
+const ELEMENT_PATTERNS = {
+    tension: {
+        element: 'Viento/Aire 🌬️',
+        pattern: 'Exceso de Viento con espasmo uterino y nervioso',
+        characteristics: [
+            'Dolor cólico o punzante (espasmos)',
+            'Síntomas irregulares/cambiantes',
+            'Ansiedad, hipervigilancia',
+            'Sensibilidad al estrés',
+            'Respiración entrecortada con dolor'
+        ]
+    },
+    calor: {
+        element: 'Fuego 🔥',
+        pattern: 'Exceso de Fuego: calor interno, sangrado abundante, irritabilidad',
+        characteristics: [
+            'Flujo rojo brillante/abundante',
+            'Sensación de calor/sed/enrojecimiento',
+            'Irritabilidad premenstrual',
+            'Sueño ligero',
+            'Digestión rápida/acidez'
+        ]
+    },
+    humedad: {
+        element: 'Tierra/Agua 💧',
+        pattern: 'Exceso de Humedad: pesadez, retención, coágulos',
+        characteristics: [
+            'Hinchazón/pesadez',
+            'Coágulos o flujo espeso',
+            'Digestión lenta de grasas',
+            'Letargo postcomida',
+            'Mejoría con movimiento suave'
+        ]
+    },
+    sequedad: {
+        element: 'Agua Deficiente 🌵',
+        pattern: 'Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga',
+        characteristics: [
+            'Sangrado muy escaso o ausente',
+            'Sed y sequedad',
+            'Cansancio, sueño no reparador',
+            'Rigidez articular',
+            'Irritabilidad por agotamiento'
+        ]
+    }
+};
+
+// Application State
 let currentQuestionIndex = 0;
-let answers = {};            // Stores answers keyed by question id
-let elementScores = {};       // Accumulates scores for each element
+let surveyResponses = {};
+let calculatedElement = null;
+let userId = null;
 
-// Cached DOM reference
-const appRoot = document.getElementById('app');
+// DOM Elements
+const pages = {
+    landing: document.getElementById('landing-page'),
+    survey: document.getElementById('survey-page'),
+    results: document.getElementById('results-page'),
+    email: document.getElementById('email-page'),
+    waitlist: document.getElementById('waitlist-page'),
+    loading: document.getElementById('loading-screen')
+};
 
-/**
- * Fetch a JSON file from the data directory. If the file cannot be read
- * (e.g. missing or malformed), the promise will reject with a helpful error.
- * @param {string} filename Name of the JSON file under DATA_PATH
- */
-async function fetchJSON(filename) {
-  const url = DATA_PATH + filename;
-  const response = await fetch(url, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`Error al cargar ${filename}: ${response.status}`);
-  }
-  return response.json();
+const elements = {
+    startQuiz: document.getElementById('start-quiz'),
+    surveyContent: document.getElementById('survey-content'),
+    progressFill: document.getElementById('progress-fill'),
+    progressText: document.getElementById('progress-text'),
+    prevBtn: document.getElementById('prev-btn'),
+    nextBtn: document.getElementById('next-btn'),
+    resultsContent: document.getElementById('results-content'),
+    emailForm: document.getElementById('email-form'),
+    waitlistForm: document.getElementById('waitlist-form'),
+    waitlistSuccess: document.getElementById('waitlist-success')
+};
+
+// Utility Functions
+function generateUserId() {
+    return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
-/**
- * Initialise the application by loading UI copy. On success the landing
- * screen is rendered. If copy cannot be loaded the user is informed.
- */
-async function init() {
-  try {
-    copyData = await fetchJSON('copy.json');
-    scoringData = await fetchJSON('scoring.json');
-    resultsData = await fetchJSON('results.json');
-    renderLanding();
-  } catch (err) {
-    console.error(err);
-    appRoot.innerHTML = `<p>No se pudo cargar el contenido. Intenta recargar la página.</p>`;
-  }
-}
-
-/**
- * Render the landing/welcome screen with a CTA to start the quiz. All text
- * comes from copy.json (app.title, app.subtitle, app.disclaimer and CTA).
- */
-function renderLanding() {
-  // Reset state
-  currentQuestionIndex = 0;
-  answers = {};
-  currentMode = 'regular';
-
-  const { app, cta, footer } = copyData;
-  appRoot.innerHTML = '';
-  const container = document.createElement('div');
-  container.classList.add('landing');
-  const titleEl = document.createElement('h1');
-  titleEl.textContent = app.title || 'Haz el quiz';
-  container.appendChild(titleEl);
-  if (app.subtitle) {
-    const subtitleEl = document.createElement('p');
-    subtitleEl.textContent = app.subtitle;
-    subtitleEl.style.marginBottom = '1rem';
-    container.appendChild(subtitleEl);
-  }
-  // Disclaimer note
-  if (app.disclaimer) {
-    const disclaimerEl = document.createElement('p');
-    disclaimerEl.classList.add('disclaimer');
-    disclaimerEl.textContent = app.disclaimer;
-    container.appendChild(disclaimerEl);
-  }
-  // Primary CTA
-  const startBtn = document.createElement('button');
-  startBtn.classList.add('btn-primary');
-  startBtn.textContent = cta.start || 'Comenzar';
-  startBtn.addEventListener('click', () => startSurvey('regular'));
-  container.appendChild(startBtn);
-  // Offer Pro upgrade
-  const proBtn = document.createElement('button');
-  proBtn.classList.add('btn-secondary');
-  proBtn.textContent = cta.upgrade || 'Versión Pro';
-  proBtn.style.marginLeft = '0.5rem';
-  proBtn.addEventListener('click', () => startSurvey('pro'));
-  container.appendChild(proBtn);
-  // Footer invitation block appears on landing
-  if (footer) {
-    const footerBlock = renderFooter(footer);
-    container.appendChild(footerBlock);
-  }
-  appRoot.appendChild(container);
-  // Move focus to container for accessibility
-  container.setAttribute('tabindex', '-1');
-  container.focus();
-}
-
-/**
- * Render the questions from the selected survey (regular or pro). Questions
- * are defined in their respective JSON file under data/. The function
- * preloads all questions then displays the first one.
- * @param {string} mode 'regular' or 'pro'
- */
-async function startSurvey(mode) {
-  currentMode = mode;
-  try {
-    const filename = mode === 'pro' ? 'questions_pro.json' : 'questions.json';
-    const qdata = await fetchJSON(filename);
-    questionsData = qdata.sections.reduce((acc, section) => {
-      section.questions.forEach(q => acc.push(q));
-      return acc;
-    }, []);
-    // Reset answers/state
-    currentQuestionIndex = 0;
-    answers = {};
-    renderQuestion();
-  } catch (err) {
-    console.error(err);
-    appRoot.innerHTML = `<p>No se pudieron cargar las preguntas. Intenta de nuevo.</p>`;
-  }
-}
-
-/**
- * Render a single question at the current index. Displays progress,
- * question text, options as selectable chips, and navigation buttons.
- */
-function renderQuestion() {
-  const total = questionsData.length;
-  if (currentQuestionIndex < 0 || currentQuestionIndex >= total) {
-    return;
-  }
-  const q = questionsData[currentQuestionIndex];
-  appRoot.innerHTML = '';
-  const container = document.createElement('div');
-  // Progress bar
-  const progressContainer = document.createElement('div');
-  progressContainer.classList.add('progress-container');
-  const progressBar = document.createElement('div');
-  progressBar.classList.add('progress-bar');
-  const progressPercent = ((currentQuestionIndex) / total) * 100;
-  progressBar.style.width = `${progressPercent}%`;
-  progressContainer.appendChild(progressBar);
-  container.appendChild(progressContainer);
-  // Question label
-  const label = document.createElement('div');
-  label.classList.add('question-label');
-  label.textContent = q.label;
-  container.appendChild(label);
-  // Options container
-  const optionsDiv = document.createElement('div');
-  optionsDiv.classList.add('options');
-  q.options.forEach(opt => {
-    const chip = document.createElement('button');
-    chip.setAttribute('type', 'button');
-    chip.classList.add('option-chip');
-    chip.setAttribute('data-option-id', opt.id);
-    chip.textContent = opt.label;
-    // Mark as selected if previously answered
-    const selected = answers[q.id];
-    if (selected) {
-      if (q.type === 'single' && selected === opt.id) chip.classList.add('selected');
-      if (q.type === 'multi' && selected.includes(opt.id)) chip.classList.add('selected');
+function showPage(pageName) {
+    Object.values(pages).forEach(page => {
+        if (page) page.classList.remove('active');
+    });
+    if (pages[pageName]) {
+        pages[pageName].classList.add('active');
     }
-    // Click handler
-    chip.addEventListener('click', () => {
-      if (q.type === 'single') {
-        // Clear previous selection
-        answers[q.id] = opt.id;
-        // update UI
-        Array.from(optionsDiv.children).forEach(node => node.classList.remove('selected'));
-        chip.classList.add('selected');
-      } else if (q.type === 'multi') {
-        // Toggle selection in array
-        if (!Array.isArray(answers[q.id])) answers[q.id] = [];
-        const idx = answers[q.id].indexOf(opt.id);
-        if (idx >= 0) {
-          answers[q.id].splice(idx, 1);
-          chip.classList.remove('selected');
+}
+
+function showLoading(show = true) {
+    if (show) {
+        pages.loading.classList.add('active');
+    } else {
+        pages.loading.classList.remove('active');
+    }
+}
+
+// Survey Logic
+function renderQuestion(questionIndex) {
+    const question = SURVEY_QUESTIONS[questionIndex];
+    if (!question) return;
+
+    let optionsHtml = '';
+    
+    if (question.type === 'single_choice') {
+        optionsHtml = question.options.map(option => `
+            <div class="survey-option" data-value="${option.value}">
+                <input type="radio" name="${question.id}" value="${option.value}" id="${question.id}_${option.value}">
+                <label for="${question.id}_${option.value}">${option.label}</label>
+            </div>
+        `).join('');
+    } else if (question.type === 'multi_select') {
+        optionsHtml = question.options.map(option => `
+            <div class="survey-option" data-value="${option.value}">
+                <input type="checkbox" name="${question.id}" value="${option.value}" id="${question.id}_${option.value}">
+                <label for="${question.id}_${option.value}">${option.label}</label>
+            </div>
+        `).join('');
+    }
+
+    elements.surveyContent.innerHTML = `
+        <div class="survey-question">
+            <h2 class="question-title">${question.title}</h2>
+            <div class="survey-options">
+                ${optionsHtml}
+            </div>
+        </div>
+    `;
+
+    // Add click handlers to options
+    const optionElements = elements.surveyContent.querySelectorAll('.survey-option');
+    optionElements.forEach(option => {
+        option.addEventListener('click', (e) => {
+            const input = option.querySelector('input');
+            if (question.type === 'single_choice') {
+                // Clear other selections
+                optionElements.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                input.checked = true;
+            } else if (question.type === 'multi_select') {
+                // Handle max selection limit
+                if (question.max_selected) {
+                    const checkedCount = elements.surveyContent.querySelectorAll('input[type="checkbox"]:checked').length;
+                    if (!input.checked && checkedCount >= question.max_selected) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                option.classList.toggle('selected');
+                input.checked = !input.checked;
+            }
+            updateNextButtonState();
+        });
+    });
+
+    updateProgressBar();
+    updateNavigationButtons();
+    updateNextButtonState();
+}
+
+function updateProgressBar() {
+    const progress = ((currentQuestionIndex + 1) / SURVEY_QUESTIONS.length) * 100;
+    elements.progressFill.style.width = `${progress}%`;
+    elements.progressText.textContent = `Pregunta ${currentQuestionIndex + 1} de ${SURVEY_QUESTIONS.length}`;
+}
+
+function updateNavigationButtons() {
+    elements.prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+    elements.nextBtn.textContent = currentQuestionIndex === SURVEY_QUESTIONS.length - 1 ? 'Finalizar' : 'Siguiente';
+}
+
+function updateNextButtonState() {
+    const question = SURVEY_QUESTIONS[currentQuestionIndex];
+    const inputs = elements.surveyContent.querySelectorAll('input');
+    const hasSelection = Array.from(inputs).some(input => input.checked);
+    elements.nextBtn.disabled = !hasSelection;
+}
+
+function collectCurrentResponse() {
+    const question = SURVEY_QUESTIONS[currentQuestionIndex];
+    const inputs = elements.surveyContent.querySelectorAll('input:checked');
+    
+    if (question.type === 'single_choice') {
+        surveyResponses[question.id] = inputs[0]?.value || null;
+    } else if (question.type === 'multi_select') {
+        surveyResponses[question.id] = Array.from(inputs).map(input => input.value);
+    }
+}
+
+// Element Calculation Logic
+function calculateElement() {
+    let scores = {
+        tension: 0,
+        calor: 0,
+        humedad: 0,
+        sequedad: 0
+    };
+
+    // Scoring based on responses
+    const responses = surveyResponses;
+
+    // P2 symptoms scoring
+    if (responses.P2 && Array.isArray(responses.P2)) {
+        responses.P2.forEach(symptom => {
+            if (symptom.includes('Dolor o cólicos') || symptom.includes('Cambios de humor / ansiedad')) {
+                scores.tension += 2;
+            }
+            if (symptom.includes('rojo brillante') || symptom.includes('calor/sed/irritabilidad')) {
+                scores.calor += 3;
+            }
+            if (symptom.includes('coágulos/espeso') || symptom.includes('Hinchazón') || symptom.includes('pesadez')) {
+                scores.humedad += 3;
+            }
+            if (symptom.includes('escaso o ausente')) {
+                scores.sequedad += 3;
+            }
+            if (symptom.includes('Fatiga')) {
+                scores.sequedad += 1;
+                scores.tension += 1;
+            }
+        });
+    }
+
+    // P3 physical signs scoring
+    if (responses.P3 && Array.isArray(responses.P3)) {
+        responses.P3.forEach(sign => {
+            if (sign.includes('Calor, enrojecimiento') || sign.includes('Punta de la lengua roja')) {
+                scores.calor += 2;
+            }
+            if (sign.includes('Frío') || sign.includes('Lengua pálida') || sign.includes('Sequedad')) {
+                scores.sequedad += 2;
+            }
+            if (sign.includes('Lengua hinchada') || sign.includes('Hinchazón, pesadez, retención')) {
+                scores.humedad += 2;
+            }
+        });
+    }
+
+    // Determine dominant element
+    const maxScore = Math.max(...Object.values(scores));
+    const dominantElements = Object.keys(scores).filter(key => scores[key] === maxScore);
+    
+    // If tie, use priority order: calor > humedad > sequedad > tension
+    const priority = ['calor', 'humedad', 'sequedad', 'tension'];
+    for (const element of priority) {
+        if (dominantElements.includes(element)) {
+            return element;
+        }
+    }
+    
+    return 'tension'; // default
+}
+
+function renderResults() {
+    const elementKey = calculatedElement;
+    const elementData = ELEMENT_PATTERNS[elementKey];
+    
+    if (!elementData) {
+        console.error('Element data not found for:', elementKey);
+        return;
+    }
+
+    const characteristicsList = elementData.characteristics
+        .map(char => `<li>${char}</li>`)
+        .join('');
+
+    elements.resultsContent.innerHTML = `
+        <div class="element-result">
+            <div class="result-element">${elementData.element}</div>
+            <h3 class="result-pattern">${elementData.pattern}</h3>
+            <ul class="characteristics-list">
+                ${characteristicsList}
+            </ul>
+            <div class="results-actions">
+                <button id="get-full-results" class="btn btn--primary btn--lg">
+                    Obtener resultados completos por email
+                </button>
+                <button id="join-waitlist" class="btn btn--secondary btn--lg" style="margin-top: 16px;">
+                    Toma la versión PRO
+                </button>
+            </div>
+        </div>
+        
+        <div class="disclaimer">
+            <p><strong>Nota importante:</strong> Esta evaluación es orientativa y no sustituye el consejo médico profesional. Consulta siempre con un profesional de la salud para cualquier problema menstrual.</p>
+        </div>
+    `;
+
+    // Add event listeners
+    document.getElementById('get-full-results').addEventListener('click', () => {
+        showPage('email');
+    });
+    
+    document.getElementById('join-waitlist').addEventListener('click', () => {
+        showPage('waitlist');
+    });
+}
+
+// Data Persistence
+async function saveToSupabase(data) {
+    try {
+        const { error } = await supabase
+            .from('survey_responses')
+            .insert([{
+                user_id: userId,
+                responses: surveyResponses,
+                calculated_element: calculatedElement,
+                timestamp: new Date().toISOString(),
+                ...data
+            }]);
+        
+        if (error) {
+            console.error('Supabase error:', error);
         } else {
-          answers[q.id].push(opt.id);
-          chip.classList.add('selected');
+            console.log('Data saved to Supabase successfully');
         }
-      }
-    });
-    optionsDiv.appendChild(chip);
-  });
-  container.appendChild(optionsDiv);
-  // Navigation buttons
-  const nav = document.createElement('div');
-  nav.style.display = 'flex';
-  nav.style.justifyContent = 'space-between';
-  // Back button
-  const backBtn = document.createElement('button');
-  backBtn.classList.add('btn-back');
-  backBtn.textContent = copyData.cta.back || 'Atrás';
-  backBtn.disabled = currentQuestionIndex === 0;
-  backBtn.addEventListener('click', () => {
-    currentQuestionIndex--;
-    renderQuestion();
-  });
-  nav.appendChild(backBtn);
-  // Next/Submit button
-  const nextBtn = document.createElement('button');
-  nextBtn.classList.add('btn-primary');
-  nextBtn.textContent = currentQuestionIndex === total - 1 ? (copyData.cta.submit || 'Ver resultados') : (copyData.cta.continue || 'Continuar');
-  nextBtn.addEventListener('click', () => {
-    // Validate answer presence for current question
-    if (!answers[q.id] || (Array.isArray(answers[q.id]) && answers[q.id].length === 0)) {
-      alert('Selecciona una opción para continuar.');
-      return;
+    } catch (error) {
+        console.error('Error saving to Supabase:', error);
     }
-    if (currentQuestionIndex === total - 1) {
-      renderCompletionForm();
-    } else {
-      currentQuestionIndex++;
-      renderQuestion();
-    }
-  });
-  nav.appendChild(nextBtn);
-  container.appendChild(nav);
-  appRoot.appendChild(container);
-  // Focus container for screen readers
-  container.setAttribute('tabindex', '-1');
-  container.focus();
 }
 
-/**
- * Render the completion form. Prompts for name, email and optional waitlist
- * opt‑in. Once submitted, scores are computed and results displayed.
- */
-function renderCompletionForm() {
-  appRoot.innerHTML = '';
-  const formContainer = document.createElement('div');
-  formContainer.classList.add('completion-form');
-  // Title
-  const header = document.createElement('h2');
-  header.textContent = 'Ingresa tus datos para ver tus resultados';
-  formContainer.appendChild(header);
-  // Name field
-  const nameGroup = document.createElement('div');
-  nameGroup.classList.add('form-group');
-  const nameLabel = document.createElement('label');
-  nameLabel.setAttribute('for', 'name');
-  nameLabel.textContent = 'Nombre:';
-  const nameInput = document.createElement('input');
-  nameInput.setAttribute('type', 'text');
-  nameInput.setAttribute('id', 'name');
-  nameInput.setAttribute('required', '');
-  nameGroup.appendChild(nameLabel);
-  nameGroup.appendChild(nameInput);
-  formContainer.appendChild(nameGroup);
-  // Email field
-  const emailGroup = document.createElement('div');
-  emailGroup.classList.add('form-group');
-  const emailLabel = document.createElement('label');
-  emailLabel.setAttribute('for', 'email');
-  emailLabel.textContent = 'Correo electrónico:';
-  const emailInput = document.createElement('input');
-  emailInput.setAttribute('type', 'email');
-  emailInput.setAttribute('id', 'email');
-  emailInput.setAttribute('required', '');
-  emailGroup.appendChild(emailLabel);
-  emailGroup.appendChild(emailInput);
-  formContainer.appendChild(emailGroup);
-  // Waitlist opt‑in
-  const waitGroup = document.createElement('div');
-  waitGroup.classList.add('form-group');
-  const waitCheckbox = document.createElement('input');
-  waitCheckbox.setAttribute('type', 'checkbox');
-  waitCheckbox.setAttribute('id', 'waitlist');
-  const waitLabel = document.createElement('label');
-  waitLabel.setAttribute('for', 'waitlist');
-  waitLabel.textContent = 'Deseo unirme a la lista de espera para medicina personalizada';
-  waitGroup.appendChild(waitCheckbox);
-  waitGroup.appendChild(waitLabel);
-  formContainer.appendChild(waitGroup);
-  // Disclaimer
-  const disclaimer = document.createElement('p');
-  disclaimer.classList.add('disclaimer');
-  disclaimer.textContent = copyData.app.disclaimer || 'Este contenido es educativo y no sustituye atención médica.';
-  formContainer.appendChild(disclaimer);
-  // Submit button
-  const submitBtn = document.createElement('button');
-  submitBtn.classList.add('btn-primary');
-  submitBtn.textContent = copyData.cta.submit || 'Ver resultados';
-  submitBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-    // Validation
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
-    if (!name || !email) {
-      alert('Por favor ingresa tu nombre y correo.');
-      return;
-    }
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Procesando…';
+// Email Functions
+async function sendResultsEmail(name, email) {
+    const elementData = ELEMENT_PATTERNS[calculatedElement];
+    
+    const emailContent = `
+        <h2>Tu Perfil Energético - ${elementData.element}</h2>
+        <h3>${elementData.pattern}</h3>
+        
+        <h4>Características de tu patrón:</h4>
+        <ul>
+            ${elementData.characteristics.map(char => `<li>${char}</li>`).join('')}
+        </ul>
+        
+        <h4>Recomendaciones personalizadas:</h4>
+        <p>Basado en tu perfil ${elementData.element}, te recomendamos:</p>
+        <ul>
+            <li>Observar tus patrones durante los próximos 2-3 ciclos</li>
+            <li>Llevar un diario de síntomas y emociones</li>
+            <li>Considerar prácticas que equilibren tu elemento dominante</li>
+        </ul>
+        
+        <div style="margin-top: 30px; padding: 20px; background-color: #f0f9ff; border-radius: 8px;">
+            <h4>🌟 Únete a la lista de espera</h4>
+            <p>Recibe acceso temprano al primer sistema de herbolaria personalizada para tu ciclo menstrual en México.</p>
+            <ul>
+                <li>💰 Descuento de miembro fundador</li>
+                <li>🔔 Notificaciones de lanzamiento</li>
+                <li>🎯 Acceso prioritario a tu kit personalizado</li>
+                <li>📚 Guías gratuitas de salud menstrual</li>
+            </ul>
+            <p><strong>Lanzamiento previsto: Primavera 2026</strong></p>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 12px; color: #666;">
+            <strong>Nota importante:</strong> Esta evaluación es orientativa y no sustituye el consejo médico profesional.
+        </p>
+    `;
+
     try {
-      // Compute scores and determine final type
-      const { finalType, scores } = await calculateResult();
-      // Persist submission
-      await persistSubmission({ name, email, finalType, scores, waitlistOptIn: waitCheckbox.checked });
-      // Render results
-      renderResults(finalType, scores, name);
-    } catch (err) {
-      console.error(err);
-      alert('Ocurrió un error al procesar tus respuestas. Intenta de nuevo.');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = copyData.cta.submit || 'Ver resultados';
-    }
-  });
-  formContainer.appendChild(submitBtn);
-  appRoot.appendChild(formContainer);
-  formContainer.setAttribute('tabindex', '-1');
-  formContainer.focus();
-}
-
-/**
- * Calculate elemental scores from the answers using scoring.json. It sums
- * weights for each selected option and returns both the scores and the
- * element with the highest score (tie broken by threshold order).
- */
-async function calculateResult() {
-  // Initialize scores
-  const elements = scoringData.elements;
-  const scores = {};
-  elements.forEach(el => { scores[el] = 0; });
-  // Apply weights
-  for (const [qId, ans] of Object.entries(answers)) {
-    if (Array.isArray(ans)) {
-      ans.forEach(optId => addWeights(`${qId}:${optId}`));
-    } else {
-      addWeights(`${qId}:${ans}`);
-    }
-  }
-  // Helper to accumulate weights
-  function addWeights(key) {
-    const weightObj = scoringData.weights[key];
-    if (weightObj) {
-      Object.entries(weightObj).forEach(([el, val]) => {
-        if (typeof scores[el] === 'number') {
-          scores[el] += val;
+        const response = await fetch(CONFIG.FORMSPREE_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                subject: `Tu Perfil Energético - ${elementData.element}`,
+                message: emailContent,
+                element: elementData.element,
+                pattern: elementData.pattern
+            })
+        });
+        
+        if (response.ok) {
+            console.log('Email sent successfully');
+            return true;
+        } else {
+            console.error('Email sending failed:', response.statusText);
+            return false;
         }
-      });
+    } catch (error) {
+        console.error('Error sending email:', error);
+        return false;
     }
-  }
-  // Determine final type – element with highest score; tiebreaker list
-  let finalType = null;
-  let maxScore = -Infinity;
-  Object.entries(scores).forEach(([el, val]) => {
-    if (val > maxScore) {
-      maxScore = val;
-      finalType = el;
-    } else if (val === maxScore) {
-      // tie – use thresholds order
-      const tieOrder = scoringData.thresholds.tie_breaker || [];
-      if (tieOrder.indexOf(el) < tieOrder.indexOf(finalType)) {
-        finalType = el;
-      }
-    }
-  });
-  return { finalType, scores };
 }
 
-/**
- * Persist the survey response to Supabase and Formspree. If either request
- * fails, the errors are swallowed and logged; the application continues
- * offline gracefully. Supabase stores the raw answers and scoring.
- * Formspree sends a nicely formatted email to the user.
- * @param {object} param0 Response data
- */
-async function persistSubmission({ name, email, finalType, scores, waitlistOptIn }) {
-  const payload = {
-    id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
-    version: currentMode,
-    name,
-    email,
-    answers: JSON.stringify(answers),
-    element_scores: JSON.stringify(scores),
-    final_type: finalType,
-    consent_waitlist: waitlistOptIn,
-    source: 'qr',
-    meta: JSON.stringify({ userAgent: navigator.userAgent, locale: navigator.language }),
-  };
-  // Save to Supabase
-  try {
-    await fetch(`${SUPABASE_URL}/rest/v1/survey_responses`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    console.warn('Error al guardar en Supabase:', err);
-    // fallback: save to localStorage for retry later
+async function joinWaitlist(name, email) {
     try {
-      const local = JSON.parse(localStorage.getItem('pending_submissions') || '[]');
-      local.push(payload);
-      localStorage.setItem('pending_submissions', JSON.stringify(local));
-    } catch (e) {
-      console.warn('No se pudo guardar en localStorage');
+        const response = await fetch(CONFIG.WAITLIST_WEBHOOK, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                timestamp: new Date().toISOString(),
+                source: 'survey_app',
+                element_type: calculatedElement
+            })
+        });
+        
+        if (response.ok) {
+            console.log('Waitlist signup successful');
+            return true;
+        } else {
+            console.error('Waitlist signup failed:', response.statusText);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error joining waitlist:', error);
+        return false;
     }
-  }
-  // Send email via Formspree
-  try {
-    const emailBody = renderEmailTemplate(name, finalType, scores);
-    await fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, mensaje: emailBody, version: currentMode })
+}
+
+// Event Listeners
+function initializeEventListeners() {
+    // Start Quiz
+    elements.startQuiz.addEventListener('click', () => {
+        userId = generateUserId();
+        currentQuestionIndex = 0;
+        surveyResponses = {};
+        showPage('survey');
+        renderQuestion(currentQuestionIndex);
     });
-  } catch (err) {
-    console.warn('Error al enviar email:', err);
-  }
-  // Waitlist webhook
-  if (waitlistOptIn) {
-    try {
-      await fetch(GENERIC_WAITLIST_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, source: 'quiz', final_type: finalType })
-      });
-    } catch (err) {
-      console.warn('Error al notificar waitlist:', err);
-    }
-  }
-}
 
-/**
- * Compose a simple plain‑text email body summarising the results. In a
- * production environment this should match the HTML template used by
- * marketing emails, but here we assemble a concise summary with tips.
- * @param {string} name User's name
- * @param {string} finalType Element id (aire/fuego/agua/tierra)
- * @param {object} scores Score breakdown
- */
-function renderEmailTemplate(name, finalType, scores) {
-  const result = resultsData.types[finalType];
-  let body = `Hola ${name},\n\n`;
-  body += `Gracias por completar el quiz de Colita de rana. Tu tipo de ciclo es: ${result.name}.\n\n`;
-  body += `${result.summary}\n\n`;
-  body += `Por qué: ${result.why}\n\n`;
-  body += `Recomendaciones por fase:\n`;
-  for (const phase in result.lifestyle) {
-    const tips = result.lifestyle[phase];
-    body += `- ${phase}: ${tips.join(', ')}\n`;
-  }
-  body += `\nAcciones herbales recomendadas: `;
-  body += result.herbal_actions_preview.map(a => `${a.action} – ${a.explain}`).join('; ');
-  body += '\n\nEste contenido es informativo y no sustituye atención médica.\n\n';
-  return body;
-}
-
-/**
- * Render the results page with information pulled from results.json. It
- * presents the user's elemental type, a summary, why explanation, and
- * detailed recommendations. Also includes the footer block from copy.json.
- * @param {string} finalType Element id
- * @param {object} scores Score breakdown
- * @param {string} name User's name to personalise the message
- */
-function renderResults(finalType, scores, name) {
-  const result = resultsData.types[finalType];
-  appRoot.innerHTML = '';
-  const container = document.createElement('div');
-  container.classList.add('results-container');
-  // Greeting
-  const greet = document.createElement('h2');
-  greet.textContent = `¡Gracias, ${name}! Aquí están tus resultados:`;
-  container.appendChild(greet);
-  // Type badge
-  const typeEl = document.createElement('div');
-  typeEl.classList.add('results-type');
-  typeEl.textContent = `${result.name}`;
-  container.appendChild(typeEl);
-  // Summary
-  const summaryEl = document.createElement('div');
-  summaryEl.classList.add('results-summary');
-  summaryEl.textContent = result.summary;
-  container.appendChild(summaryEl);
-  // Why explanation
-  const whyEl = document.createElement('div');
-  whyEl.classList.add('results-why');
-  whyEl.textContent = result.why;
-  container.appendChild(whyEl);
-  // Lifestyle tips by phase
-  const lifestyleSection = document.createElement('div');
-  lifestyleSection.classList.add('results-section');
-  const lifestyleTitle = document.createElement('h3');
-  lifestyleTitle.textContent = 'Estilo de vida por fase:';
-  lifestyleSection.appendChild(lifestyleTitle);
-  for (const phase in result.lifestyle) {
-    const phaseHeader = document.createElement('h4');
-    // Capitalise first letter
-    phaseHeader.textContent = phase.charAt(0).toUpperCase() + phase.slice(1);
-    lifestyleSection.appendChild(phaseHeader);
-    const ul = document.createElement('ul');
-    result.lifestyle[phase].forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      ul.appendChild(li);
+    // Navigation
+    elements.nextBtn.addEventListener('click', async () => {
+        collectCurrentResponse();
+        
+        if (currentQuestionIndex < SURVEY_QUESTIONS.length - 1) {
+            currentQuestionIndex++;
+            renderQuestion(currentQuestionIndex);
+        } else {
+            // Survey complete
+            showLoading(true);
+            
+            // Calculate element
+            calculatedElement = calculateElement();
+            
+            // Save to Supabase
+            await saveToSupabase();
+            
+            // Show results after delay
+            setTimeout(() => {
+                showLoading(false);
+                renderResults();
+                showPage('results');
+            }, 2000);
+        }
     });
-    lifestyleSection.appendChild(ul);
-  }
-  container.appendChild(lifestyleSection);
-  // Nutrition tips
-  const nutritionSection = document.createElement('div');
-  nutritionSection.classList.add('results-section');
-  const nutritionTitle = document.createElement('h3');
-  nutritionTitle.textContent = 'Nutrición recomendada:';
-  nutritionSection.appendChild(nutritionTitle);
-  const nutritionList = document.createElement('ul');
-  result.nutrition.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    nutritionList.appendChild(li);
-  });
-  nutritionSection.appendChild(nutritionList);
-  container.appendChild(nutritionSection);
-  // Herbal actions preview
-  const herbalSection = document.createElement('div');
-  herbalSection.classList.add('results-section');
-  const herbalTitle = document.createElement('h3');
-  herbalTitle.textContent = 'Acciones herbales:';
-  herbalSection.appendChild(herbalTitle);
-  const herbalList = document.createElement('ul');
-  result.herbal_actions_preview.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = `${item.action}: ${item.explain}`;
-    herbalList.appendChild(li);
-  });
-  herbalSection.appendChild(herbalList);
-  container.appendChild(herbalSection);
-  // Footer block
-  const footerBlock = renderFooter(copyData.footer);
-  container.appendChild(footerBlock);
-  // Retake button for pro version
-  const retakeBtn = document.createElement('button');
-  retakeBtn.classList.add('btn-secondary');
-  retakeBtn.style.marginTop = '1rem';
-  retakeBtn.textContent = '¿Quieres la versión Pro?';
-  retakeBtn.addEventListener('click', () => startSurvey('pro'));
-  container.appendChild(retakeBtn);
-  // Back to start
-  const homeBtn = document.createElement('button');
-  homeBtn.classList.add('btn-back');
-  homeBtn.style.marginLeft = '0.5rem';
-  homeBtn.textContent = 'Volver al inicio';
-  homeBtn.addEventListener('click', () => renderLanding());
-  container.appendChild(homeBtn);
-  appRoot.appendChild(container);
-  container.setAttribute('tabindex', '-1');
-  container.focus();
-}
 
-/**
- * Render the footer block using copy.json.footer. This helper creates a
- * consistent footer for the landing and results pages.
- * @param {object} footerData Footer content from copy.json
- */
-function renderFooter(footerData) {
-  const footer = document.createElement('div');
-  footer.classList.add('footer');
-  if (footerData.title) {
-    const h4 = document.createElement('h4');
-    h4.textContent = footerData.title;
-    footer.appendChild(h4);
-  }
-  if (footerData.description) {
-    const p = document.createElement('p');
-    p.textContent = footerData.description;
-    footer.appendChild(p);
-  }
-  if (Array.isArray(footerData.benefits)) {
-    const ul = document.createElement('ul');
-    footerData.benefits.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      ul.appendChild(li);
+    elements.prevBtn.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            renderQuestion(currentQuestionIndex);
+        }
     });
-    footer.appendChild(ul);
-  }
-  if (footerData.launch_date) {
-    const launch = document.createElement('p');
-    launch.textContent = footerData.launch_date;
-    footer.appendChild(launch);
-  }
-  return footer;
+
+    // Email Form
+    elements.emailForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        
+        if (!name || !email) {
+            alert('Por favor, completa todos los campos.');
+            return;
+        }
+
+        showLoading(true);
+        
+        // Send email and save user data
+        const emailSent = await sendResultsEmail(name, email);
+        await saveToSupabase({ name, email, email_sent: emailSent });
+        
+        showLoading(false);
+        
+        if (emailSent) {
+            alert('¡Resultados enviados! Revisa tu bandeja de entrada.');
+            showPage('waitlist');
+        } else {
+            alert('Hubo un problema al enviar el email. Por favor, intenta de nuevo.');
+        }
+    });
+
+    // Waitlist Form
+    elements.waitlistForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        
+        if (!name || !email) {
+            alert('Por favor, completa todos los campos.');
+            return;
+        }
+
+        showLoading(true);
+        
+        const success = await joinWaitlist(name, email);
+        await saveToSupabase({ waitlist_name: name, waitlist_email: email, waitlist_joined: success });
+        
+        showLoading(false);
+        
+        if (success) {
+            elements.waitlistForm.style.display = 'none';
+            elements.waitlistSuccess.style.display = 'block';
+        } else {
+            alert('Hubo un problema al unirte a la lista de espera. Por favor, intenta de nuevo.');
+        }
+    });
 }
 
-// Kick off the app once the DOM is ready
-document.addEventListener('DOMContentLoaded', init);
+// Initialize Application
+function initializeApp() {
+    // Show landing page by default
+    showPage('landing');
+    
+    // Initialize event listeners
+    initializeEventListeners();
+    
+    console.log('Colita de Rana Survey App initialized');
+}
+
+// Start the application when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeApp);
