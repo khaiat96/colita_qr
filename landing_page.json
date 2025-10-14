@@ -33,8 +33,25 @@
     },
 
     "personalized_intro": {
-    "text": "Estamos desarrollando el primer sistema de plantas medicinales personalizado para la salud menstrual. Cada mujer tiene un patrón único de síntomas que merece un trato único."
+    "title": "Colita de Rana Club: Medicina Herbal Personalizada",
+    "text": "Estamos desarrollando el primer sistema personalizado de medicina herbal para la salud menstrual. Cada mujer tiene un patrón único de síntomas que merece un trato único."
+  
+      "personalized_cta": {
+      "label": "Únete a la lista de espera 2026",
+      "href": "#waitlist",
+      "event": "cta_waitlist_click",
+      "style": "primary",
+      "icon": "bell",
+      "aria_label": "Ir a la sección de lista de espera"
+    },
+    "style": {
+      "card": true,
+      "badge_as_brand": true
+    },
+  
+  
   },
+
   "elements": {
     "title": "Los 4 elementos en tu ciclo",
     "subtext": "Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.",
@@ -94,7 +111,7 @@
       "Un diagnóstico energético simple de tu tipo de ciclo",
       "Por qué se agrupan tus síntomas (visión integral)",
       "Consejos suaves por fase del ciclo",
-      "Vista previa de acciones herbales (sin fórmulas)"
+      "Vista previa de formulaciones herbales para tu patrón"
     ],
     "cta": {
       "label": "Haz el quiz ahora",
@@ -104,22 +121,6 @@
       "style": "solid"
     }
   },
-
-    "secondary_cta": {
-      "label": "Únete a la lista de espera 2026",
-      "href": "#waitlist",
-      "event": "cta_waitlist_click",
-      "style": "secondary",
-      "icon": "bell",
-      "aria_label": "Ir a la sección de lista de espera"
-    },
-    "a11y": {
-      "h1": "Tu ciclo es único. Tu medicina también."
-    },
-    "style": {
-      "card": true,
-      "badge_as_brand": true
-    },
   },
   "waitlist": {
     "id": "waitlist",

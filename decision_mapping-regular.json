@@ -1,8 +1,8 @@
-  "decision_mapping-regular-v5.2.1.json": {
+  "decision_mapping-regular-v5.2.2.json": {
     "meta": {
       "version": "decision_mapping-regular-v5.2.1.json",
       "language": "es-MX",
-      "description": "Regular v5.2.1: +peso a P3 en empates; anti_calor_in_damp ignora más señales (incluye P6) cuando coágulos+pesadez; mantiene degradación de Tensión a 'Tendencia' sin cólicos y añade copy explicativo",
+      "description": "Regular v5.2.2: modifying survey logic ",
       "content_safety": {
         "blocklist": [
           "1:3",
@@ -56,6 +56,7 @@
         "P2q_cantidad",
         "P3b_quick_test_frio_sequedad",
         "P2q_margen_calor_humedad",
+        "P2q2_margen_calor_humedad"
         "P2q_productos_por_dia",
         "P8b_sequedad_detalle",
         "P2z2_preferencia_termica_bebidas",
@@ -191,7 +192,7 @@
         {
           "value": "Manchado entre reglas",
           "scores": {
-            "humedad": 1
+            "calor": 1
           }
         },
         {
@@ -308,6 +309,32 @@
         }
       ],
       "P2q_margen_calor_humedad": [
+        {
+          "value": "calor_sed",
+          "scores": {
+            "calor": 1
+          }
+        },
+        {
+          "value": "pesadez_hinchazon",
+          "scores": {
+            "humedad": 1
+          }
+        },
+        {
+          "value": "ambas",
+          "scores": {
+            "calor": 1,
+            "humedad": 1
+          }
+        },
+        {
+          "value": "ninguna",
+          "scores": {}
+        }
+      ],
+        
+        "P2q2_margen_calor_humedad": [
         {
           "value": "calor_sed",
           "scores": {
@@ -1008,7 +1035,10 @@
         ]
       }
     },
+
     "modifiers": {
+
+      
       "contraception_handling": {
         "enabled": true,
         "question_id": "P0_contraception",
@@ -1991,6 +2021,7 @@
       ],
       "log_missing_questions": [
         "P2q_margen_calor_humedad"
+        "P2q2_margen_calor_humedad"       
       ]
     },
     "tie_logic": {
@@ -2029,6 +2060,7 @@
           ],
           "ask_ids": [
             "P2q_margen_calor_humedad"
+            "P2q2_margen_calor_humedad"
           ]
         }
       ]
@@ -2039,3 +2071,4 @@
       }
     }
   },
+

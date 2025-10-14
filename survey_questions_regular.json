@@ -37,7 +37,6 @@
       "sequedad"
     ],
     "ui_rules": {
-      "when_P1_no_cycle_hide_P2": true,
       "use_priority_for_label_order": true,
       "result_personalization": {
         "use_P1_copy_hint_in_header": true
@@ -183,6 +182,8 @@
       }
     },
     "questions": [
+
+  
       {
         "id": "P0_contraception",
         "type": "single_choice",
@@ -215,6 +216,8 @@
           }
         ]
       },
+
+
       {
         "id": "P1",
         "type": "single_choice",
@@ -384,6 +387,8 @@
           }
         ]
       },
+
+
       {
         "id": "P2",
         "type": "multi_select",
@@ -435,134 +440,6 @@
           "min_selected": 0,
           "max_selected": 3
         }
-      },
-      {
-        "id": "P2q_cantidad",
-        "type": "slider",
-        "title": "¿Qué tanta cantidad hay en tus días más intensos? 📊",
-        "help_text": "0 = casi nada; 10 = empapa con facilidad.",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "tick_marks": [
-          0,
-          3,
-          6,
-          8,
-          10
-        ],
-        "tick_labels": {
-          "0": "0",
-          "3": "3",
-          "6": "6",
-          "8": "8",
-          "10": "10"
-        },
-        "aria_label": "Cantidad de sangrado de 0 a 10"
-      },
-      {
-        "id": "P2q_color",
-        "type": "single_choice",
-        "title": "Color predominante en días intensos 🎨",
-        "help_text": "Elige el que más se acerque.",
-        "options": [
-          {
-            "label": "Rojo brillante",
-            "value": "rojo_brillante"
-          },
-          {
-            "label": "Rojo oscuro",
-            "value": "rojo_oscuro"
-          },
-          {
-            "label": "Marrón (al inicio o al final)",
-            "value": "marron"
-          },
-          {
-            "label": "Rosa / aguado",
-            "value": "rosa_aguado"
-          }
-        ]
-      },
-      {
-        "id": "P2q_margen_calor_humedad",
-        "type": "single_choice",
-        "title": "Si es rojo oscuro y abundante, ¿qué sientes más? 🌡️/💧",
-        "help_text": "Nos ayuda a diferenciar si predomina el calor o la retención.",
-        "visible_if": {
-          "all": [
-            {
-              "question_id": "P2q_color",
-              "equals": "rojo_oscuro"
-            },
-            {
-              "question_id": "P2q_cantidad",
-              "at_least": 7
-            }
-          ]
-        },
-        "options": [
-          {
-            "label": "Calor/sed predominante",
-            "value": "calor_sed"
-          },
-          {
-            "label": "Pesadez/hinchazón predominante",
-            "value": "pesadez_hinchazon"
-          },
-          {
-            "label": "Ambas por igual",
-            "value": "ambas"
-          },
-          {
-            "label": "Ninguna / no estoy segura",
-            "value": "ninguna"
-          }
-        ],
-        "validation": {
-          "soft_required": true,
-          "soft_required_message": "Ayúdanos a precisar: ¿calor/sed o pesadez/hinchazón?"
-        }
-      },
-      {
-        "id": "P2q_textura",
-        "type": "multi_select",
-        "title": "Textura del flujo en días intensos (opcional) 🧪",
-        "help_text": "Puedes elegir más de una.",
-        "options": [
-          {
-            "label": "Con coágulos",
-            "value": "coagulos"
-          },
-          {
-            "label": "Fluido aguado",
-            "value": "aguado"
-          }
-        ],
-        "validation": {
-          "min_selected": 0,
-          "max_selected": 2
-        }
-      },
-      {
-        "id": "P2q_productos_por_dia",
-        "type": "single_choice",
-        "title": "En días intensos, ¿cuántos productos usas/día? 🧻",
-        "help_text": "Ayuda a estimar el volumen.",
-        "options": [
-          {
-            "label": "1–3",
-            "value": "1–3"
-          },
-          {
-            "label": "4–6",
-            "value": "4–6"
-          },
-          {
-            "label": "7 o más",
-            "value": ">=7"
-          }
-        ]
       },
       {
         "id": "P2b_abundancia",
@@ -625,6 +502,176 @@
           {
             "label": "Casi siempre",
             "value": "casi_siempre"
+          }
+        ]
+      },
+
+      {
+        "id": "P2q_cantidad",
+        "type": "slider",
+        "title": "¿Qué tanta cantidad hay en tus días más intensos? 📊",
+        "help_text": "0 = casi nada; 10 = empapa con facilidad.",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "tick_marks": [
+          0,
+          3,
+          6,
+          8,
+          10
+        ],
+        "tick_labels": {
+          "0": "0",
+          "3": "3",
+          "6": "6",
+          "8": "8",
+          "10": "10"
+        },
+        "aria_label": "Cantidad de sangrado de 0 a 10"
+      },
+      {
+        "id": "P2q_color",
+        "type": "single_choice",
+        "title": "Color predominante en días intensos 🎨",
+        "help_text": "Elige el que más se acerque.",
+        "options": [
+          {
+            "label": "Rojo brillante",
+            "value": "rojo_brillante"
+          },
+          {
+            "label": "Rojo oscuro",
+            "value": "rojo_oscuro"
+          },
+          {
+            "label": "Marrón (al inicio o al final)",
+            "value": "marron"
+          },
+          {
+            "label": "Rosa / aguado",
+            "value": "rosa_aguado"
+          }
+        ]
+      },
+        {
+        "id": "P2q2_margen_calor_humedad",
+        "type": "single_choice",
+        "title": "Si es rojo brillante y con cuagulos, ¿qué sientes más? 🌡️/💧",
+        "help_text": "Nos ayuda a diferenciar si predomina el calor o la retención.",
+        "visible_if": {
+          "all": [
+            {
+              "question_id": "P2q_color",
+              "equals": "rojo_brillante"
+            },
+            {
+              "question_id": "P2q_textura",
+              "equals": "coagulos"
+            }
+          ]
+        },
+        "options": [
+          {
+            "label": "Calor/sed predominante",
+            "value": "calor_sed"
+          },
+          {
+            "label": "Pesadez/hinchazón predominante",
+            "value": "pesadez_hinchazon"
+          },
+          {
+            "label": "Ambas por igual",
+            "value": "ambas"
+          },
+          {
+            "label": "Ninguna / no estoy segura",
+            "value": "ninguna"
+          }
+        ],
+        "validation": {
+          "soft_required": true,
+          "soft_required_message": "Ayúdanos a precisar: ¿calor/sed o pesadez/hinchazón?"
+        },
+      },
+      {
+        "id": "P2q_margen_calor_humedad",
+        "type": "single_choice",
+        "title": "Si es rojo oscuro y abundante, ¿qué sientes más? 🌡️/💧",
+        "help_text": "Nos ayuda a diferenciar si predomina el calor o la retención.",
+        "visible_if": {
+          "all": [
+            {
+              "question_id": "P2q_color",
+              "equals": "rojo_oscuro"
+            },
+            {
+              "question_id": "P2q_cantidad",
+              "at_least": 7
+            }
+          ]
+        },
+        "options": [
+          {
+            "label": "Calor/sed predominante",
+            "value": "calor_sed"
+          },
+          {
+            "label": "Pesadez/hinchazón predominante",
+            "value": "pesadez_hinchazon"
+          },
+          {
+            "label": "Ambas por igual",
+            "value": "ambas"
+          },
+          {
+            "label": "Ninguna / no estoy segura",
+            "value": "ninguna"
+          }
+        ],
+        "validation": {
+          "soft_required": true,
+          "soft_required_message": "Ayúdanos a precisar: ¿calor/sed o pesadez/hinchazón?"
+        },
+      },
+
+      {
+        "id": "P2q_textura",
+        "type": "multi_select",
+        "title": "Textura del flujo en días intensos (opcional) 🧪",
+        "help_text": "Puedes elegir más de una.",
+        "options": [
+          {
+            "label": "Con coágulos",
+            "value": "coagulos"
+          },
+          {
+            "label": "Fluido aguado",
+            "value": "aguado"
+          }
+        ],
+        "validation": {
+          "min_selected": 0,
+          "max_selected": 2
+        }
+      },
+      {
+        "id": "P2q_productos_por_dia",
+        "type": "single_choice",
+        "title": "En días intensos, ¿cuántos productos usas/día? 🧻",
+        "help_text": "Ayuda a estimar el volumen.",
+        "options": [
+          {
+            "label": "1–3",
+            "value": "1–3"
+          },
+          {
+            "label": "4–6",
+            "value": "4–6"
+          },
+          {
+            "label": "7 o más",
+            "value": ">=7"
           }
         ]
       },
@@ -776,26 +823,8 @@
         "max": 10,
         "step": 1
       },
-      {
-        "id": "P2z2_preferencia_termica_bebidas",
-        "type": "single_choice",
-        "title": "Para sentirte mejor sueles preferir… 🧊/🔥",
-        "help_text": "Puede dar pistas sobre tu patrón.",
-        "options": [
-          {
-            "label": "Bebidas calientes/templadas",
-            "value": "bebidas_calientes"
-          },
-          {
-            "label": "Bebidas frías",
-            "value": "bebidas_frias"
-          },
-          {
-            "label": "Indistinto",
-            "value": "indistinto"
-          }
-        ]
-      },
+
+
       {
         "id": "P3",
         "type": "multi_select",
@@ -838,69 +867,6 @@
         "validation": {
           "min_selected": 0,
           "max_selected": 3
-        }
-      },
-      {
-        "id": "P8b_sequedad_detalle",
-        "type": "multi_select",
-        "title": "Si notas sequedad, ¿dónde lo sientes más? (opcional) 🌵",
-        "visible_if": {
-          "any": [
-            {
-              "question_id": "P3",
-              "includes": [
-                "Sequedad (piel, mucosas)"
-              ]
-            },
-            {
-              "question_id": "P2",
-              "includes": [
-                "Sangrado escaso o ausente",
-                "Fatiga o cansancio extremo"
-              ]
-            }
-          ]
-        },
-        "options": [
-          {
-            "label": "Boca seca",
-            "value": "boca_seca"
-          },
-          {
-            "label": "Ojos secos",
-            "value": "ojos_secos"
-          },
-          {
-            "label": "Lubricación vaginal baja",
-            "value": "lubricacion_baja"
-          },
-          {
-            "label": "Sed nocturna",
-            "value": "sed_nocturna"
-          },
-          {
-            "label": "Piel muy seca",
-            "value": "piel_muy_seca"
-          }
-        ],
-        "validation": {
-          "min_selected": 0,
-          "max_selected": 5,
-          "soft_required_when": {
-            "all": [
-              {
-                "question_id": "P2",
-                "includes": [
-                  "Sangrado escaso o ausente"
-                ]
-              },
-              {
-                "question_id": "P2z2_preferencia_termica_bebidas",
-                "equals": "bebidas_calientes"
-              }
-            ],
-            "message": "Ayúdanos a precisar señales de sequedad: ¿boca/ojos/vagina seca o sed nocturna?"
-          }
         }
       },
       {
@@ -1166,6 +1132,115 @@
           "max_selected": 7
         }
       },
+
+
+      {
+        "id": "P8_signos_corporales",
+        "type": "multi_select",
+        "title": "Señales del cuerpo (opcional) 🧩",
+        "help_text": "Si no viste tus señales arriba, selecciona hasta 3.",
+        "visible_if": {
+          "any": [
+            {
+              "question_id": "P2",
+              "includes": [
+                "Ninguna de las anteriores"
+              ]
+            },
+            {
+              "question_id": "P3",
+              "includes": [
+                "Ninguna de las anteriores"
+              ]
+            }
+          ]
+        },
+        "options": [
+          {
+            "label": "Sed intensa la mayor parte del día",
+            "value": "Sed intensa"
+          },
+          {
+            "label": "Piel muy seca",
+            "value": "Piel muy seca"
+          },
+          {
+            "label": "Sudor pegajoso",
+            "value": "Sudor pegajoso"
+          },
+          {
+            "label": "Poco o nada de sudor incluso con calor",
+            "value": "Poco sudor con calor"
+          }
+        ],
+        "validation": {
+          "min_selected": 0,
+          "max_selected": 3
+        }
+      }
+            {
+        "id": "P8b_sequedad_detalle",
+        "type": "multi_select",
+        "title": "Si notas sequedad, ¿dónde lo sientes más? (opcional) 🌵",
+        "visible_if": {
+          "any": [
+            {
+              "question_id": "P3",
+              "includes": [
+                "Sequedad (piel, mucosas)"
+              ]
+            },
+            {
+              "question_id": "P2",
+              "includes": [
+                "Sangrado escaso o ausente",
+                "Fatiga o cansancio extremo"
+              ]
+            }
+          ]
+        },
+        "options": [
+          {
+            "label": "Boca seca",
+            "value": "boca_seca"
+          },
+          {
+            "label": "Ojos secos",
+            "value": "ojos_secos"
+          },
+          {
+            "label": "Lubricación vaginal baja",
+            "value": "lubricacion_baja"
+          },
+          {
+            "label": "Sed nocturna",
+            "value": "sed_nocturna"
+          },
+          {
+            "label": "Piel muy seca",
+            "value": "piel_muy_seca"
+          }
+        ],
+        "validation": {
+          "min_selected": 0,
+          "max_selected": 5,
+          "soft_required_when": {
+            "all": [
+              {
+                "question_id": "P2",
+                "includes": [
+                  "Sangrado escaso o ausente"
+                ]
+              },
+              {
+                "question_id": "P2z2_preferencia_termica_bebidas",
+                "equals": "bebidas_calientes"
+              }
+            ],
+            "message": "Ayúdanos a precisar señales de sequedad: ¿boca/ojos/vagina seca o sed nocturna?"
+          }
+        }
+      },
       {
         "id": "P9_estres",
         "type": "slider",
@@ -1223,49 +1298,5 @@
           }
         ]
       },
-      {
-        "id": "P8_signos_corporales",
-        "type": "multi_select",
-        "title": "Señales del cuerpo (opcional) 🧩",
-        "help_text": "Si no viste tus señales arriba, selecciona hasta 3.",
-        "visible_if": {
-          "any": [
-            {
-              "question_id": "P2",
-              "includes": [
-                "Ninguna de las anteriores"
-              ]
-            },
-            {
-              "question_id": "P3",
-              "includes": [
-                "Ninguna de las anteriores"
-              ]
-            }
-          ]
-        },
-        "options": [
-          {
-            "label": "Sed intensa la mayor parte del día",
-            "value": "Sed intensa"
-          },
-          {
-            "label": "Piel muy seca",
-            "value": "Piel muy seca"
-          },
-          {
-            "label": "Sudor pegajoso",
-            "value": "Sudor pegajoso"
-          },
-          {
-            "label": "Poco o nada de sudor incluso con calor",
-            "value": "Poco sudor con calor"
-          }
-        ],
-        "validation": {
-          "min_selected": 0,
-          "max_selected": 3
-        }
-      }
     ]
   },
