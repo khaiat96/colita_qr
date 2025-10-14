@@ -22,7 +22,7 @@
       "Tu medicina también."
     ],
     "subtitle": "Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.",
-    "body": "Nuestro quiz identifica el elemento que domina tu ciclo y explica por qué ciertos síntomas se repiten.",
+    "body": "Nuestro quiz identifica el elemento que domina tu ciclo y genera una guía de cuidado personalizada para tu perfil.",
     "primary_cta": {
       "label": "Descubre tu tipo de ciclo",
       "href": "/quiz",
@@ -48,8 +48,6 @@
       "card": true,
       "badge_as_brand": true
     },
-  
-  
   },
 
   "elements": {
@@ -57,7 +55,7 @@
     "subtext": "Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.",
     "cards": [
       {
-        "element": "Aire",
+        "element": "Aire 🌬️",
         "pattern": "Tensión",
         "bullets": [
           "Nervio alto y espasmos",
@@ -67,7 +65,7 @@
         "icon": "air"
       },
       {
-        "element": "Fuego",
+        "element": "Fuego 🔥",
         "pattern": "Calor",
         "bullets": [
           "Rojo brillante/abundante",
@@ -77,7 +75,7 @@
         "icon": "fire"
       },
       {
-        "element": "Tierra",
+        "element": "Tierra ⛰️",
         "pattern": "Retención (humedad)",
         "bullets": [
           "Pesadez/hinchazón",
@@ -87,7 +85,7 @@
         "icon": "earth"
       },
       {
-        "element": "Agua",
+        "element": "Agua 💧",
         "pattern": "Sequedad",
         "bullets": [
           "Flujo escaso",
