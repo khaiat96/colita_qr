@@ -1,4 +1,4 @@
-{
+"landing_page.json": {
   "meta": {
     "version": "landing-a-v3.0",
     "language": "es-MX",
@@ -16,15 +16,15 @@
     "style_preset": "paper-cards"
   },
   "hero": {
+    "logo_url": "/assets/logo-colitaderana.png",
     "eyebrow": "Colita de rana — ahora personalizada",
     "title_lines": [
       "Tu ciclo es único.",
       "Tu medicina también."
     ],
     "subtitle": "Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.",
-    "body": "Nuestro quiz identifica el elemento que domina tu ciclo y genera una guía de cuidado personalizada para tu perfil.",
     "primary_cta": {
-      "label": "Descubre tu tipo de ciclo",
+      "label": "Toma el quiz",
       "href": "/quiz",
       "event": "cta_quiz_click",
       "style": "solid",

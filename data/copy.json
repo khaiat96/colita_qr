@@ -1,0 +1,25 @@
+{
+  "app": {
+    "title": "Haz el quiz y recibe tu plan personalizado",
+    "subtitle": "Descubre tu tipo de ciclo y aprende cómo equilibrarlo con medicina herbal.",
+    "disclaimer": "Este contenido es informativo y no sustituye atención médica."
+  },
+  "cta": {
+    "start": "Comenzar",
+    "continue": "Siguiente",
+    "back": "Atrás",
+    "submit": "Ver resultados",
+    "upgrade": "Pro: evaluación detallada"
+  },
+  "footer": {
+    "title": "🌟 Únete a la lista de espera",
+    "description": "Recibe acceso temprano a nuestra plataforma de medicina herbal personalizada.",
+    "benefits": [
+      "💰 Descuento de miembro fundador",
+      "🔔 Notificaciones de lanzamiento",
+      "🎯 Acceso prioritario a tu kit personalizado",
+      "📚 Guías gratuitas de salud menstrual"
+    ],
+    "launch_date": "Lanzamiento previsto: Primavera 2026"
+  }
+}
