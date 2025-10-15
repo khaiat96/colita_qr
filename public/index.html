@@ -6,31 +6,6 @@
     <title>Colita de Rana - Tu medicina personalizada</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <style>
-        .page { display: none; }
-        .page.active { display: block; }
-        /* Add these styles for landing page centering */
-        .landing-flex-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            gap: 32px;
-        }
-        .landing-actions {
-            display: flex;
-            gap: 24px;
-        }
-        .main-waitlist-form {
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            align-items: center;
-        }
-    </style>
 </head>
 <body>
     <!-- Landing Page -->
@@ -39,95 +14,99 @@
             <h1 class="brand-name">🌿 Colita de Rana</h1>
         </header>
         <main class="container">
-            <div class="landing-flex-wrap">
-                <!-- Hero Section -->
-                <section class="hero" style="text-align:center;">
-                    <h1 class="hero-title">
-                        <span>Tu ciclo es único.</span>
-                        <span>Tu medicina también.</span>
-                    </h1>
-                    <p class="hero-subtitle">
-                        Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México. Cada mujer tiene un patrón único de síntomas que merece una medicina única.
-                    </p>
-                </section>
-                <div class="landing-actions">
-                    <button class="btn-primary" onclick="scrollToWaitlist()">
-                        Llévame a la lista de espera
-                    </button>
-                    <button class="btn-primary" onclick="startSurvey()">
-                        Toma el quiz
-                    </button>
+            <!-- Hero Section -->
+            <section class="hero">
+                <h1 class="hero-title">
+                    <span>Tu ciclo es único.</span>
+                    <span>Tu medicina también.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México. Cada mujer tiene un patrón único de síntomas que merece una medicina única.
+                </p>
+                <button class="btn-primary" onclick="scrollToWaitlist()">
+                    Llévame a la lista de espera
+                </button>
+            </section>
+            <!-- Secondary Section -->
+            <section class="secondary-section">
+                <h2>Descubre consejos adaptados a tu patrón menstrual:</h2>
+                <p class="section-subtitle">
+                    Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.
+                </p>
+                <button class="btn-primary" onclick="startSurvey()">
+                    Toma el quiz
+                </button>
+            </section>
+        
+            <!-- Elements Section -->
+            <section class="elements-section">
+                <h2>Los 4 elementos en tu ciclo</h2>
+                <p class="section-subtitle">
+                    Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.
+                </p>
+                <div class="elements-grid">
+                    <div class="element-card">
+                        <h3>Aire 🌬️</h3>
+                        <p class="element-pattern">Tensión</p>
+                        <ul>
+                            <li>Nervio alto y espasmos</li>
+                            <li>Síntomas cambiantes</li>
+                            <li>Mejora con respiración y estiramientos</li>
+                        </ul>
+                    </div>
+                    <div class="element-card">
+                        <h3>Fuego 🔥</h3>
+                        <p class="element-pattern">Calor</p>
+                        <ul>
+                            <li>Rojo brillante/abundante</li>
+                            <li>Irritabilidad, calor/sed</li>
+                            <li>Mejora con frescor e hidratación</li>
+                        </ul>
+                    </div>
+                    <div class="element-card">
+                        <h3>Tierra ⛰️</h3>
+                        <p class="element-pattern">Retención (humedad)</p>
+                        <ul>
+                            <li>Pesadez/hinchazón</li>
+                            <li>Coágulos o espesor</li>
+                            <li>Mejora con movimiento y ligereza</li>
+                        </ul>
+                    </div>
+                    <div class="element-card">
+                        <h3>Agua 💧</h3>
+                        <p class="element-pattern">Sequedad</p>
+                        <ul>
+                            <li>Flujo escaso</li>
+                            <li>Sed/sequedad</li>
+                            <li>Mejora con hidratación y grasas buenas</li>
+                        </ul>
+                    </div>
                 </div>
-                <!-- Waitlist Section -->
-                <section id="waitlist-section" class="waitlist-section" style="width:100%;">
-                    <div class="waitlist-content">
-                        <h2>🌟 Únete a la lista de espera</h2>
-                        <p class="waitlist-description">
-                            Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
-                        </p>
-                        <div class="benefits-grid">
-                            <div class="benefit-item">💰 Descuento de miembro fundador</div>
-                            <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
-                            <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
-                            <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
-                        </div>
-                        <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-                        <!-- Waitlist Form for landing page -->
-                        <form id="main-waitlist-form" class="main-waitlist-form">
-                            <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
-                            <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
-                            <button type="submit" class="btn-primary">
-                                Unirme a la lista de espera
-                            </button>
-                        </form>
-                    </div>
-                </section>
-                <!-- Elements Section -->
-                <section class="elements-section" style="width:100%;margin-top:32px;">
-                    <h2>Los 4 elementos en tu ciclo</h2>
-                    <p class="section-subtitle">
-                        Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.
+            </section>
+            <!-- Waitlist Section -->
+            <section id="waitlist-section" class="waitlist-section">
+                <div class="waitlist-content">
+                    <h2>🌟 Únete a la lista de espera</h2>
+                    <p class="waitlist-description">
+                        Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
                     </p>
-                    <div class="elements-grid">
-                        <div class="element-card">
-                            <h3>Aire 🌬️</h3>
-                            <p class="element-pattern">Tensión</p>
-                            <ul>
-                                <li>Nervio alto y espasmos</li>
-                                <li>Síntomas cambiantes</li>
-                                <li>Mejora con respiración y estiramientos</li>
-                            </ul>
-                        </div>
-                        <div class="element-card">
-                            <h3>Fuego 🔥</h3>
-                            <p class="element-pattern">Calor</p>
-                            <ul>
-                                <li>Rojo brillante/abundante</li>
-                                <li>Irritabilidad, calor/sed</li>
-                                <li>Mejora con frescor e hidratación</li>
-                            </ul>
-                        </div>
-                        <div class="element-card">
-                            <h3>Tierra ⛰️</h3>
-                            <p class="element-pattern">Retención (humedad)</p>
-                            <ul>
-                                <li>Pesadez/hinchazón</li>
-                                <li>Coágulos o espesor</li>
-                                <li>Mejora con movimiento y ligereza</li>
-                            </ul>
-                        </div>
-                        <div class="element-card">
-                            <h3>Agua 💧</h3>
-                            <p class="element-pattern">Sequedad</p>
-                            <ul>
-                                <li>Flujo escaso</li>
-                                <li>Sed/sequedad</li>
-                                <li>Mejora con hidratación y grasas buenas</li>
-                            </ul>
-                        </div>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">💰 Descuento de miembro fundador</div>
+                        <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
+                        <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
+                        <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
                     </div>
-                </section>
-            </div>
+                    <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+                    <!-- Waitlist Form for landing page -->
+                    <form id="main-waitlist-form" class="main-waitlist-form">
+                        <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
+                        <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
+                        <button type="submit" class="btn-primary">
+                            Unirme a la lista de espera
+                        </button>
+                    </form>
+                </div>
+            </section>
         </main>
         <footer class="medical-disclaimer">
             <div class="container">
@@ -136,25 +115,23 @@
         </footer>
     </div>
 
-    <!-- Survey Page -->
-    <div id="survey-page" class="page">
-        <!-- ... unchanged ... -->
-    </div>
     <!-- Results Page -->
     <div id="results-page" class="page">
-        <!-- ... unchanged ... -->
-    </div>
-    <!-- Waitlist Page -->
-    <div id="waitlist-page" class="page">
-        <!-- ... unchanged ... -->
-    </div>
-    <!-- Loading Modal -->
-    <div id="loading-modal" class="modal">
-        <div class="modal-content">
-            <div class="spinner"></div>
-            <p>Procesando tu evaluación...</p>
+        <!-- Your results page content goes here -->
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="results-container">
+            <div class="results-card" id="results-card">
+                <!-- Results will be populated here by JS -->
+            </div>
+            <form id="results-waitlist-form" class="results-footer-form">
+                <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
+                <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
+                <button type="submit" class="btn-primary">Unirme a la lista de espera</button>
+            </form>
+            <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
         </div>
     </div>
-    <script src="app.js"></script>
 </body>
 </html>
