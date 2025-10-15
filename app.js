@@ -1,189 +1,173 @@
 // Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xldppdop';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
-
-// Initialize Supabase client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Survey data variables
-let surveyData = null;
-let surveyQuestions = [];
 let questionOrder = [];
-let currentQuestionIndex = 0;
+let surveyQuestions = [];
 let answers = {};
-let sessionId = generateSessionId();
+let currentQuestionIndex = 0;
+let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
 
-function generateSessionId() {
-    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-}
-
-// Load survey questions from JSON
-async function loadSurveyJSON() {
-    const resp = await fetch('survey_questions-combined.json');
-    surveyData = await resp.json();
-    surveyQuestions = surveyData.questions;
-    questionOrder = surveyData.question_order;
-}
-
-// Helper: Find question by ID
-function getQuestionById(qId) {
-    return surveyQuestions.find(q => q.id === qId);
-}
-
-// Improved Helper: Evaluate visible_if condition (supports all common cases from the JSON)
-function isQuestionVisible(question, answers) {
-    if (!question.visible_if) return true;
-    const cond = question.visible_if;
-
-    // Simple: question_id + equals
-    if (cond.question_id && typeof cond.equals !== "undefined") {
-        return answers[cond.question_id] === cond.equals;
-    }
-    // question_id + includes (single value)
-    if (cond.question_id && cond.includes) {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) return ans.includes(cond.includes);
-        return ans === cond.includes;
-    }
-    // question_id + includes_any (array)
-    if (cond.question_id && cond.includes_any) {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) {
-            return cond.includes_any.some(val => ans.includes(val));
-        }
-        return cond.includes_any.includes(ans);
-    }
-    // question_id + not_includes_any (array)
-    if (cond.question_id && cond.not_includes_any) {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) {
-            return cond.not_includes_any.every(val => !ans.includes(val));
-        }
-        return !cond.not_includes_any.includes(ans);
-    }
-    // question_id + not_in (array)
-    if (cond.question_id && cond.not_in) {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) {
-            return cond.not_in.every(val => !ans.includes(val));
-        }
-        return !cond.not_in.includes(ans);
-    }
-    // question_id + at_least (for sliders)
-    if (cond.question_id && typeof cond.at_least !== "undefined") {
-        const ans = answers[cond.question_id];
-        return typeof ans === "number" && ans >= cond.at_least;
-    }
-    // question_id + at_most (for sliders)
-    if (cond.question_id && typeof cond.at_most !== "undefined") {
-        const ans = answers[cond.question_id];
-        return typeof ans === "number" && ans <= cond.at_most;
-    }
-    // Compound: all (array of conditions)
-    if (cond.all) {
-        return cond.all.every(sub => isQuestionVisible({visible_if: sub}, answers));
-    }
-    // Compound: any (array of conditions)
-    if (cond.any) {
-        return cond.any.some(sub => isQuestionVisible({visible_if: sub}, answers));
-    }
-    // not_includes (single value)
-    if (cond.question_id && cond.not_includes) {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) return !ans.includes(cond.not_includes);
-        return ans !== cond.not_includes;
-    }
-    // not_equals
-    if (cond.question_id && typeof cond.not_equals !== "undefined") {
-        return answers[cond.question_id] !== cond.not_equals;
-    }
-    // missing
-    if (cond.missing) {
-        return typeof answers[cond.missing] === "undefined";
-    }
-    // Default fallback
-    return true;
-}
-
-// Get next visible question index, starting from current + 1
-function getNextVisibleQuestionIndex(fromIndex) {
-    for (let i = fromIndex + 1; i < questionOrder.length; i++) {
-        const qId = questionOrder[i];
-        const q = getQuestionById(qId);
-        if (isQuestionVisible(q, answers)) return i;
-    }
-    return -1;
-}
-
-// Get previous visible question index, starting from current - 1
-function getPrevVisibleQuestionIndex(fromIndex) {
-    for (let i = fromIndex - 1; i >= 0; i--) {
-        const qId = questionOrder[i];
-        const q = getQuestionById(qId);
-        if (isQuestionVisible(q, answers)) return i;
-    }
-    return -1;
-}
-
-// Page navigation functions
-window.showPage = function(pageId) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    document.getElementById(pageId).classList.add('active');
-};
-
-window.startSurvey = function() {
-    isProMode = false;
-    showPage('survey-page');
-    currentQuestionIndex = 0;
-    answers = {};
-    document.getElementById('pro-mode-indicator').style.display = 'none';
-    renderQuestion();
-};
-
-window.startProSurvey = function() {
-    isProMode = true;
-    showPage('survey-page');
-    currentQuestionIndex = 0;
-    answers = {};
-    document.getElementById('pro-mode-indicator').style.display = 'block';
-    renderQuestion();
-};
-
-window.showWaitlist = function() {
-    showPage('waitlist-page');
-};
+// ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
     const waitlistSection = document.getElementById('waitlist-section');
     if (waitlistSection) {
-        waitlistSection.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-        });
+        waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
 
-// Survey question rendering
+document.addEventListener('DOMContentLoaded', function() {
+    const mainWaitlistForm = document.getElementById('main-waitlist-form');
+    if (mainWaitlistForm) {
+        mainWaitlistForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('main-waitlist-name').value;
+            const email = document.getElementById('main-waitlist-email').value;
+            try {
+                await fetch(WAITLIST_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, source: 'landing_page' })
+                });
+                await supabase.from('waitlist').insert([{ name, email, source: 'landing_page' }]);
+                alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+                mainWaitlistForm.reset();
+            } catch (error) {
+                console.error('Error joining waitlist:', error);
+                alert('Hubo un error. Por favor intenta de nuevo.');
+            }
+        });
+    }
+    
+    const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+    if (resultsWaitlistForm) {
+        resultsWaitlistForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('results-waitlist-name').value;
+            const email = document.getElementById('results-waitlist-email').value;
+            try {
+                await fetch(WAITLIST_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, source: 'results_page' })
+                });
+                await supabase.from('waitlist').insert([{ name, email, source: 'results_page' }]);
+                alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+                resultsWaitlistForm.reset();
+            } catch (error) {
+                console.error('Error joining waitlist:', error);
+                alert('Hubo un error. Por favor intenta de nuevo.');
+            }
+        });
+    }
+});
+
+// ==================== UTILITY FUNCTIONS ====================
+
+function getQuestionById(qId) {
+    return surveyQuestions.find(q => q.id === qId);
+}
+
+function isQuestionVisible(question, answers) {
+    if (!question) return false;
+    if (question.id === "P0_contraception" || question.id === "P1") return true;
+
+    if (question.id.startsWith("P1_")) {
+        const p1Answer = answers["P1"];
+        const shouldShow = p1Answer === "No tengo sangrado actualmente";
+        return shouldShow;
+    }
+
+    if (!question.visible_if) return true;
+    const cond = question.visible_if;
+    if (cond.question_id && typeof cond.equals !== "undefined") {
+        return answers[cond.question_id] === cond.equals;
+    }
+    if (cond.question_id && cond.includes) {
+        const ans = answers[cond.question_id];
+        const inclArr = Array.isArray(cond.includes) ? cond.includes : [cond.includes];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return inclArr.some(val => ansArr.includes(val));
+    }
+    if (cond.question_id && cond.includes_any) {
+        const ans = answers[cond.question_id];
+        const inclAnyArr = Array.isArray(cond.includes_any) ? cond.includes_any : [cond.includes_any];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return inclAnyArr.some(val => ansArr.includes(val));
+    }
+    if (cond.question_id && cond.not_includes) {
+        const ans = answers[cond.question_id];
+        const notInclArr = Array.isArray(cond.not_includes) ? cond.not_includes : [cond.not_includes];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return notInclArr.every(val => !ansArr.includes(val));
+    }
+    if (cond.question_id && cond.not_in) {
+        const ans = answers[cond.question_id];
+        const notInArr = Array.isArray(cond.not_in) ? cond.not_in : [cond.not_in];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return notInArr.every(val => !ansArr.includes(val));
+    }
+    if (cond.question_id && cond.not_includes_any) {
+        const ans = answers[cond.question_id];
+        const notInclArr = Array.isArray(cond.not_includes_any) ? cond.not_includes_any : [cond.not_includes_any];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return notInclArr.every(val => !ansArr.includes(val));
+    }
+    if (cond.question_id && typeof cond.at_least !== "undefined") {
+        const ans = Number(answers[cond.question_id]) || 0;
+        return ans >= cond.at_least;
+    }
+    if (cond.all && Array.isArray(cond.all)) {
+        return cond.all.every(subCond => isQuestionVisible({visible_if: subCond}, answers));
+    }
+    if (cond.any && Array.isArray(cond.any)) {
+        return cond.any.some(subCond => isQuestionVisible({visible_if: subCond}, answers));
+    }
+    return true;
+}
+
+function getNextVisibleQuestionIndex(currentIndex) {
+    for (let i = currentIndex + 1; i < questionOrder.length; i++) {
+        const qId = questionOrder[i];
+        const question = getQuestionById(qId);
+        if (isQuestionVisible(question, answers)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function getPrevVisibleQuestionIndex(currentIndex) {
+    for (let i = currentIndex - 1; i >= 0; i--) {
+        const qId = questionOrder[i];
+        const question = getQuestionById(qId);
+        if (isQuestionVisible(question, answers)) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// ==================== SURVEY RENDERING ====================
+
 function renderQuestion() {
-    // Skip hidden questions
     let qId = questionOrder[currentQuestionIndex];
     let question = getQuestionById(qId);
 
-    // If not visible, auto-skip to next
     while (question && !isQuestionVisible(question, answers)) {
         const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-        if (nextIdx === -1) {
+        if (nextIdx > -1) {
+            currentQuestionIndex = nextIdx;
+            qId = questionOrder[currentQuestionIndex];
+            question = getQuestionById(qId);
+        } else {
             finishSurvey();
             return;
         }
-        currentQuestionIndex = nextIdx;
-        qId = questionOrder[currentQuestionIndex];
-        question = getQuestionById(qId);
     }
 
     if (!question) {
@@ -191,16 +175,25 @@ function renderQuestion() {
         return;
     }
 
+    // ✅ FIX: Initialize answers[qId] for multiselect BEFORE rendering
+    if (question.type === "multiselect" && !answers[qId]) {
+        answers[qId] = [];
+    }
+
     const surveyContent = document.getElementById('survey-content');
+    if (!surveyContent) return;
+
     let optionsHtml = '';
 
-    // Handle multi_select, single_choice, slider, etc.
-    if (question.type === 'multi_select' || question.type === 'single_choice') {
+    if (question.type === 'multiselect' || question.type === 'single_choice') {
         question.options.forEach((option, index) => {
-            const isMultiSelect = question.type === 'multi_select';
+            const isMultiSelect = question.type === 'multiselect';
             const optionClass = isMultiSelect ? 'option multi-select' : 'option';
+            const selected = isMultiSelect 
+                ? (answers[question.id] && answers[question.id].includes(option.value)) 
+                : answers[question.id] === option.value;
             optionsHtml += `
-                <div class="${optionClass}" data-value="${option.value}" onclick="selectOption('${option.value}', ${isMultiSelect})">
+                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" onclick="selectOption('${option.value}', ${isMultiSelect})">
                     ${option.label}
                 </div>
             `;
@@ -224,6 +217,10 @@ function renderQuestion() {
                 ${optionsHtml}
             </div>
         </div>
+        <div class="survey-navigation">
+            <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display:none;">← Anterior</button>
+            <button class="btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+        </div>
     `;
 
     updateProgress();
@@ -244,14 +241,12 @@ window.selectOption = function(value, isMultiSelect) {
         if (index > -1) {
             currentAnswers.splice(index, 1);
         } else {
-            // If max_selected, enforce
-            if (question.validation && question.validation.max_selected && currentAnswers.length >= question.validation.max_selected) {
+            if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
                 currentAnswers.shift();
             }
             currentAnswers.push(value);
         }
 
-        // Update visual selection
         document.querySelectorAll('.option').forEach(option => {
             if (option.dataset.value === value) {
                 option.classList.toggle('selected');
@@ -259,7 +254,6 @@ window.selectOption = function(value, isMultiSelect) {
         });
     } else {
         answers[question.id] = value;
-        // Update visual selection
         document.querySelectorAll('.option').forEach(option => {
             option.classList.remove('selected');
         });
@@ -276,34 +270,78 @@ window.selectSlider = function(qId, value) {
 };
 
 function updateProgress() {
-    // Count only visible questions
     let visibleCount = 0;
     for (let i = 0; i <= currentQuestionIndex; i++) {
         const q = getQuestionById(questionOrder[i]);
         if (isQuestionVisible(q, answers)) visibleCount++;
     }
-    // Total visible questions (up to this point)
     const totalVisible = questionOrder.filter(qId => isQuestionVisible(getQuestionById(qId), answers)).length;
     const progress = ((visibleCount) / totalVisible) * 100;
     document.getElementById('progress-bar').style.width = `${progress}%`;
     document.getElementById('progress-text').textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
 }
 
+// ✅ FIXED: updateNavigation function
 function updateNavigation() {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
-    const hasAnswer = answers[question.id] && (
-        question.type === 'single_choice' ? 
-        answers[question.id] : 
-        Array.isArray(answers[question.id]) && answers[question.id].length > 0
-    );
+    let hasAnswer = false;
+
+    // 🔍 DEBUG: Log what's happening
+    console.log('🔍 Navigation Debug:', {
+        qId,
+        type: question.type,
+        validation: question.validation,
+        currentAnswer: answers[qId],
+        answerType: typeof answers[qId],
+        answerIsArray: Array.isArray(answers[qId])
+    });
+
+    if (question.type === 'multiselect') {
+        // ✅ FIX: Ensure we always get an array
+        const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
+        const minSelected = question.validation?.minselected ?? 1;
+
+        console.log('🔍 Multiselect Debug:', {
+            selected,
+            selectedLength: selected.length,
+            minSelected,
+            minSelectedIs0: minSelected === 0
+        });
+
+        // ✅ FIX: If minselected is 0, question is optional - always enable Next
+        if (minSelected === 0) {
+            hasAnswer = true;
+            console.log('✅ minselected=0: Question is OPTIONAL, enabling Next button');
+        } else {
+            hasAnswer = selected.length >= minSelected;
+            console.log(`${hasAnswer ? '✅' : '❌'} minselected=${minSelected}: Need ${minSelected}, have ${selected.length}`);
+        }
+    } else if (question.type === 'single_choice') {
+        hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+    } else if (question.type === 'slider') {
+        hasAnswer = typeof answers[qId] === 'number';
+    } else {
+        hasAnswer = !!answers[qId];
+    }
+
+    console.log('🔍 Final hasAnswer:', hasAnswer);
+
+    // Enable/disable next button
     document.getElementById('next-btn').disabled = !hasAnswer;
-    document.getElementById('back-btn').style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) > -1 ? 'block' : 'none';
+
+    // Show/hide back button  
+    document.getElementById('back-btn').style.display = 
+        getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
 }
 
-// Navigation
+// ==================== NAVIGATION ====================
+
 window.nextQuestion = function() {
-    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    let nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    while (nextIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[nextIdx]), answers)) {
+        nextIdx = getNextVisibleQuestionIndex(nextIdx);
+    }
     if (nextIdx > -1) {
         currentQuestionIndex = nextIdx;
         renderQuestion();
@@ -313,14 +351,18 @@ window.nextQuestion = function() {
 };
 
 window.previousQuestion = function() {
-    const prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
+    let prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
+    while (prevIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[prevIdx]), answers)) {
+        prevIdx = getPrevVisibleQuestionIndex(prevIdx);
+    }
     if (prevIdx > -1) {
         currentQuestionIndex = prevIdx;
         renderQuestion();
     }
 };
 
-// Results calculation (same as before, you can adapt for dynamic scoring)
+// ==================== RESULTS CALCULATION ====================
+
 function calculateResults() {
     const scores = {
         tension: 0,
@@ -330,7 +372,6 @@ function calculateResults() {
         sequedad: 0
     };
 
-    // Calculate scores based on answers
     surveyQuestions.forEach(question => {
         const answer = answers[question.id];
         if (!answer) return;
@@ -348,7 +389,6 @@ function calculateResults() {
         }
     });
 
-    // Find dominant pattern
     let maxScore = 0;
     let dominantPattern = 'sequedad';
     ['tension', 'calor', 'humedad', 'sequedad'].forEach(pattern => {
@@ -362,40 +402,30 @@ function calculateResults() {
 }
 
 async function finishSurvey() {
-    // Show loading
     document.getElementById('loading-modal').classList.add('show');
-
-    // Calculate results
     const dominantPattern = calculateResults();
-    // You may want to get result templates from another JSON file
 
-    // Save to Supabase
     try {
         await supabase
             .from('survey_responses')
-            .insert([
-                {
-                    session_id: sessionId,
-                    answers: answers,
-                    result_pattern: dominantPattern,
-                    is_pro_mode: isProMode,
-                    created_at: new Date().toISOString()
-                }
-            ]);
+            .insert([{
+                session_id: sessionId,
+                answers: answers,
+                result_pattern: dominantPattern,
+                is_pro_mode: isProMode,
+                created_at: new Date().toISOString()
+            }]);
     } catch (error) {
         console.error('Error saving to Supabase:', error);
     }
 
-    // Hide loading
     setTimeout(() => {
         document.getElementById('loading-modal').classList.remove('show');
-        showResults(dominantPattern); // You may want to load results dynamically
+        showResults(dominantPattern);
     }, 2000);
 }
 
 function showResults(patternKey) {
-    // Use elementPatterns as before, or load from JSON
-    // For now, fallback to static templates as before
     const elementPatterns = {
         tension: {
             element: 'Viento/Aire 🌬️',
@@ -465,19 +495,49 @@ function showResults(patternKey) {
     showPage('results-page');
 }
 
-// Email and waitlist forms: unchanged from before—ensure any fetches/IDs match your HTML!
+// ==================== PAGE NAVIGATION ====================
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    document.getElementById(pageId).classList.add('active');
+}
+
+window.startSurvey = function() {
+    if (!surveyQuestions.length || !questionOrder.length) {
+        alert('Las preguntas del quiz no se han cargado aún. Intenta de nuevo en unos segundos.');
+        return;
+    }
+    showPage('survey-page');
+    currentQuestionIndex = 0;
+    answers = {};
+    renderQuestion();
+};
+
+// ==================== INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
     isProMode = false;
 
     try {
-        await loadSurveyJSON();
+        console.log('🔍 Loading survey_questions-combined.json...');
+        const resp = await fetch('survey_questions-combined.json');
+        console.log('📡 Fetch response:', resp.status, resp.statusText);
+        
+        if (!resp.ok) {
+            throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+        }
+        
+        const surveyData = await resp.json();
+        console.log('✅ Survey data loaded:', surveyData.questions?.length, 'questions');
+        
+        surveyQuestions = surveyData.questions;
+        questionOrder = surveyData.question_order;
+        
     } catch (err) {
-        alert('No se pudieron cargar las preguntas del quiz.');
-        console.error(err);
+        console.error('❌ Error loading survey:', err);
+        alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     }
-
-    // All button handlers are attached to window above so inline onclick works.
-    // Your waitlist & email form logic can remain as before.
 });

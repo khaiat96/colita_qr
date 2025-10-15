@@ -183,8 +183,7 @@
     }
   },
     "questions": [
-    {
-      "id": "P0_contraception",
+    { "id": "P0_contraception",
       "type": "single_choice",
       "title": "¿Usas anticoncepción actualmente? 🛡️",
       "help_text": "Nos ayuda a interpretar mejor tus señales.",
@@ -219,8 +218,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P1",
+    { "id": "P1",
       "type": "single_choice",
       "title": "¿Cómo ha sido tu ciclo en los últimos 3 meses? ⏱️",
       "help_text": "Elige la opción que mejor te describa.",
@@ -248,8 +246,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P1_motivo_no_ciclo",
+    { "id": "P1_motivo_no_ciclo",
       "type": "single_choice",
       "title": "Si no hay sangrado, ¿cuál es la razón principal? 🌙",
       "help_text": "Nos ayuda a personalizar tus recomendaciones.",
@@ -276,8 +273,7 @@
         }
       ]
     },
-    {
-      "id": "P1_amenorrea_contexto",
+    { "id": "P1_amenorrea_contexto",
       "type": "multiselect",
       "title": "Factores que aplican (opcional) 🧩",
       "help_text": "Selecciona los que apliquen.",
@@ -312,8 +308,7 @@
         "maxselected": 5
       }
     },
-    {
-      "id": "P1_onset_timing",
+    { "id": "P1_onset_timing",
       "type": "single_choice",
       "title": "¿Cómo empezaron esos cambios? ⏳",
       "help_text": "Opcional. Aporta contexto.",
@@ -344,8 +339,7 @@
         }
       ]
     },
-    {
-      "id": "P1_no_cycle_desde_cuando",
+    { "id": "P1_no_cycle_desde_cuando",
       "type": "single_choice",
       "title": "¿Desde cuándo no hay sangrado? 📆",
       "help_text": "Aporta contexto sobre tu caso.",
@@ -368,8 +362,7 @@
         }
       ]
     },
-    {
-      "id": "P2",
+    { "id": "P2",
       "type": "multiselect",
       "title": "En los últimos 3 ciclos, ¿qué síntomas aplican? 🩸",
       "help_text": "Selecciona hasta 3. Si es abundante, elige el tipo que mejor lo describe.",
@@ -423,8 +416,7 @@
         "regular"
       ]
     },
-    {
-      "id": "P2_spotting_frecuencia",
+    { "id": "P2_spotting_frecuencia",
       "type": "single_choice",
       "title": "Si tuviste manchado, ¿con qué frecuencia? 📍",
       "help_text": "Opcional (afina lectura).",
@@ -452,8 +444,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_spotting_context",
+    { "id": "P2_spotting_context",
       "type": "single_choice",
       "title": "En días con manchado, ¿hubo calor/irritabilidad? 🌡️",
       "help_text": "Opcional. Identifica contexto de calor.",
@@ -481,8 +472,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_margen_calor_humedad",
+    { "id": "P2_margen_calor_humedad",
       "type": "single_choice",
       "title": "Si es rojo brillante y con coágulos, ¿qué sientes más? 🌡️/💧",
       "help_text": "Nos ayuda a diferenciar si predomina el calor o la retención.",
@@ -521,8 +511,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2b_margen_calor_humedad",
+    { "id": "P2b_margen_calor_humedad",
       "type": "single_choice",
       "title": "Si es rojo oscuro y abundante, ¿qué sientes más? 🌡️/💧",
       "help_text": "Nos ayuda a diferenciar si predomina el calor o la retención.",
@@ -561,8 +550,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_escaso_frecuencia",
+    { "id": "P2_escaso_frecuencia",
       "type": "single_choice",
       "title": "Si el sangrado es escaso/ausente, ¿con qué frecuencia? 🌵",
       "visible_if": {
@@ -594,8 +582,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_hinchazon_severidad",
+    { "id": "P2_hinchazon_severidad",
       "type": "slider",
       "title": "Hinchazón/retención: ¿qué tanto? 💧",
       "visible_if": {
@@ -612,8 +599,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_fatiga_severidad",
+    {"id": "P2_fatiga_severidad",
       "type": "slider",
       "title": "¿Qué tan fuerte fue la fatiga? 🥱",
       "visible_if": {
@@ -630,8 +616,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_animo_severidad",
+    { "id": "P2_animo_severidad",
       "type": "slider",
       "title": "Cambios de ánimo/ansiedad: ¿qué tanto? 💛",
       "visible_if": {
@@ -648,8 +633,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_periodo_calidad",
+    { "id": "P2_periodo_calidad",
       "type": "compound",
       "title": "Calidad del sangrado menstrual 🌹",
       "help_text": "Responde según tus días más intensos.",
@@ -787,10 +771,7 @@
             "pro"
           ]
         }
-      ]
-    },
-    {
-      "id": "P2_patron_flujo",
+            { "id": "P2_patron_flujo",
       "type": "single_choice",
       "title": "Patrón del flujo en días intensos 🔎",
       "help_text": "¿Cómo describirías el patrón general?",
@@ -816,70 +797,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P2_olor",
-      "type": "single_choice",
-      "title": "Olor del sangrado (opcional) 👃",
-      "help_text": "Elige la opción que más se acerque.",
-      "options": [
-        {
-          "label": "Olor fuerte/ácido",
-          "value": "fuerte_acido"
-        },
-        {
-          "label": "Olor húmedo/pesado",
-          "value": "olor_humedo"
-        },
-        {
-          "label": "Metálico leve o casi sin olor",
-          "value": "metalico_leve_sin_olor"
-        }
-      ],
-      "modes": [
-        "pro"
-      ]
-    },
-    {
-      "id": "P2_abundancia",
-      "type": "single_choice",
-      "title": "Si es abundante, ¿cada cuánto cambias toalla/tampón? ⏳",
-      "help_text": "Se muestra si marcaste abundante o si tu cantidad es alta.",
-      "visible_if": {
-        "any": [
-          {
-            "question_id": "P2",
-            "includes_any": [
-              "Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)",
-              "Sangrado abundante (prolongado, con coágulos/espeso, sensación de pesadez)"
-            ]
-          },
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 7
-          }
-        ]
-      },
-      "options": [
-        {
-          "label": "Más de 3 horas",
-          "value": ">3h"
-        },
-        {
-          "label": "Cada 2–3 horas",
-          "value": "2–3h"
-        },
-        {
-          "label": "Menos de 1 hora",
-          "value": "<1h"
-        }
-      ],
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    {
-      "id": "P2_duracion_dias",
+    { "id": "P2_duracion_dias",
       "type": "single_choice",
       "title": "¿Cuántos días dura tu sangrado? 📅",
       "help_text": "Incluye todos los días con sangrado.",
@@ -901,8 +819,9 @@
         "pro"
       ]
     },
-    {
-      "id": "P2c_dolor_bloque",
+      ]
+    },
+    { "id": "P2c_dolor_bloque",
       "type": "grouped",
       "title": "Cuando tuviste dolor o cólicos:",
       "visible_if": {
@@ -1037,8 +956,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P3",
+    { "id": "P3",
       "type": "multiselect",
       "title": "Señales del cuerpo que notas (últimos 3 ciclos) 🧭",
       "help_text": "Selecciona hasta 3.",
@@ -1085,8 +1003,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P3_capa_lingual",
+    { "id": "P3_capa_lingual",
       "type": "single_choice",
       "title": "Capa en la lengua (opcional) 👅",
       "help_text": "Observa al despertar en luz natural.",
@@ -1112,8 +1029,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P3_hinchazon_modificador",
+    { "id": "P3_hinchazon_modificador",
       "type": "single_choice",
       "title": "Si hay pesadez/hinchazón, ¿cómo cambia con el movimiento? 🚶‍♀️",
       "help_text": "Opcional.",
@@ -1142,8 +1058,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P3_quick_test_frio_sequedad",
+    { "id": "P3_quick_test_frio_sequedad",
       "type": "single_choice",
       "title": "Si no marcaste Frío o Sequedad, ¿con cuál te identificas más? 🧊🌵",
       "help_text": "Opcional. Úsala si te cuesta decidir.",
@@ -1178,8 +1093,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P4",
+    { "id": "P4",
       "type": "multiselect",
       "title": "Estados emocionales (últimos 3 ciclos) 💬",
       "help_text": "Selecciona hasta 2.",
@@ -1218,8 +1132,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P7",
+    { "id": "P7",
       "type": "single_choice",
       "title": "¿Cuándo se intensifican más tus síntomas? 🗓️",
       "help_text": "Elige la fase.",
@@ -1242,35 +1155,7 @@
         }
       ]
     },
-    {
-      "id": "P7_mastalgia_premenstrual",
-      "type": "single_choice",
-      "title": "Antes del periodo, ¿notas sensibilidad/hinchazón en pechos? 🫧",
-      "help_text": "Opcional.",
-      "visible_if": {
-        "question_id": "P7",
-        "equals": "antes"
-      },
-      "options": [
-        {
-          "label": "Sí, con hinchazón",
-          "value": "si_con_hinchazon"
-        },
-        {
-          "label": "Sí, más bien tensión/sensibilidad sin hinchazón",
-          "value": "si_sin_hinchazon"
-        },
-        {
-          "label": "No",
-          "value": "no"
-        }
-      ],
-      "modes": [
-        "pro"
-      ]
-    },
-    {
-      "id": "P7_durante",
+    { "id": "P7_durante",
       "type": "multiselect",
       "title": "¿Qué días del periodo son más intensos? 🔎",
       "help_text": "Selecciona todos los días. (1 = primer día del sangrado)",
@@ -1313,8 +1198,7 @@
         "maxselected": 7
       }
     },
-    {
-      "id": "P5",
+    { "id": "P5",
       "type": "multiselect",
       "title": "Antojos o preferencias de alimentos 🍫🍜🍉",
       "help_text": "Elige todos los que apliquen.",
@@ -1386,8 +1270,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P5b_preferencia_termica_bebidas",
+    { "id": "P5b_preferencia_termica_bebidas",
       "type": "single_choice",
       "title": "Cuando tienes sed, ¿qué prefieres? 🧊🔥",
       "help_text": "Señal útil de tu terreno.",
@@ -1410,8 +1293,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P6",
+    { "id": "P6",
       "type": "multiselect",
       "title": "Tu patrón de energía general ⚡",
       "help_text": "Selecciona hasta 2.",
@@ -1446,8 +1328,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P8_signos_corporales",
+    { "id": "P8_signos_corporales",
       "type": "multiselect",
       "title": "Señales del cuerpo (opcional) 🧩",
       "help_text": "Si no viste tus señales arriba, selecciona hasta 3.",
@@ -1494,8 +1375,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P8_acne_ciclico",
+    { "id": "P8_acne_ciclico",
       "type": "single_choice",
       "title": "¿Brotes/acné relacionados con el ciclo? (opcional) 🔴",
       "help_text": "Elige la opción que más se acerque.",
@@ -1517,8 +1397,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P8_sequedad_detalle",
+    { "id": "P8_sequedad_detalle",
       "type": "multiselect",
       "title": "Si notas sequedad, ¿dónde lo sientes más? (opcional) 🌵",
       "visible_if": {
@@ -1584,8 +1463,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P8_que_alivia_sequedad",
+    { "id": "P8_que_alivia_sequedad",
       "type": "multiselect",
       "title": "Cuando hay sequedad, ¿qué te alivia? 💦 (opcional)",
       "visible_if": {
@@ -1631,8 +1509,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P8_contexto_sequedad",
+    { "id": "P8_contexto_sequedad",
       "type": "multiselect",
       "title": "¿Qué empeora tu sequedad? 🌬️ (opcional)",
       "options": [
@@ -1661,8 +1538,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P9_sueno_calidad",
+    { "id": "P9_sueno_calidad",
       "type": "slider",
       "title": "Calidad de sueño (últimos 7 días) 😴",
       "help_text": "0 = pésima; 10 = excelente.",
@@ -1673,8 +1549,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P9_estres",
+    { "id": "P9_estres",
       "type": "slider",
       "title": "Estrés percibido (últimos 7 días) 😵‍💫",
       "help_text": "0 = nada; 10 = muy alto.",
@@ -1686,8 +1561,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P9_ejercicio",
+    { "id": "P9_ejercicio",
       "type": "single_choice",
       "title": "Ejercicio/actividad física semanal 🏃‍♀️",
       "help_text": "Selecciona la opción que más se acerque.",
@@ -1714,31 +1588,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P9_digestion_transito",
-      "type": "single_choice",
-      "title": "Tránsito intestinal (últimas 2 semanas) 🍽️",
-      "help_text": "Elige la opción más frecuente.",
-      "options": [
-        {
-          "label": "Estreñimiento (heces duras / menos de 3x/sem)",
-          "value": "estrenimiento"
-        },
-        {
-          "label": "Heces sueltas / pegajosas",
-          "value": "sueltas_pegajosas"
-        },
-        {
-          "label": "Regular",
-          "value": "regular"
-        }
-      ],
-      "modes": [
-        "pro"
-      ]
-    },
-    {
-      "id": "P9_sensibilidad_clima",
+    { "id": "P9_sensibilidad_clima",
       "type": "single_choice",
       "title": "Sensibilidad al clima 🌡️",
       "help_text": "¿Qué te molesta más en general?",
@@ -1760,8 +1610,7 @@
         "pro"
       ]
     },
-    {
-      "id": "P9_cafeina",
+    { "id": "P9_cafeina",
       "type": "single_choice",
       "title": "¿Cuánta cafeína tomas al día? ☕",
       "help_text": "Cafés/energéticas/tés fuertes.",
@@ -1788,32 +1637,9 @@
         "pro"
       ]
     },
-    {
-      "id": "P9_alcohol",
-      "type": "single_choice",
-      "title": "¿Cuántas bebidas alcohólicas por semana? 🍷",
-      "help_text": "Aproximado.",
-      "options": [
-        {
-          "label": "Ninguna",
-          "value": "0_sem"
-        },
-        {
-          "label": "1–3 por semana",
-          "value": "1–3_sem"
-        },
-        {
-          "label": "4 o más por semana",
-          "value": ">=4_sem"
-        }
-      ],
-      "modes": [
-        "pro"
-      ]
-    }
   ],
   "question_order": [
-    "P0_contraception",
+     "P0_contraception",
     "P1",
     "P1_motivo_no_ciclo",
     "P1_amenorrea_contexto",
@@ -1822,17 +1648,13 @@
     "P2",
     "P2_spotting_frecuencia",
     "P2_spotting_context",
+    "P2_margen_calor_humedad",
+    "P2b_margen_calor_humedad",
     "P2_escaso_frecuencia",
     "P2_hinchazon_severidad",
     "P2_fatiga_severidad",
     "P2_animo_severidad",
     "P2_periodo_calidad",
-    "P2_margen_calor_humedad",
-    "P2b_margen_calor_humedad",
-    "P2_patron_flujo",
-    "P2_olor",
-    "P2_abundancia",
-    "P2_duracion_dias",
     "P2c_dolor_bloque",
     "P3",
     "P3_capa_lingual",
@@ -1840,7 +1662,6 @@
     "P3_quick_test_frio_sequedad",
     "P4",
     "P7",
-    "P7_mastalgia_premenstrual",
     "P7_durante",
     "P5",
     "P5b_preferencia_termica_bebidas",
@@ -1853,9 +1674,7 @@
     "P9_sueno_calidad",
     "P9_estres",
     "P9_ejercicio",
-    "P9_digestion_transito",
     "P9_sensibilidad_clima",
     "P9_cafeina",
-    "P9_alcohol"
   ]
 }
