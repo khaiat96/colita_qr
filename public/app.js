@@ -11,7 +11,7 @@ let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
+console.log('🚀 APP.JS LOADED - VERSION 3.0 - FINAL FIX - OCT 15 4:26PM');
 
 // ==================== WAITLIST FUNCTIONS ====================
 
