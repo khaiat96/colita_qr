@@ -53,9 +53,8 @@ async function loadResultsTemplate() {
     window.resultsTemplate = await resp.json();
 }
 
-// Helper: Check visible_if logic (AGGRESSIVE P1 FIX)
+// Helper: Check visible_if logic (AGGRESSIVE P1 FIX + custom includes_any logic)
 function isQuestionVisible(question, answers) {
-    // Always show first questions (P0_contraception, P1)
     if (!question) return false;
     if (question.id === "P0_contraception" || question.id === "P1") return true;
 
@@ -67,6 +66,22 @@ function isQuestionVisible(question, answers) {
             console.log(`🔍 Aggressive P1_* check for ${question.id}: P1="${p1Answer}" -> ${shouldShow ? 'SHOW' : 'HIDE'}`);
         }
         return shouldShow;
+    }
+
+    // Custom conditional for spotting questions
+    if (
+        (question.id === "P2_spotting_frecuencia" || question.id === "P2_spot_pre_post")
+    ) {
+        const ans = answers["P2"];
+        if (!ans) return false;
+        const options = [
+            "Manchado entre reglas",
+            "Sangrado después de relaciones"
+        ];
+        if (Array.isArray(ans)) {
+            return ans.some(val => options.includes(val));
+        }
+        return options.includes(ans);
     }
 
     // Otherwise normal logic
@@ -86,6 +101,14 @@ function isQuestionVisible(question, answers) {
         return inclArr.some(val => ansArr.includes(val));
     }
 
+    // includes_any (array)
+    if (cond.question_id && cond.includes_any) {
+        const ans = answers[cond.question_id];
+        const inclAnyArr = Array.isArray(cond.includes_any) ? cond.includes_any : [cond.includes_any];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return inclAnyArr.some(val => ansArr.includes(val));
+    }
+
     // not_includes (single or array)
     if (cond.question_id && cond.not_includes) {
         const ans = answers[cond.question_id];
@@ -100,14 +123,6 @@ function isQuestionVisible(question, answers) {
         const notInArr = Array.isArray(cond.not_in) ? cond.not_in : [cond.not_in];
         const ansArr = Array.isArray(ans) ? ans : [ans];
         return notInArr.every(val => !ansArr.includes(val));
-    }
-
-    // includes_any (array)
-    if (cond.question_id && cond.includes_any) {
-        const ans = answers[cond.question_id];
-        const inclAnyArr = Array.isArray(cond.includes_any) ? cond.includes_any : [cond.includes_any];
-        const ansArr = Array.isArray(ans) ? ans : [ans];
-        return inclAnyArr.some(val => ansArr.includes(val));
     }
 
     // not_includes_any (array) 
@@ -324,8 +339,12 @@ function renderQuestion() {
         html += `<button class="btn-secondary" onclick="goToPreviousQuestion()">← Anterior</button>`;
     }
 
-    // Next button
-    const hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+    // Next button logic
+    let hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+    // Always allow next for optional multi_select P2_spot_pre_post
+    if (question.type === "multi_select" && qId === "P2_spot_pre_post") {
+        hasAnswer = true;
+    }
     if (hasAnswer || question.type === 'slider') {
         html += `<button class="btn-primary" onclick="goToNextQuestion()">Siguiente →</button>`;
     }

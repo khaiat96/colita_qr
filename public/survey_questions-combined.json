@@ -424,16 +424,17 @@
         "pro"
       ]
     },
-    {
+{
       "id": "P2_spotting_frecuencia",
       "type": "single_choice",
       "title": "Si tuviste manchado, ¿con qué frecuencia? 📍",
       "help_text": "Opcional (afina lectura).",
       "visible_if": {
         "question_id": "P2",
-        "includes": [
-          "Manchado entre reglas"
-        ]
+        "includes_any": [
+          "Manchado entre reglas",
+          "Sangrado después de relaciones"
+        ],
       },
       "options": [
         {
@@ -447,41 +448,46 @@
         {
           "label": "≥5 veces / 3 ciclos",
           "value": "spot_frecuente"
-        }
+        },
       ],
       "modes": [
         "pro"
-      ]
+      ],
     },
     {
-      "id": "P2_spotting_context",
-      "type": "single_choice",
-      "title": "En días con manchado, ¿hubo calor/irritabilidad? 🌡️",
-      "help_text": "Opcional. Identifica contexto de calor.",
+      "id": "P2_spot_pre_post",
+      "type": "multi_select",
+      "title": "Si has notado manchados, ¿cuándo aparecen? (opcional) 🧭",
+      "help_text": "Puedes elegir más de una.",
       "visible_if": {
         "question_id": "P2",
-        "includes": [
-          "Manchado entre reglas"
+        "includes_any": [
+          "Manchado entre reglas",
+          "Sangrado después de relaciones"
         ]
       },
       "options": [
         {
-          "label": "Sí, calor o irritabilidad",
-          "value": "si_calor_irritabilidad"
+          "label": "Antes de la regla (1–3 días)",
+          "value": "antes"
         },
         {
-          "label": "No",
-          "value": "no"
+          "label": "Después de la regla (1–3 días)",
+          "value": "despues"
         },
         {
-          "label": "No estoy segura",
-          "value": "no_seguro"
+          "label": "Entre periodos",
+          "value": "entre"
         }
       ],
+      "validation": {
+        "min_selected": 0,
+        "max_selected": 3
+      },
       "modes": [
         "pro"
       ]
-    },
+    }
     {
       "id": "P2_spot_pre_post",
       "type": "multi_select",
