@@ -29,22 +29,6 @@ function isQuestionVisible(question, answers) {
         return shouldShow;
     }
 
-    // Custom conditional for spotting questions
-    if (
-        (question.id === "P2_spotting_frecuencia" || question.id === "P2_spotting_context" || question.id === "P2_spot_pre_post")
-    ) {
-        const ans = answers["P2"];
-        if (!ans) return false;
-        const options = [
-            "Manchado entre reglas",
-            "Sangrado después de relaciones"
-        ];
-        if (Array.isArray(ans)) {
-            return ans.some(val => options.includes(val));
-        }
-        return options.includes(ans);
-    }
-
     // Otherwise normal logic
     if (!question.visible_if) return true;
     const cond = question.visible_if;
