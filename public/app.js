@@ -13,7 +13,6 @@ let isProMode = false;
 
 // ==================== WAITLIST FUNCTIONS ====================
 
-// Scroll to waitlist section on landing page
 window.scrollToWaitlist = function() {
     const waitlistSection = document.getElementById('waitlist-section');
     if (waitlistSection) {
@@ -21,27 +20,20 @@ window.scrollToWaitlist = function() {
     }
 };
 
-// Handle main waitlist form (on landing page)
 document.addEventListener('DOMContentLoaded', function() {
     const mainWaitlistForm = document.getElementById('main-waitlist-form');
     if (mainWaitlistForm) {
         mainWaitlistForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const name = document.getElementById('main-waitlist-name').value;
             const email = document.getElementById('main-waitlist-email').value;
-            
             try {
-                // Send to webhook
                 await fetch(WAITLIST_WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, source: 'landing_page' })
                 });
-                
-                // Save to Supabase
                 await supabase.from('waitlist').insert([{ name, email, source: 'landing_page' }]);
-                
                 alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
                 mainWaitlistForm.reset();
             } catch (error) {
@@ -51,26 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Handle results waitlist form
     const resultsWaitlistForm = document.getElementById('results-waitlist-form');
     if (resultsWaitlistForm) {
         resultsWaitlistForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const name = document.getElementById('results-waitlist-name').value;
             const email = document.getElementById('results-waitlist-email').value;
-            
             try {
-                // Send to webhook
                 await fetch(WAITLIST_WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, source: 'results_page' })
                 });
-                
-                // Save to Supabase
                 await supabase.from('waitlist').insert([{ name, email, source: 'results_page' }]);
-                
                 alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
                 resultsWaitlistForm.reset();
             } catch (error) {
@@ -83,24 +68,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ==================== UTILITY FUNCTIONS ====================
 
-// Utility function to get question by id
 function getQuestionById(qId) {
     return surveyQuestions.find(q => q.id === qId);
 }
 
-// Utility for visible_if logic
 function isQuestionVisible(question, answers) {
     if (!question) return false;
     if (question.id === "P0_contraception" || question.id === "P1") return true;
 
-    // AGGRESSIVE: Hide ALL P1_* questions unless P1 = "No tengo sangrado actualmente"
     if (question.id.startsWith("P1_")) {
         const p1Answer = answers["P1"];
         const shouldShow = p1Answer === "No tengo sangrado actualmente";
         return shouldShow;
     }
 
-    // Otherwise normal logic
     if (!question.visible_if) return true;
     const cond = question.visible_if;
     if (cond.question_id && typeof cond.equals !== "undefined") {
@@ -149,7 +130,6 @@ function isQuestionVisible(question, answers) {
     return true;
 }
 
-// Navigation helpers: skip hidden questions!
 function getNextVisibleQuestionIndex(currentIndex) {
     for (let i = currentIndex + 1; i < questionOrder.length; i++) {
         const qId = questionOrder[i];
@@ -175,11 +155,9 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 // ==================== SURVEY RENDERING ====================
 
 function renderQuestion() {
-    // Defensive: always land on a visible question
     let qId = questionOrder[currentQuestionIndex];
     let question = getQuestionById(qId);
 
-    // If current is not visible, auto-skip forward
     while (question && !isQuestionVisible(question, answers)) {
         const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
         if (nextIdx > -1) {
@@ -197,18 +175,16 @@ function renderQuestion() {
         return;
     }
 
-    // Defensive patch for multiselect answer initialization
+    // ✅ FIX: Initialize answers[qId] for multiselect BEFORE rendering
     if (question.type === "multiselect" && !answers[qId]) {
         answers[qId] = [];
     }
 
-    // Defensive check: Ensure survey-content exists
     const surveyContent = document.getElementById('survey-content');
     if (!surveyContent) return;
 
     let optionsHtml = '';
 
-    // Handle multiselect, single_choice, slider
     if (question.type === 'multiselect' || question.type === 'single_choice') {
         question.options.forEach((option, index) => {
             const isMultiSelect = question.type === 'multiselect';
@@ -265,14 +241,12 @@ window.selectOption = function(value, isMultiSelect) {
         if (index > -1) {
             currentAnswers.splice(index, 1);
         } else {
-            // If maxselected, enforce
             if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
                 currentAnswers.shift();
             }
             currentAnswers.push(value);
         }
 
-        // Update visual selection
         document.querySelectorAll('.option').forEach(option => {
             if (option.dataset.value === value) {
                 option.classList.toggle('selected');
@@ -280,7 +254,6 @@ window.selectOption = function(value, isMultiSelect) {
         });
     } else {
         answers[question.id] = value;
-        // Update visual selection
         document.querySelectorAll('.option').forEach(option => {
             option.classList.remove('selected');
         });
@@ -297,7 +270,6 @@ window.selectSlider = function(qId, value) {
 };
 
 function updateProgress() {
-    // Count only visible questions
     let visibleCount = 0;
     for (let i = 0; i <= currentQuestionIndex; i++) {
         const q = getQuestionById(questionOrder[i]);
@@ -309,19 +281,41 @@ function updateProgress() {
     document.getElementById('progress-text').textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
 }
 
+// ✅ FIXED: updateNavigation function
 function updateNavigation() {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
     let hasAnswer = false;
 
+    // 🔍 DEBUG: Log what's happening
+    console.log('🔍 Navigation Debug:', {
+        qId,
+        type: question.type,
+        validation: question.validation,
+        currentAnswer: answers[qId],
+        answerType: typeof answers[qId],
+        answerIsArray: Array.isArray(answers[qId])
+    });
+
     if (question.type === 'multiselect') {
+        // ✅ FIX: Ensure we always get an array
         const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
         const minSelected = question.validation?.minselected ?? 1;
 
+        console.log('🔍 Multiselect Debug:', {
+            selected,
+            selectedLength: selected.length,
+            minSelected,
+            minSelectedIs0: minSelected === 0
+        });
+
+        // ✅ FIX: If minselected is 0, question is optional - always enable Next
         if (minSelected === 0) {
             hasAnswer = true;
+            console.log('✅ minselected=0: Question is OPTIONAL, enabling Next button');
         } else {
             hasAnswer = selected.length >= minSelected;
+            console.log(`${hasAnswer ? '✅' : '❌'} minselected=${minSelected}: Need ${minSelected}, have ${selected.length}`);
         }
     } else if (question.type === 'single_choice') {
         hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
@@ -330,6 +324,8 @@ function updateNavigation() {
     } else {
         hasAnswer = !!answers[qId];
     }
+
+    console.log('🔍 Final hasAnswer:', hasAnswer);
 
     // Enable/disable next button
     document.getElementById('next-btn').disabled = !hasAnswer;
@@ -393,7 +389,6 @@ function calculateResults() {
         }
     });
 
-    // Find dominant pattern
     let maxScore = 0;
     let dominantPattern = 'sequedad';
     ['tension', 'calor', 'humedad', 'sequedad'].forEach(pattern => {
