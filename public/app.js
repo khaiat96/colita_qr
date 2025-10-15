@@ -509,7 +509,7 @@ function calculatePeriodPattern(answers) {
     if (margin >= 3) confidence = 'Alta';
     else if (margin >= 2) confidence = 'Media';
 
-    // Check for mixed patterns
+    // Check for mixed pattern
     const isMixed = margin <= 1 && topScore >= 2 && secondScore >= 2;
 
     const result = {
