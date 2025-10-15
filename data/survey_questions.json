@@ -175,45 +175,7 @@
       ]
     }
   },
-  "question_order": [
-  "P0_contraception",
-  "P1",
-  "P1_motivo_no_ciclo",
-  "P1_amenorrea_contexto",
-  "P1_onset_timing", 
-  "P1_no_cycle_desde_cuando",
-  "P2",
-  "P2_spotting_frecuencia",
-  "P2_spotting_context",
-  "P2_margen_calor_humedad",
-  "P2b_margen_calor_humedad",
-  "P2_escaso_frecuencia",
-  "P2_hinchazon_severidad",
-  "P2_fatiga_severidad",
-  "P2_animo_severidad",
-  "P2_periodo_calidad",
-  "P2_abundancia", 
-  "P2c_dolor_bloque",
-  "P3",
-  "P3_hinchazon_modificador",
-  "P3_quick_test_frio_sequedad",
-  "P4",
-  "P7",         // ← P7 now comes before P5
-  "P7_durante",
-  "P5",         // ← P5 now comes after P7
-  "P5b_preferencia_termica_bebidas",
-  "P6",
-  "P8_signos_corporales",
-  "P8_sequedad_detalle",
-  "P8_que_alivia_sequedad",
-  "P8_contexto_sequedad",
-  "P9_sueno_calidad",
-  "P9_estres",
-  "P9_ejercicio",
-  "P9_cafeina",
-  "P9_alcohol"
-],
-  "questions": [
+    "questions": [
     { "id": "P0_contraception",
       "type": "single_choice",
       "title": "¿Usas anticoncepción actualmente? 🛡️",
@@ -933,5 +895,47 @@
       "modes": ["pro"]
     }
   ],
+  "question_order": [
+  "P0_contraception",
+  "P1",
+  "P1_motivo_no_ciclo",
+  "P1_amenorrea_contexto",
+  "P1_onset_timing", 
+  "P1_no_cycle_desde_cuando",
+  "P2",
+  "P2_spotting_frecuencia",
+  "P2_spotting_context",
+  "P2_margen_calor_humedad",
+  "P2b_margen_calor_humedad",
+  "P2_escaso_frecuencia",
+  "P2_hinchazon_severidad",
+  "P2_fatiga_severidad",
+  "P2_animo_severidad",
+  "P2_periodo_calidad",
+  "P2_abundancia", 
+  "P2c_dolor_bloque",
+  "P3",
+  "P3_hinchazon_modificador",
+  "P3_quick_test_frio_sequedad",
+  "P4",
+  "P7",         // ← P7 now comes before P5
+  "P7_durante",
+  "P5",         // ← P5 now comes after P7
+  "P5b_preferencia_termica_bebidas",
+  "P6",
+  "P8_signos_corporales",
+  "P8_sequedad_detalle",
+  "P8_que_alivia_sequedad",
+  "P8_contexto_sequedad",
+  "P9_sueno_calidad",
+  "P9_estres",
+  "P9_ejercicio",
+  "P9_cafeina",
+  "P9_alcohol"
+],
 }
 
+{
+  "questions": [ ... ],
+  "question_order": [ ... ]
+}
