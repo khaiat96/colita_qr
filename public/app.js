@@ -4,7 +4,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
 let questionOrder = [];
 let surveyQuestions = [];
 let answers = {};
@@ -27,6 +26,22 @@ function isQuestionVisible(question, answers) {
         const p1Answer = answers["P1"];
         const shouldShow = p1Answer === "No tengo sangrado actualmente";
         return shouldShow;
+    }
+
+    // Custom conditional for spotting questions (unified logic for all conditionals)
+    if (
+        (question.id === "P2_spotting_frecuencia" || question.id === "P2_spotting_context" || question.id === "P2_spot_pre_post")
+    ) {
+        const ans = answers["P2"];
+        if (!ans) return false;
+        const options = [
+            "Manchado entre reglas",
+            "Sangrado después de relaciones"
+        ];
+        if (Array.isArray(ans)) {
+            return ans.some(val => options.includes(val));
+        }
+        return options.includes(ans);
     }
 
     // Otherwise normal logic
@@ -102,20 +117,21 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 
 // Survey rendering
 function renderQuestion() {
-    // Skip hidden questions
+    // Defensive: always land on a visible question
     let qId = questionOrder[currentQuestionIndex];
     let question = getQuestionById(qId);
 
-    // If not visible, auto-skip to next
+    // If current is not visible, auto-skip forward (robust recursion, never get stuck!)
     while (question && !isQuestionVisible(question, answers)) {
         const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-        if (nextIdx === -1) {
+        if (nextIdx > -1) {
+            currentQuestionIndex = nextIdx;
+            qId = questionOrder[currentQuestionIndex];
+            question = getQuestionById(qId);
+        } else {
             finishSurvey();
             return;
         }
-        currentQuestionIndex = nextIdx;
-        qId = questionOrder[currentQuestionIndex];
-        question = getQuestionById(qId);
     }
 
     if (!question) {
@@ -262,7 +278,11 @@ function updateNavigation() {
 
 // Navigation
 window.nextQuestion = function() {
-    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    // Defensive: always land on visible question
+    let nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    while (nextIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[nextIdx]), answers)) {
+        nextIdx = getNextVisibleQuestionIndex(nextIdx);
+    }
     if (nextIdx > -1) {
         currentQuestionIndex = nextIdx;
         renderQuestion();
@@ -272,7 +292,10 @@ window.nextQuestion = function() {
 };
 
 window.previousQuestion = function() {
-    const prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
+    let prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
+    while (prevIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[prevIdx]), answers)) {
+        prevIdx = getPrevVisibleQuestionIndex(prevIdx);
+    }
     if (prevIdx > -1) {
         currentQuestionIndex = prevIdx;
         renderQuestion();
