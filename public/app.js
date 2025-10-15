@@ -19,7 +19,7 @@ window.showPage = function(pageId) {
 window.startSurvey = function() {
     // Survey initialization logic; if you have variables to reset, do so here.
     window.showPage('survey-page');
-    // Add any additional logic needed for starting your survey.
+    // Additional logic for starting your survey, if needed
 };
 
 window.scrollToWaitlist = function() {
@@ -30,12 +30,39 @@ window.scrollToWaitlist = function() {
 };
 
 // ----------------------------------------------------
+// Survey Data Loading Functions
+// ----------------------------------------------------
+
+// You MUST have these async functions defined for your quiz to load.
+// Make sure the corresponding JSON files are present in your public directory.
+
+async function loadSurveyJSON() {
+    const resp = await fetch('survey_questions-combined.json');
+    if (!resp.ok) throw new Error("survey_questions-combined.json not found");
+    const surveyData = await resp.json();
+    window.surveyQuestions = surveyData.questions;
+    window.questionOrder = surveyData.question_order;
+}
+
+async function loadDecisionMapping() {
+    const resp = await fetch('decision_mapping-combined.json');
+    if (!resp.ok) throw new Error("decision_mapping-combined.json not found");
+    window.decisionMapping = await resp.json();
+}
+
+async function loadResultsTemplate() {
+    const resp = await fetch('results_template.json');
+    if (!resp.ok) throw new Error("results_template.json not found");
+    window.resultsTemplate = await resp.json();
+}
+
+// ----------------------------------------------------
 // Your existing form and survey logic
 // ----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
-    isProMode = false;
+    window.isProMode = false;
 
     try {
         await loadSurveyJSON();
