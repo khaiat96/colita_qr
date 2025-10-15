@@ -61,36 +61,43 @@ function isQuestionVisible(question, answers) {
     if (!question.visible_if) return true;
     const cond = question.visible_if;
 
+    // equals
     if (cond.question_id && typeof cond.equals !== "undefined") {
         return answers[cond.question_id] === cond.equals;
     }
-    if (cond.question_id && cond.includes) {
+    // includes (single value)
+    if (cond.question_id && typeof cond.includes !== "undefined") {
         const ans = answers[cond.question_id];
         if (Array.isArray(ans)) return ans.includes(cond.includes);
         return ans === cond.includes;
     }
+    // includes_any (array)
     if (cond.question_id && cond.includes_any) {
         const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) {
-            return cond.includes_any.some(val => ans.includes(val));
-        }
+        if (Array.isArray(ans)) return cond.includes_any.some(val => ans.includes(val));
         return cond.includes_any.includes(ans);
     }
+    // not_includes_any (array)
     if (cond.question_id && cond.not_includes_any) {
         const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) {
-            return cond.not_includes_any.every(val => !ans.includes(val));
-        }
+        if (Array.isArray(ans)) return cond.not_includes_any.every(val => !ans.includes(val));
         return !cond.not_includes_any.includes(ans);
     }
+    // not_in (array)
     if (cond.question_id && cond.not_in) {
         const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) {
-            return cond.not_in.every(val => !ans.includes(val));
-        }
+        if (Array.isArray(ans)) return cond.not_in.every(val => !ans.includes(val));
         return !cond.not_in.includes(ans);
     }
-    // Add more logic as needed for your schema!
+    // all: array of visible_if conditions (for compound cases)
+    if (cond.all && Array.isArray(cond.all)) {
+        return cond.all.every(subCond => isQuestionVisible({visible_if: subCond}, answers));
+    }
+    // any: array of visible_if conditions (for compound cases)
+    if (cond.any && Array.isArray(cond.any)) {
+        return cond.any.some(subCond => isQuestionVisible({visible_if: subCond}, answers));
+    }
+    // Default: show
     return true;
 }
 
@@ -115,7 +122,6 @@ function renderQuestion() {
 
     window.currentQuestionIndex = currentIndex;
 
-    // End of survey
     if (currentIndex >= questionOrder.length) {
         document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
         return;
