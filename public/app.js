@@ -70,7 +70,7 @@ function isQuestionVisible(question, answers) {
 
     // Custom conditional for spotting questions
     if (
-        (question.id === "P2_spotting_frecuencia" || question.id === "P2_spot_pre_post")
+        (question.id === "P2_spotting_frecuencia" || question.id === "P2_spotting_context" || question.id === "P2_spot_pre_post")
     ) {
         const ans = answers["P2"];
         if (!ans) return false;
@@ -153,6 +153,52 @@ function isQuestionVisible(question, answers) {
     return true;
 }
 
+// Helper for compound: Check if compound item is visible
+function isCompoundItemVisible(item, answers) {
+    if (!item.visible_if) return true;
+    return isQuestionVisible({ ...item, id: item.id, visible_if: item.visible_if }, answers);
+}
+
+// Helper for compound: Has answer for a compound item
+function compoundItemHasAnswer(item, answers) {
+    const val = answers[item.id];
+    if (item.type === 'multi_select') {
+        if (!val) return false;
+        if (!item.validation || !item.validation.min_selected) return true;
+        return val.length >= (item.validation.min_selected || 0);
+    } else if (item.type === 'slider') {
+        return typeof val !== 'undefined';
+    } else {
+        return !!val;
+    }
+}
+
+// Helper for compound: All required visible items answered
+function compoundAllRequiredAnswered(items, answers) {
+    return items
+        .filter(item => isCompoundItemVisible(item, answers))
+        .every(item => {
+            if (item.type === 'multi_select') {
+                if (item.validation && item.validation.min_selected === 0) return true;
+                return compoundItemHasAnswer(item, answers);
+            } else if (item.type === 'slider') {
+                return compoundItemHasAnswer(item, answers);
+            } else {
+                // single_choice, etc.
+                return compoundItemHasAnswer(item, answers);
+            }
+        });
+}
+
+// PATCH: Always initialize answers[item.id] as [] for multi_select items in compound
+function initCompoundMultiSelectAnswers(items, answers) {
+    items.forEach(item => {
+        if (item.type === 'multi_select' && !answers[item.id]) {
+            answers[item.id] = [];
+        }
+    });
+}
+
 // Helper to get next visible index
 function getNextVisibleIndex(fromIndex) {
     let idx = fromIndex + 1;
@@ -183,7 +229,7 @@ function getPrevVisibleIndex(fromIndex) {
     return idx;
 }
 
-// Main render function
+// Main render function (patched for compound support!)
 function renderQuestion() {
     const questionOrder = window.questionOrder || [];
     const surveyQuestions = window.surveyQuestions || [];
@@ -255,13 +301,74 @@ function renderQuestion() {
     // Question title
     html += `<h3 class="question-title">${question.title}</h3>`;
 
-    // Question description
-    if (question.description) {
-        html += `<p class="question-description">${question.description}</p>`;
+    if (question.help_text) {
+        html += `<p class="question-description">${question.help_text}</p>`;
     }
 
-    // Render based on question type
-    if (question.type === 'single_choice') {
+    // PATCH: Compound support
+    if (question.type === 'compound') {
+        // Support "items" property (new format), fallback to "questions" property (old format)
+        const items = question.items || question.questions || [];
+        initCompoundMultiSelectAnswers(items, answers);
+
+        html += `<div class="compound-question">`;
+        items.forEach(item => {
+            if (!isCompoundItemVisible(item, answers)) return;
+            html += `<div class="sub-question">`;
+            html += `<h4>${item.title}</h4>`;
+            if (item.help_text) {
+                html += `<div class="sub-help">${item.help_text}</div>`;
+            }
+            if (item.type === 'slider') {
+                const sliderValue = typeof answers[item.id] !== 'undefined' ? answers[item.id] : item.min;
+                html += `
+                    <div class="slider-container">
+                        <div class="slider-labels">
+                            <span>${item.tick_labels ? item.tick_labels[item.min] : item.min}</span>
+                            <span>${item.tick_labels ? item.tick_labels[item.max] : item.max}</span>
+                        </div>
+                        <input type="range" min="${item.min}" max="${item.max}" step="${item.step || 1}" 
+                               value="${sliderValue}" id="slider-input-${item.id}"
+                               oninput="document.getElementById('slider-value-${item.id}').innerText = this.value; window.answers['${item.id}'] = Number(this.value)">
+                        <div class="slider-value">
+                            Valor: <span id="slider-value-${item.id}">${sliderValue}</span>
+                        </div>
+                    </div>
+                `;
+            } else if (item.type === 'single_choice') {
+                html += `<div class="options-container">`;
+                item.options.forEach(option => {
+                    const isSelected = answers[item.id] === option.value;
+                    html += `
+                        <div class="option ${isSelected ? 'selected' : ''}" 
+                             onclick="selectCompoundOption('${item.id}', '${option.value}')">
+                            <div class="option-indicator"></div>
+                            <span class="option-text">${option.label}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else if (item.type === 'multi_select') {
+                html += `<div class="options-container">`;
+                item.options.forEach(option => {
+                    const isSelected = answers[item.id] && answers[item.id].includes(option.value);
+                    html += `
+                        <div class="option ${isSelected ? 'selected' : ''}" 
+                             onclick="selectCompoundMultiOption('${item.id}', '${option.value}')">
+                            <div class="option-indicator"></div>
+                            <span class="option-text">${option.label}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+        });
+        html += `</div>`;
+    }
+    // Non-compound question logic (unchanged, see previous code for single_choice, multi_select, slider)
+
+    else if (question.type === 'single_choice') {
         html += `<div class="options-container">`;
         question.options.forEach(option => {
             const isSelected = answers[qId] === option.value;
@@ -274,8 +381,8 @@ function renderQuestion() {
             `;
         });
         html += `</div>`;
-
     } else if (question.type === 'multi_select') {
+        if (!answers[qId]) answers[qId] = [];
         html += `<div class="options-container">`;
         question.options.forEach(option => {
             const isSelected = answers[qId] && answers[qId].includes(option.value);
@@ -288,7 +395,6 @@ function renderQuestion() {
             `;
         });
         html += `</div>`;
-
     } else if (question.type === 'slider') {
         const sliderValue = answers[question.id] !== undefined ? answers[question.id] : question.min;
         html += `
@@ -305,29 +411,6 @@ function renderQuestion() {
                 </div>
             </div>
         `;
-
-    } else if (question.type === 'compound') {
-        html += `<div class="compound-container">`;
-        question.questions.forEach(subQ => {
-            html += `<div class="sub-question">`;
-            html += `<h4>${subQ.title}</h4>`;
-            if (subQ.type === 'single_choice') {
-                html += `<div class="options-container">`;
-                subQ.options.forEach(option => {
-                    const isSelected = answers[subQ.id] === option.value;
-                    html += `
-                        <div class="option ${isSelected ? 'selected' : ''}" 
-                             onclick="selectCompoundOption('${subQ.id}', '${option.value}')">
-                            <div class="option-indicator"></div>
-                            <span class="option-text">${option.label}</span>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
-            }
-            html += `</div>`;
-        });
-        html += `</div>`;
     }
 
     // Navigation buttons
@@ -339,15 +422,21 @@ function renderQuestion() {
         html += `<button class="btn-secondary" onclick="goToPreviousQuestion()">← Anterior</button>`;
     }
 
-    // Next button logic
-    let hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
-    // Always allow next for optional multi_select questions
-    if (
-        question.type === "multi_select" &&
-        question.validation &&
-        question.validation.min_selected === 0
-    ) {
-        hasAnswer = true;
+    // Next button logic ("compound" support!)
+    let hasAnswer;
+    if (question.type === 'compound') {
+        const items = question.items || question.questions || [];
+        hasAnswer = compoundAllRequiredAnswered(items, answers);
+    } else {
+        hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+        // Always allow next for optional multi_select questions
+        if (
+            question.type === "multi_select" &&
+            question.validation &&
+            question.validation.min_selected === 0
+        ) {
+            hasAnswer = true;
+        }
     }
     if (hasAnswer || question.type === 'slider') {
         html += `<button class="btn-primary" onclick="goToNextQuestion()">Siguiente →</button>`;
@@ -356,6 +445,10 @@ function renderQuestion() {
     html += `</div>`;
 
     document.getElementById('survey-content').innerHTML = html;
+
+    if (isDebug()) {
+        console.log("[renderQuestion] qId:", qId, "type:", question.type, "hasAnswer:", hasAnswer, "answers[qId]:", answers[qId], "currentIndex:", currentIndex, "nextVisibleIndex:", getNextVisibleIndex(currentIndex));
+    }
 }
 
 // Selection functions
@@ -398,9 +491,25 @@ window.selectCompoundOption = function(subQuestionId, value) {
     renderQuestion();
 };
 
+window.selectCompoundMultiOption = function(subQuestionId, value) {
+    if (!window.answers[subQuestionId]) window.answers[subQuestionId] = [];
+    const arr = window.answers[subQuestionId];
+    if (arr.includes(value)) {
+        window.answers[subQuestionId] = arr.filter(v => v !== value);
+    } else {
+        window.answers[subQuestionId].push(value);
+    }
+    if (isDebug()) console.log(`selectCompoundMultiOption: Saved answer for ${subQuestionId}:`, window.answers[subQuestionId]);
+    renderQuestion();
+};
+
 window.goToNextQuestion = function() {
     const currentIndex = window.currentQuestionIndex || 0;
-    window.currentQuestionIndex = getNextVisibleIndex(currentIndex);
+    const nextIndex = getNextVisibleIndex(currentIndex);
+    if (isDebug()) {
+        console.log("Moving from", currentIndex, "to", nextIndex, "next qid:", window.questionOrder[nextIndex]);
+    }
+    window.currentQuestionIndex = nextIndex;
     renderQuestion();
 };
 
@@ -429,6 +538,67 @@ document.addEventListener('DOMContentLoaded', async function() {
             </div>
         `;
     }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+  // ... existing code ...
+  
+  // Waitlist form handler (main landing)
+  const mainWaitlistForm = document.getElementById('main-waitlist-form');
+  if (mainWaitlistForm) {
+    mainWaitlistForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('main-waitlist-name').value.trim();
+      const email = document.getElementById('main-waitlist-email').value.trim();
+      if (!name || !email) return;
+      fetch(WAITLIST_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'main' })
+      }).then(() => {
+        mainWaitlistForm.reset();
+        alert('¡Gracias por unirte a la lista de espera! Pronto recibirás novedades.');
+      });
+    });
+  }
+
+  // Waitlist form handler (results page)
+  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+  if (resultsWaitlistForm) {
+    resultsWaitlistForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('results-waitlist-name').value.trim();
+      const email = document.getElementById('results-waitlist-email').value.trim();
+      if (!name || !email) return;
+      fetch(WAITLIST_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'results' })
+      }).then(() => {
+        resultsWaitlistForm.reset();
+        alert('¡Gracias por unirte a la lista de espera! Pronto recibirás novedades.');
+      });
+    });
+  }
+
+  // Waitlist form handler (waitlist page)
+  const waitlistForm = document.getElementById('waitlist-form');
+  if (waitlistForm) {
+    waitlistForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const name = document.getElementById('waitlist-name').value.trim();
+      const email = document.getElementById('waitlist-email').value.trim();
+      if (!name || !email) return;
+      fetch(WAITLIST_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'waitlist' })
+      }).then(() => {
+        waitlistForm.reset();
+        alert('¡Gracias por unirte a la lista de espera! Pronto recibirás novedades.');
+      });
+    });
+  }
 });
 
 // =================================================================
