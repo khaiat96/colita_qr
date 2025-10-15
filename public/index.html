@@ -114,25 +114,92 @@
             </div>
         </footer>
     </div>
-    <!-- Survey Page, Results Page, Waitlist Page, Loading Modal... -->
-    <!-- ...[unchanged sections from your current HTML, but include the waitlist forms as shown below for results and waitlist pages]... -->
-    <!-- Results Page waitlist form -->
-    <form id="results-waitlist-form" class="results-footer-form">
-        <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
-        <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
-        <button type="submit" class="btn-primary">
-            Unirme a la lista de espera
-        </button>
-    </form>
-    <!-- Waitlist Page waitlist form -->
-    <form id="waitlist-form" class="waitlist-form">
-        <input type="text" id="waitlist-name" placeholder="Tu nombre" required>
-        <input type="email" id="waitlist-email" placeholder="tu@email.com" required>
-        <button type="submit" class="btn-primary">
-            Unirme a la lista de espera
-        </button>
-    </form>
-    <!-- Loading Modal and script -->
+
+    <!-- Survey Page -->
+    <div id="survey-page" class="page">
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="survey-container">
+            <div class="survey-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-bar"></div>
+                </div>
+                <p class="progress-text" id="progress-text">Pregunta 1 de 8</p>
+            </div>
+            <div id="pro-mode-indicator" class="pro-mode-indicator" style="display: none;">
+                ✨ Versión PRO - Evaluación Avanzada
+            </div>
+            <div class="survey-content" id="survey-content">
+                <!-- Survey questions will be populated here -->
+            </div>
+            <div class="survey-navigation">
+                <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display: none;">
+                    ← Anterior
+                </button>
+                <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Page -->
+    <div id="results-page" class="page">
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="results-container">
+            <div class="results-card" id="results-card">
+                <!-- Results will be populated here -->
+            </div>
+            <div class="email-section">
+                <form id="email-form" class="email-form">
+                    <input type="text" id="user-name" placeholder="Tu nombre" required>
+                    <input type="email" id="user-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Obtener resultados completos por email
+                    </button>
+                </form>
+                <div class="pro-section">
+                    <button class="simplified-pro-button" onclick="startProSurvey()">
+                        Toma la versión PRO
+                    </button>
+                </div>
+            </div>
+            <div class="results-footer">
+                <h3>🌟 Únete a la lista de espera</h3>
+                <form id="results-waitlist-form" class="results-footer-form">
+                    <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
+                    <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Unirme a la lista de espera
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Waitlist Page -->
+    <div id="waitlist-page" class="page">
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="waitlist-container">
+            <div class="waitlist-content">
+                <h2>🌟 Únete a la lista de espera</h2>
+                <form id="waitlist-form" class="waitlist-form">
+                    <input type="text" id="waitlist-name" placeholder="Tu nombre" required>
+                    <input type="email" id="waitlist-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Unirme a la lista de espera
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
     <div id="loading-modal" class="modal">
         <div class="modal-content">
             <div class="spinner"></div>

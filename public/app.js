@@ -164,17 +164,17 @@ window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
-    document.getElementById(pageId).classList.add('active');
+    const target = document.getElementById(pageId);
+    if (target) target.classList.add('active');
 };
 
-
-// Put this in app.js (should already exist)
 window.startSurvey = function() {
     isProMode = false;
     showPage('survey-page');
     currentQuestionIndex = 0;
     answers = {};
-    document.getElementById('pro-mode-indicator').style.display = 'none';
+    const proIndicator = document.getElementById('pro-mode-indicator');
+    if (proIndicator) proIndicator.style.display = 'none';
     renderQuestion();
 };
 
@@ -183,7 +183,8 @@ window.startProSurvey = function() {
     showPage('survey-page');
     currentQuestionIndex = 0;
     answers = {};
-    document.getElementById('pro-mode-indicator').style.display = 'block';
+    const proIndicator = document.getElementById('pro-mode-indicator');
+    if (proIndicator) proIndicator.style.display = 'block';
     renderQuestion();
 };
 
@@ -520,102 +521,4 @@ function showResults(patternKey) {
                 'Mejoría con movimiento suave'
             ]
         },
-        sequedad: {
-            element: 'Agua 💧',
-            pattern: 'Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga',
-            characteristics: [
-                'Sangrado muy escaso o ausente',
-                'Sed y sequedad',
-                'Cansancio, sueño no reparador',
-                'Rigidez articular',
-                'Irritabilidad por agotamiento'
-            ]
-        }
-    };
-    const pattern = elementPatterns[patternKey];
-
-    const resultsCard = document.getElementById('results-card');
-    const characteristicsHtml = pattern.characteristics.map(char => 
-        `<li>${char}</li>`
-    ).join('');
-    const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
-
-    resultsCard.innerHTML = `
-        ${proModeText}
-        <h2>${pattern.element}</h2>
-        <h3>${pattern.pattern}</h3>
-        <ul class="characteristics">
-            ${characteristicsHtml}
-        </ul>
-        <div class="disclaimer">
-            <strong>Nota importante:</strong> Esta evaluación es orientativa y no sustituye el consejo médico profesional. Consulta siempre con un profesional de la salud para cualquier problema menstrual.
-        </div>
-    `;
-
-    showPage('results-page');
-}
-
-// Waitlist form handler for all pages
-document.addEventListener('DOMContentLoaded', async function() {
-    showPage('landing-page');
-    isProMode = false;
-
-    try {
-        await loadSurveyJSON();
-        await loadDecisionMapping();
-        await loadResultsTemplate();
-    } catch (err) {
-        alert('No se pudieron cargar las preguntas del quiz.');
-        console.error(err);
-    }
-
-    // List of waitlist forms on all pages
-    const waitlistForms = [
-        document.getElementById('waitlist-form'),
-        document.getElementById('main-waitlist-form'),
-        document.getElementById('results-waitlist-form')
-    ];
-
-    waitlistForms.forEach(form => {
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-
-                // Find the name/email input fields in the form
-                const nameInput = form.querySelector('input[type="text"], input[name="name"]');
-                const emailInput = form.querySelector('input[type="email"], input[name="email"]');
-                const name = nameInput ? nameInput.value.trim() : '';
-                const email = emailInput ? emailInput.value.trim() : '';
-
-                if (!name || !email) {
-                    alert('Por favor ingresa tu nombre y correo.');
-                    return;
-                }
-
-                // Optionally disable button to prevent double submit
-                const submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) submitBtn.disabled = true;
-
-                try {
-                    const resp = await fetch(WAITLIST_WEBHOOK, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email })
-                    });
-
-                    if (resp.ok) {
-                        alert('¡Gracias por unirte a la lista de espera!');
-                        form.reset();
-                        showPage('landing-page'); // Or show confirmation
-                    } else {
-                        throw new Error('No se pudo enviar tu información.');
-                    }
-                } catch (err) {
-                    alert('Error al enviar. Intenta de nuevo.');
-                }
-
-                if (submitBtn) submitBtn.disabled = false;
-            });
-        }
-    });
-});
+       
