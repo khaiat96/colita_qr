@@ -69,7 +69,7 @@
       "swipe_navigation": true,
       "min_tap_target_px": 48,
       "option_style_single_choice": "chips",
-      "option_style_multi_select": "chips",
+      "option_style_multiselect": "chips",
       "compact_help_text": true,
       "details_on_tap": {
         "enabled": true,
@@ -278,7 +278,7 @@
     },
     {
       "id": "P1_amenorrea_contexto",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Factores que aplican (opcional) 🧩",
       "help_text": "Selecciona los que apliquen.",
       "visible_if": {
@@ -370,7 +370,7 @@
     },
     {
       "id": "P2",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "En los últimos 3 ciclos, ¿qué síntomas aplican? 🩸",
       "help_text": "Selecciona hasta 3. Si es abundante, elige el tipo que mejor lo describe.",
       "options": [
@@ -712,7 +712,7 @@
         },
         {
           "id": "P2_textura",
-          "type": "multi_select",
+          "type": "multiselect",
           "title": "Textura del flujo en días intensos 🧪",
           "help_text": "Puedes elegir más de una.",
           "options": [
@@ -962,7 +962,7 @@
         },
         {
           "id": "P2q_dolor_empeora",
-          "type": "multi_select",
+          "type": "multiselect",
           "title": "¿Qué empeora tus cólicos? (elige hasta 2) ⚠️",
           "help_text": "Puedes seleccionar hasta dos opciones.",
           "options": [
@@ -1039,7 +1039,7 @@
     },
     {
       "id": "P3",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Señales del cuerpo que notas (últimos 3 ciclos) 🧭",
       "help_text": "Selecciona hasta 3.",
       "options": [
@@ -1180,7 +1180,7 @@
     },
     {
       "id": "P4",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Estados emocionales (últimos 3 ciclos) 💬",
       "help_text": "Selecciona hasta 2.",
       "options": [
@@ -1271,7 +1271,7 @@
     },
     {
       "id": "P7_durante",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "¿Qué días del periodo son más intensos? 🔎",
       "help_text": "Selecciona todos los días. (1 = primer día del sangrado)",
       "visible_if": {
@@ -1315,7 +1315,7 @@
     },
     {
       "id": "P5",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Antojos o preferencias de alimentos 🍫🍜🍉",
       "help_text": "Elige todos los que apliquen.",
       "options": [
@@ -1412,7 +1412,7 @@
     },
     {
       "id": "P6",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Tu patrón de energía general ⚡",
       "help_text": "Selecciona hasta 2.",
       "options": [
@@ -1448,7 +1448,7 @@
     },
     {
       "id": "P8_signos_corporales",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Señales del cuerpo (opcional) 🧩",
       "help_text": "Si no viste tus señales arriba, selecciona hasta 3.",
       "visible_if": {
@@ -1519,7 +1519,7 @@
     },
     {
       "id": "P8_sequedad_detalle",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Si notas sequedad, ¿dónde lo sientes más? (opcional) 🌵",
       "visible_if": {
         "any": [
@@ -1586,7 +1586,7 @@
     },
     {
       "id": "P8_que_alivia_sequedad",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "Cuando hay sequedad, ¿qué te alivia? 💦 (opcional)",
       "visible_if": {
         "any": [
@@ -1633,7 +1633,7 @@
     },
     {
       "id": "P8_contexto_sequedad",
-      "type": "multi_select",
+      "type": "multiselect",
       "title": "¿Qué empeora tu sequedad? 🌬️ (opcional)",
       "options": [
         {
