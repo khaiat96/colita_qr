@@ -413,35 +413,25 @@ function renderQuestion() {
         `;
     }
 
-    // Navigation buttons
-    html += `<div class="navigation-buttons">`;
-
-    // Back button
+    // Navigation buttons (DYNAMIC, replaces static HTML nav!)
     const prevIndex = getPrevVisibleIndex(currentIndex);
-    if (prevIndex >= 0) {
-        html += `<button class="btn-secondary" onclick="goToPreviousQuestion()">← Anterior</button>`;
-    }
 
     // Next button logic ("compound" support!)
     let hasAnswer;
     if (question.type === 'compound') {
         const items = question.items || question.questions || [];
         hasAnswer = compoundAllRequiredAnswered(items, answers);
+    } else if (question.type === "multi_select" && question.validation && question.validation.min_selected === 0) {
+        hasAnswer = true;
     } else {
         hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
-        // Always allow next for optional multi_select questions
-        if (
-            question.type === "multi_select" &&
-            question.validation &&
-            question.validation.min_selected === 0
-        ) {
-            hasAnswer = true;
-        }
-    }
-    if (hasAnswer || question.type === 'slider') {
-        html += `<button class="btn-primary" onclick="goToNextQuestion()">Siguiente →</button>`;
     }
 
+    html += `<div class="navigation-buttons">`;
+    if (prevIndex >= 0) {
+        html += `<button class="btn-secondary" onclick="goToPreviousQuestion()">← Anterior</button>`;
+    }
+    html += `<button class="btn-primary" onclick="goToNextQuestion()" ${hasAnswer ? '' : 'disabled'}>Siguiente →</button>`;
     html += `</div>`;
 
     document.getElementById('survey-content').innerHTML = html;
