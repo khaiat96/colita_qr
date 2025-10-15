@@ -124,7 +124,7 @@ function renderQuestion() {
     }
 
     // Defensive patch for multi_select answer initialization
-    if (question.type === "multi_select" && !answers[qId]) {
+    if (question.type === "multiselect" && !answers[qId]) {  // ✅ Fixed: removed underscore
         answers[qId] = [];
     }
 
@@ -135,9 +135,9 @@ function renderQuestion() {
     let optionsHtml = '';
 
     // Handle multi_select, single_choice, slider, etc.
-    if (question.type === 'multi_select' || question.type === 'single_choice') {
+if (question.type === 'multiselect' || question.type === 'single_choice') {  // ✅ Fixed
         question.options.forEach((option, index) => {
-            const isMultiSelect = question.type === 'multi_select';
+const isMultiSelect = question.type === 'multiselect';  // ✅ Fixed
             const optionClass = isMultiSelect ? 'option multi-select' : 'option';
             const selected = isMultiSelect 
                 ? (answers[question.id] && answers[question.id].includes(option.value)) 
@@ -249,9 +249,9 @@ function updateNavigation() {
         currentAnswer: answers[qId]
     });
 
-    if (question.type === 'multi_select') {
+    if (question.type === 'multiselect') {  // ✅ Fixed: removed underscore
         const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
-        const minSelected = question.validation?.min_selected ?? 1;
+        const minSelected = question.validation?.minselected ?? 1;  // ✅ Fixed: removed underscore
 
         if (minSelected === 0) {
             // Accept both [] and undefined as "valid" for navigation
@@ -466,16 +466,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     isProMode = false;
 
     try {
+        console.log('🔍 Loading survey_questions-combined.json...');
         const resp = await fetch('survey_questions-combined.json');
-        if (!resp.ok) throw new Error("survey_questions-combined.json not found");
+        console.log('📡 Fetch response:', resp.status, resp.statusText, resp.url);
+        
+        if (!resp.ok) {
+            throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+        }
+        
+        console.log('📄 Parsing JSON...');
         const surveyData = await resp.json();
+        console.log('✅ Survey data loaded:', surveyData);
+        console.log('📊 Questions found:', surveyData.questions?.length);
+        console.log('📋 Question order:', surveyData.question_order?.length);
+        
         surveyQuestions = surveyData.questions;
         questionOrder = surveyData.question_order;
+        console.log('✅ Data assigned successfully');
+        
     } catch (err) {
-        alert('No se pudieron cargar las preguntas del quiz.');
-        console.error(err);
+        console.error('❌ Detailed loading error:', err);
+        console.error('❌ Error stack:', err.stack);
+        alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     }
-
-    // All button handlers are attached to window above so inline onclick works.
-    // Your waitlist & email form logic can remain as before.
 });
