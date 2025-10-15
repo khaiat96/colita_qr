@@ -421,19 +421,17 @@
       },
       "modes": [
         "regular",
-        "pro"
       ]
     },
-{
+    {
       "id": "P2_spotting_frecuencia",
       "type": "single_choice",
       "title": "Si tuviste manchado, ¿con qué frecuencia? 📍",
       "help_text": "Opcional (afina lectura).",
       "visible_if": {
         "question_id": "P2",
-        "includes_any": [
-          "Manchado entre reglas",
-          "Sangrado después de relaciones"
+        "includes": [
+          "Manchado entre reglas"
         ]
       },
       "options": [
@@ -456,34 +454,29 @@
     },
     {
       "id": "P2_spotting_context",
-      "type": "multi_select",
-      "title": "Si has notado manchados, ¿cuándo aparecen? (opcional) 🧭",
-      "help_text": "Puedes elegir más de una.",
+      "type": "single_choice",
+      "title": "En días con manchado, ¿hubo calor/irritabilidad? 🌡️",
+      "help_text": "Opcional. Identifica contexto de calor.",
       "visible_if": {
         "question_id": "P2",
-        "includes_any": [
-          "Manchado entre reglas",
-          "Sangrado después de relaciones"
+        "includes": [
+          "Manchado entre reglas"
         ]
       },
       "options": [
         {
-          "label": "Antes de la regla (1–3 días)",
-          "value": "antes"
+          "label": "Sí, calor o irritabilidad",
+          "value": "si_calor_irritabilidad"
         },
         {
-          "label": "Después de la regla (1–3 días)",
-          "value": "despues"
+          "label": "No",
+          "value": "no"
         },
         {
-          "label": "Entre periodos",
-          "value": "entre"
+          "label": "No estoy segura",
+          "value": "no_seguro"
         }
       ],
-      "validation": {
-        "min_selected": 0,
-        "max_selected": 3
-      },
       "modes": [
         "pro"
       ]
@@ -733,7 +726,7 @@
             }
           ],
           "validation": {
-            "min_selected": 0,
+            "min_selected": 1,
             "max_selected": 2
           },
           "modes": [
@@ -1829,6 +1822,7 @@
     "P2",
     "P2_spotting_frecuencia",
     "P2_spotting_context",
+    "P2_spot_pre_post",
     "P2_escaso_frecuencia",
     "P2_hinchazon_severidad",
     "P2_fatiga_severidad",
