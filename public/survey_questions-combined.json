@@ -308,8 +308,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 5
+        "minselected": 0,
+        "maxselected": 5
       }
     },
     {
@@ -416,8 +416,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 3
+        "minselected": 0,
+        "maxselected": 3
       },
       "modes": [
         "regular"
@@ -726,8 +726,8 @@
             }
           ],
           "validation": {
-            "min_selected": 1,
-            "max_selected": 2
+            "minselected": 1,
+            "maxselected": 2
           },
           "modes": [
             "regular",
@@ -1000,8 +1000,8 @@
             }
           ],
           "validation": {
-            "min_selected": 0,
-            "max_selected": 2
+            "minselected": 0,
+            "maxselected": 2
           }
         },
         {
@@ -1077,8 +1077,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 3
+        "minselected": 0,
+        "maxselected": 3
       },
       "modes": [
         "regular",
@@ -1210,8 +1210,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 2
+        "minselected": 0,
+        "maxselected": 2
       },
       "modes": [
         "regular",
@@ -1309,8 +1309,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 7
+        "minselected": 0,
+        "maxselected": 7
       }
     },
     {
@@ -1349,7 +1349,7 @@
         }
       ],
       "validation": {
-        "min_selected": 0
+        "minselected": 0
       },
       "value_map": [
         {
@@ -1438,8 +1438,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 2
+        "minselected": 0,
+        "maxselected": 2
       },
       "modes": [
         "regular",
@@ -1486,8 +1486,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 3
+        "minselected": 0,
+        "maxselected": 3
       },
       "modes": [
         "regular",
@@ -1561,8 +1561,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 5,
+        "minselected": 0,
+        "maxselected": 5,
         "soft_required_when": {
           "all": [
             {
@@ -1624,8 +1624,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 4
+        "minselected": 0,
+        "maxselected": 4
       },
       "modes": [
         "pro"
@@ -1654,8 +1654,8 @@
         }
       ],
       "validation": {
-        "min_selected": 0,
-        "max_selected": 4
+        "minselected": 0,
+        "maxselected": 4
       },
       "modes": [
         "pro"
