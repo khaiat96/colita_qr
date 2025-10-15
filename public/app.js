@@ -3,6 +3,12 @@ const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 
+// Debug mode: Enable with window.DEBUG_SURVEY = true or ?debug=1
+function isDebug() {
+    if (typeof window.DEBUG_SURVEY !== 'undefined') return window.DEBUG_SURVEY;
+    return window.location.search.includes('debug=1');
+}
+
 // Initialize Supabase client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -51,67 +57,130 @@ async function loadResultsTemplate() {
 function isQuestionVisible(question, answers) {
     if (!question || !question.visible_if) return true;
     const cond = question.visible_if;
-    if (cond.question_id && typeof cond.equals !== "undefined")
+    if (isDebug()) console.log(`Checking visible_if for ${question.id}`, {answers, cond});
+
+    // equals (strict string match)
+    if (cond.question_id && typeof cond.equals !== "undefined") {
+        if (isDebug()) console.log(`Comparing answer: "${answers[cond.question_id]}" with expected: "${cond.equals}"`);
         return answers[cond.question_id] === cond.equals;
-    if (cond.question_id && typeof cond.includes !== "undefined") {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) return ans.includes(cond.includes);
-        return ans === cond.includes;
     }
-    if (cond.all && Array.isArray(cond.all))
+    // includes (array or single)
+    if (cond.question_id && cond.includes) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(cond.includes)) {
+            if (Array.isArray(ans)) return cond.includes.some(val => ans.includes(val));
+            return cond.includes.includes(ans);
+        } else {
+            if (Array.isArray(ans)) return ans.includes(cond.includes);
+            return ans === cond.includes;
+        }
+    }
+    // includes_any (array)
+    if (cond.question_id && cond.includes_any) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) return cond.includes_any.some(val => ans.includes(val));
+        return cond.includes_any.includes(ans);
+    }
+    // not_includes_any (array)
+    if (cond.question_id && cond.not_includes_any) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) return cond.not_includes_any.every(val => !ans.includes(val));
+        return !cond.not_includes_any.includes(ans);
+    }
+    // not_in (array)
+    if (cond.question_id && cond.not_in) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) return cond.not_in.every(val => !ans.includes(val));
+        return !cond.not_in.includes(ans);
+    }
+    // all: array of visible_if conditions (for compound cases)
+    if (cond.all && Array.isArray(cond.all)) {
         return cond.all.every(subCond => isQuestionVisible({visible_if: subCond}, answers));
-    if (cond.any && Array.isArray(cond.any))
+    }
+    // any: array of visible_if conditions (for compound cases)
+    if (cond.any && Array.isArray(cond.any)) {
         return cond.any.some(subCond => isQuestionVisible({visible_if: subCond}, answers));
+    }
+    // Default: show
     return true;
 }
 
-// Helper: Find next visible question index
-function getNextVisibleIndex(fromIdx) {
-    let idx = fromIdx + 1;
-    while (idx < window.questionOrder.length) {
-        const qid = window.questionOrder[idx];
-        const q = window.surveyQuestions.find(q => q.id === qid);
-        if (isQuestionVisible(q, window.answers)) return idx;
-        idx++;
+// Helper to get next visible index
+function getNextVisibleIndex(fromIndex) {
+    let idx = fromIndex + 1;
+    while (
+      idx < window.questionOrder.length &&
+      !isQuestionVisible(
+        window.surveyQuestions.find(q => q.id === window.questionOrder[idx]),
+        window.answers
+      )
+    ) {
+      if (isDebug()) console.log(`Skipping hidden question at ${idx} (${window.questionOrder[idx]})`);
+      idx++;
     }
     return idx;
 }
 
-// Helper: Find previous visible question index (for back button)
-function getPrevVisibleIndex(fromIdx) {
-    let idx = fromIdx - 1;
-    while (idx >= 0) {
-        const qid = window.questionOrder[idx];
-        const q = window.surveyQuestions.find(q => q.id === qid);
-        if (isQuestionVisible(q, window.answers)) return idx;
-        idx--;
+// Helper to get previous visible index
+function getPrevVisibleIndex(fromIndex) {
+    let idx = fromIndex - 1;
+    while (
+      idx >= 0 &&
+      !isQuestionVisible(
+        window.surveyQuestions.find(q => q.id === window.questionOrder[idx]),
+        window.answers
+      )
+    ) {
+      idx--;
     }
     return idx;
+}
+
+async function fetchWaitlist() {
+    let { data, error } = await supabase
+        .from('waitlist')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+    if (error) {
+        console.error('Error fetching waitlist:', error);
+        return [];
+    }
+    return data; // An array of waitlist entries
 }
 
 // Main render function
 function renderQuestion() {
-    const currentIndex = window.currentQuestionIndex || 0;
-    if (currentIndex >= window.questionOrder.length) {
+    const questionOrder = window.questionOrder || [];
+    const surveyQuestions = window.surveyQuestions || [];
+    const answers = window.answers || {};
+    let currentIndex = window.currentQuestionIndex || 0;
+
+    // Find the next visible question (skip if needed)
+    while (currentIndex < questionOrder.length) {
+        const qId = questionOrder[currentIndex];
+        const question = surveyQuestions.find(q => q.id === qId);
+        if (isQuestionVisible(question, answers)) break;
+        if (isDebug()) console.log(`renderQuestion: Skipping hidden question idx=${currentIndex}, id=${qId}`);
+        currentIndex++;
+    }
+
+    window.currentQuestionIndex = currentIndex;
+
+    if (currentIndex >= questionOrder.length) {
         document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
         return;
     }
-    const qId = window.questionOrder[currentIndex];
-    const question = window.surveyQuestions.find(q => q.id === qId);
 
-    // If not visible, auto-skip to next visible question
-    if (!isQuestionVisible(question, window.answers)) {
-        const nextIdx = getNextVisibleIndex(currentIndex);
-        if (nextIdx < window.questionOrder.length) {
-            window.currentQuestionIndex = nextIdx;
-            renderQuestion();
-        } else {
-            document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
-        }
-        return;
+    const qId = questionOrder[currentIndex];
+    const question = surveyQuestions.find(q => q.id === qId);
+
+    if (isDebug()) {
+        console.log(`Rendering question idx=${currentIndex}, id=${qId}, answers=`, window.answers);
     }
 
     let optionsHtml = "";
+
     if (question.type === 'multi_select' || question.type === 'single_choice') {
         question.options.forEach(option => {
             optionsHtml += `
@@ -123,10 +192,10 @@ function renderQuestion() {
     } else if (question.type === 'slider') {
         optionsHtml = `
             <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
-                value="${window.answers[question.id] || question.min}" id="slider-input"
+                value="${answers[question.id] || question.min}" id="slider-input"
                 oninput="document.getElementById('slider-value').innerText = this.value"
                 onchange="selectSlider('${question.id}', this.value)">
-            <span id="slider-value">${window.answers[question.id] || question.min}</span>
+            <span id="slider-value">${answers[question.id] || question.min}</span>
         `;
     } else {
         optionsHtml = `<div>No options for this question type.</div>`;
@@ -147,13 +216,16 @@ function renderQuestion() {
     document.getElementById('next-btn').disabled = !(window.answers[qId]);
 }
 
-// Always skip hidden questions after answer
+// Handles single/multi-select answers and always skips to next visible
 window.selectOption = function(value, isMultiSelect) {
     const currentIndex = window.currentQuestionIndex || 0;
-    const qId = window.questionOrder[currentIndex];
-    const question = window.surveyQuestions.find(q => q.id === qId);
+    const questionOrder = window.questionOrder || [];
+    const surveyQuestions = window.surveyQuestions || [];
+    const qId = questionOrder[currentIndex];
+    const question = surveyQuestions.find(q => q.id === qId);
 
     if (!question) return;
+
     if (isMultiSelect) {
         if (!window.answers[qId]) window.answers[qId] = [];
         const arr = window.answers[qId];
@@ -165,17 +237,19 @@ window.selectOption = function(value, isMultiSelect) {
     } else {
         window.answers[qId] = value;
     }
-    // Jump to next visible question!
-    const nextIdx = getNextVisibleIndex(currentIndex);
-    window.currentQuestionIndex = nextIdx;
+
+    if (isDebug()) console.log(`selectOption: Saved answer for ${qId}:`, window.answers[qId]);
+
+    // Move to next visible question!
+    window.currentQuestionIndex = getNextVisibleIndex(currentIndex);
     renderQuestion();
 };
 
 window.selectSlider = function(qId, value) {
     window.answers[qId] = Number(value);
+    if (isDebug()) console.log(`selectSlider: Saved slider for ${qId}:`, window.answers[qId]);
     // Jump to next visible question!
-    const nextIdx = getNextVisibleIndex(window.currentQuestionIndex);
-    window.currentQuestionIndex = nextIdx;
+    window.currentQuestionIndex = getNextVisibleIndex(window.currentQuestionIndex);
     renderQuestion();
 };
 
@@ -249,3 +323,4 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
+
