@@ -37,7 +37,6 @@
                     Toma el quiz
                 </button>
             </section>
-        
             <!-- Elements Section -->
             <section class="elements-section">
                 <h2>Los 4 elementos en tu ciclo</h2>
@@ -117,7 +116,6 @@
 
     <!-- Results Page -->
     <div id="results-page" class="page">
-        <!-- Your results page content goes here -->
         <header class="app-header">
             <h1 class="brand-name">🌿 Colita de Rana</h1>
         </header>
@@ -133,5 +131,63 @@
             <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
         </div>
     </div>
+
+    <!-- Survey Page (example, add your survey logic) -->
+    <div id="survey-page" class="page">
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="survey-container">
+            <div class="survey-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-bar"></div>
+                </div>
+                <p class="progress-text" id="progress-text">Pregunta 1 de 8</p>
+            </div>
+            <div id="pro-mode-indicator" class="pro-mode-indicator" style="display: none;">
+                ✨ Versión PRO - Evaluación Avanzada
+            </div>
+            <div class="survey-content" id="survey-content">
+                <!-- Survey questions will be populated here -->
+            </div>
+            <div class="survey-navigation">
+                <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display: none;">
+                    ← Anterior
+                </button>
+                <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Waitlist Page (optional, for separate waitlist views) -->
+    <div id="waitlist-page" class="page">
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="waitlist-container">
+            <div class="waitlist-content">
+                <h2>🌟 Únete a la lista de espera</h2>
+                <form id="waitlist-form" class="waitlist-form">
+                    <input type="text" id="waitlist-name" placeholder="Tu nombre" required>
+                    <input type="email" id="waitlist-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Unirme a la lista de espera
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="modal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p>Procesando tu evaluación...</p>
+        </div>
+    </div>
+    <!-- IMPORTANT: script tag must be at the end of body -->
+    <script src="app.js"></script>
 </body>
 </html>
