@@ -448,14 +448,14 @@
         {
           "label": "≥5 veces / 3 ciclos",
           "value": "spot_frecuente"
-        },
+        }
       ],
       "modes": [
         "pro"
-      ],
+      ]
     },
     {
-      "id": "P2_spot_pre_post",
+      "id": "P2_spotting_context",
       "type": "multi_select",
       "title": "Si has notado manchados, ¿cuándo aparecen? (opcional) 🧭",
       "help_text": "Puedes elegir más de una.",
@@ -464,35 +464,8 @@
         "includes_any": [
           "Manchado entre reglas",
           "Sangrado después de relaciones"
-        ]
+        ],
       },
-      "options": [
-        {
-          "label": "Antes de la regla (1–3 días)",
-          "value": "antes"
-        },
-        {
-          "label": "Después de la regla (1–3 días)",
-          "value": "despues"
-        },
-        {
-          "label": "Entre periodos",
-          "value": "entre"
-        }
-      ],
-      "validation": {
-        "min_selected": 0,
-        "max_selected": 3
-      },
-      "modes": [
-        "pro"
-      ]
-    }
-    {
-      "id": "P2_spot_pre_post",
-      "type": "multi_select",
-      "title": "Si has notado manchados, ¿cuándo aparecen? (opcional) 🧭",
-      "help_text": "Puedes elegir más de una.",
       "options": [
         {
           "label": "Antes de la regla (1–3 días)",
@@ -1856,7 +1829,6 @@
     "P2",
     "P2_spotting_frecuencia",
     "P2_spotting_context",
-    "P2_spot_pre_post",
     "P2_escaso_frecuencia",
     "P2_hinchazon_severidad",
     "P2_fatiga_severidad",
