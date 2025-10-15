@@ -13,8 +13,6 @@
         <header class="app-header">
             <h1 class="brand-name">🌿 Colita de Rana</h1>
         </header>
-
-
         <main class="container">
             <!-- Hero Section -->
             <section class="hero">
@@ -25,13 +23,15 @@
                 <p class="hero-subtitle">
                     Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México. Cada mujer tiene un patrón único de síntomas que merece una medicina única.
                 </p>
-                
-
-                
                 <button class="btn-primary" onclick="scrollToWaitlist()">
                     Llévame a la lista de espera
                 </button>
             </section>
+
+        <!-- LOGO BETWEEN SECTIONS -->
+        <div class="logo-between-sections">
+         <img src="./private/assets/logo.png" alt="Colita de Rana Logo" width="120" height="120">
+        </div>
 
             <!-- Secondary Section -->
             <section class="secondary-section">
@@ -43,14 +43,12 @@
                     Toma el quiz
                 </button>
             </section>
-
             <!-- Elements Section -->
             <section class="elements-section">
                 <h2>Los 4 elementos en tu ciclo</h2>
                 <p class="section-subtitle">
                     Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.
                 </p>
-
                 <div class="elements-grid">
                     <div class="element-card">
                         <h3>Aire 🌬️</h3>
@@ -61,7 +59,6 @@
                             <li>Mejora con respiración y estiramientos</li>
                         </ul>
                     </div>
-
                     <div class="element-card">
                         <h3>Fuego 🔥</h3>
                         <p class="element-pattern">Calor</p>
@@ -71,7 +68,6 @@
                             <li>Mejora con frescor e hidratación</li>
                         </ul>
                     </div>
-
                     <div class="element-card">
                         <h3>Tierra ⛰️</h3>
                         <p class="element-pattern">Retención (humedad)</p>
@@ -81,7 +77,6 @@
                             <li>Mejora con movimiento y ligereza</li>
                         </ul>
                     </div>
-
                     <div class="element-card">
                         <h3>Agua 💧</h3>
                         <p class="element-pattern">Sequedad</p>
@@ -93,7 +88,6 @@
                     </div>
                 </div>
             </section>
-
             <!-- Waitlist Section -->
             <section id="waitlist-section" class="waitlist-section">
                 <div class="waitlist-content">
@@ -101,16 +95,14 @@
                     <p class="waitlist-description">
                         Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
                     </p>
-
                     <div class="benefits-grid">
                         <div class="benefit-item">💰 Descuento de miembro fundador</div>
                         <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
                         <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
                         <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
                     </div>
-
                     <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-
+                    <!-- Waitlist Form for landing page -->
                     <form id="main-waitlist-form" class="main-waitlist-form">
                         <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
                         <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
@@ -121,13 +113,29 @@
                 </div>
             </section>
         </main>
-
-        <!-- Medical Disclaimer -->
         <footer class="medical-disclaimer">
             <div class="container">
                 <p>Este contenido es informativo y no sustituye atención médica.</p>
             </div>
         </footer>
+    </div>
+
+    <!-- Results Page -->
+    <div id="results-page" class="page">
+        <header class="app-header">
+            <h1 class="brand-name">🌿 Colita de Rana</h1>
+        </header>
+        <div class="results-container">
+            <div class="results-card" id="results-card">
+                <!-- Results will be populated here by JS -->
+            </div>
+            <form id="results-waitlist-form" class="results-footer-form">
+                <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
+                <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
+                <button type="submit" class="btn-primary">Unirme a la lista de espera</button>
+            </form>
+            <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
+        </div>
     </div>
 
     <!-- Survey Page -->
@@ -142,88 +150,21 @@
                 </div>
                 <p class="progress-text" id="progress-text">Pregunta 1 de 8</p>
             </div>
-
             <div id="pro-mode-indicator" class="pro-mode-indicator" style="display: none;">
                 ✨ Versión PRO - Evaluación Avanzada
             </div>
-            
             <div class="survey-content" id="survey-content">
-                <!-- Survey questions will be populated here -->
+                <!-- Survey questions and navigation buttons will be rendered here by JS -->
             </div>
-
-            <div class="survey-navigation">
+            <!-- REMOVE STATIC NAVIGATION BUTTONS HERE -->
+            <!-- <div class="survey-navigation">
                 <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display: none;">
                     ← Anterior
                 </button>
                 <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
                     Siguiente →
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Results Page -->
-    <div id="results-page" class="page">
-        <header class="app-header">
-            <h1 class="brand-name">🌿 Colita de Rana</h1>
-        </header>
-        <div class="results-container">
-            <div class="results-card" id="results-card">
-                <!-- Results will be populated here -->
-            </div>
-
-            <div class="email-section">
-                <div class="email-header">
-                    <h3 class="email-title">Obtén tus resultados completos</h3>
-                    <p class="email-description">Recibe tu análisis detallado con consejos personalizados por fase del ciclo.</p>
-                </div>
-                
-                <div class="email-benefits">
-                    <div class="benefit-item">📋 Análisis completo de tu patrón energético</div>
-                    <div class="benefit-item">🌙 Consejos específicos por fase del ciclo</div>
-                    <div class="benefit-item">🌿 Recomendaciones herbales personalizadas</div>
-                    <div class="benefit-item">📚 Guía de estilo de vida adaptada</div>
-                </div>
-                
-                <form id="email-form" class="email-form">
-                    <input type="text" id="user-name" placeholder="Tu nombre" required>
-                    <input type="email" id="user-email" placeholder="tu@email.com" required>
-                    <button type="submit" class="btn-primary">
-                        Obtener resultados completos por email
-                    </button>
-                </form>
-                
-                <div class="pro-section">
-                    <button class="simplified-pro-button" onclick="startProSurvey()">
-                        Toma la versión PRO
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Results Page Footer -->
-            <div class="results-footer">
-                <h3>🌟 Únete a la lista de espera</h3>
-                <p class="waitlist-description">
-                    Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
-                </p>
-
-                <div class="benefits-grid">
-                    <div class="benefit-item">💰 Descuento de miembro fundador</div>
-                    <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
-                    <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
-                    <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
-                </div>
-
-                <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-
-                <form id="results-waitlist-form" class="results-footer-form">
-                    <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
-                    <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
-                    <button type="submit" class="btn-primary">
-                        Unirme a la lista de espera
-                    </button>
-                </form>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -235,17 +176,6 @@
         <div class="waitlist-container">
             <div class="waitlist-content">
                 <h2>🌟 Únete a la lista de espera</h2>
-                <p>Recibe acceso temprano al primer sistema de herbolaria personalizada para tu ciclo menstrual en México.</p>
-
-                <div class="benefits-list">
-                    <div class="benefit">💰 Descuento de miembro fundador</div>
-                    <div class="benefit">🔔 Notificaciones de lanzamiento</div>
-                    <div class="benefit">🎯 Acceso prioritario a tu kit personalizado</div>
-                    <div class="benefit">📚 Guías gratuitas de salud menstrual</div>
-                </div>
-
-                <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-
                 <form id="waitlist-form" class="waitlist-form">
                     <input type="text" id="waitlist-name" placeholder="Tu nombre" required>
                     <input type="email" id="waitlist-email" placeholder="tu@email.com" required>
@@ -264,7 +194,7 @@
             <p>Procesando tu evaluación...</p>
         </div>
     </div>
-
+    <!-- IMPORTANT: script tag must be at the end of body -->
     <script src="app.js"></script>
 </body>
 </html>

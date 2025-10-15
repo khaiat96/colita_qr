@@ -1,4 +1,4 @@
-// Configuration
+// Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
@@ -10,6 +10,8 @@ let answers = {};
 let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
+
+console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -175,9 +177,10 @@ function renderQuestion() {
         return;
     }
 
-    // ✅ FIX: Initialize answers[qId] for multiselect BEFORE rendering
+    // Initialize answers for multiselect
     if (question.type === "multiselect" && !answers[qId]) {
         answers[qId] = [];
+        console.log(`✅ Initialized ${qId} as empty array`);
     }
 
     const surveyContent = document.getElementById('survey-content');
@@ -281,67 +284,65 @@ function updateProgress() {
     document.getElementById('progress-text').textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
 }
 
-// ✅ FIXED: updateNavigation function
+// ✅ CRITICAL FIX: Updated navigation logic
 function updateNavigation() {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
     let hasAnswer = false;
 
-    // 🔍 DEBUG: Log what's happening
-    console.log('🔍 Navigation Debug:', {
-        qId,
-        type: question.type,
-        validation: question.validation,
-        currentAnswer: answers[qId],
-        answerType: typeof answers[qId],
-        answerIsArray: Array.isArray(answers[qId])
-    });
+    console.log('📍 Navigation Check:', qId, 'type:', question.type);
 
     if (question.type === 'multiselect') {
-        // ✅ FIX: Ensure we always get an array
         const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
         const minSelected = question.validation?.minselected ?? 1;
 
-        console.log('🔍 Multiselect Debug:', {
+        console.log('🔍 Multiselect:', {
+            qId,
             selected,
             selectedLength: selected.length,
             minSelected,
-            minSelectedIs0: minSelected === 0
+            validation: question.validation
         });
 
-        // ✅ FIX: If minselected is 0, question is optional - always enable Next
+        // ✅ CRITICAL: If minselected is 0, always enable Next
         if (minSelected === 0) {
             hasAnswer = true;
-            console.log('✅ minselected=0: Question is OPTIONAL, enabling Next button');
+            console.log('✅✅✅ minselected=0: OPTIONAL QUESTION - ENABLING NEXT BUTTON');
         } else {
             hasAnswer = selected.length >= minSelected;
-            console.log(`${hasAnswer ? '✅' : '❌'} minselected=${minSelected}: Need ${minSelected}, have ${selected.length}`);
+            console.log(`${hasAnswer ? '✅' : '❌'} Need ${minSelected}, have ${selected.length}`);
         }
     } else if (question.type === 'single_choice') {
         hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+        console.log('Single choice:', hasAnswer ? '✅ has answer' : '❌ no answer');
     } else if (question.type === 'slider') {
         hasAnswer = typeof answers[qId] === 'number';
+        console.log('Slider:', hasAnswer ? '✅ has value' : '❌ no value');
     } else {
         hasAnswer = !!answers[qId];
     }
 
-    console.log('🔍 Final hasAnswer:', hasAnswer);
+    console.log('🎯 Final hasAnswer:', hasAnswer);
 
     // Enable/disable next button
-    document.getElementById('next-btn').disabled = !hasAnswer;
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+        nextBtn.disabled = !hasAnswer;
+        console.log('🔘 Next button disabled:', nextBtn.disabled);
+    }
 
     // Show/hide back button  
-    document.getElementById('back-btn').style.display = 
-        getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) {
+        backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
+    }
 }
 
 // ==================== NAVIGATION ====================
 
 window.nextQuestion = function() {
+    console.log('⏭️ Next clicked from:', questionOrder[currentQuestionIndex]);
     let nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-    while (nextIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[nextIdx]), answers)) {
-        nextIdx = getNextVisibleQuestionIndex(nextIdx);
-    }
     if (nextIdx > -1) {
         currentQuestionIndex = nextIdx;
         renderQuestion();
@@ -351,17 +352,15 @@ window.nextQuestion = function() {
 };
 
 window.previousQuestion = function() {
+    console.log('⏮️ Previous clicked from:', questionOrder[currentQuestionIndex]);
     let prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
-    while (prevIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[prevIdx]), answers)) {
-        prevIdx = getPrevVisibleQuestionIndex(prevIdx);
-    }
     if (prevIdx > -1) {
         currentQuestionIndex = prevIdx;
         renderQuestion();
     }
 };
 
-// ==================== RESULTS CALCULATION ====================
+// ==================== RESULTS ====================
 
 function calculateResults() {
     const scores = {
@@ -495,8 +494,6 @@ function showResults(patternKey) {
     showPage('results-page');
 }
 
-// ==================== PAGE NAVIGATION ====================
-
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -515,29 +512,37 @@ window.startSurvey = function() {
     renderQuestion();
 };
 
-// ==================== INITIALIZATION ====================
-
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
     isProMode = false;
 
     try {
-        console.log('🔍 Loading survey_questions-combined.json...');
+        console.log('🔍 Loading survey questions...');
         const resp = await fetch('survey_questions-combined.json');
-        console.log('📡 Fetch response:', resp.status, resp.statusText);
         
         if (!resp.ok) {
             throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
         }
         
         const surveyData = await resp.json();
-        console.log('✅ Survey data loaded:', surveyData.questions?.length, 'questions');
-        
         surveyQuestions = surveyData.questions;
         questionOrder = surveyData.question_order;
         
+        console.log('✅ Loaded', surveyQuestions.length, 'questions');
+        
+        // Debug P2
+        const p2 = surveyQuestions.find(q => q.id === 'P2');
+        if (p2) {
+            console.log('🎯 P2 Config:', {
+                id: p2.id,
+                type: p2.type,
+                validation: p2.validation,
+                optionsCount: p2.options.length
+            });
+        }
+        
     } catch (err) {
-        console.error('❌ Error loading survey:', err);
+        console.error('❌ Error:', err);
         alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     }
 });
