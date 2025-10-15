@@ -10,47 +10,18 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ===== MAJOR CHANGE 1: REMOVE HARDCODED QUESTIONS AND LOAD FROM JSON =====
 // Global data variables (loaded from JSON files)
 let surveyData = null;
-let decisionMapping = null;
-let resultsTemplate = null;
-let allQuestions = [];
+let surveyQuestions = [];
 let questionOrder = [];
+let answers = {};
+let currentQuestionIndex = 0;
+
 
 // REPLACED: Hardcoded surveyQuestions object with JSON loading
-async function loadAllData() {
-    try {
-        console.log('🔄 Loading survey data from JSON files...');
-        
-        const [surveyResponse, mappingResponse, templateResponse] = await Promise.all([
-            fetch('/data/survey_questions-combined.json'),
-            fetch('/data/decision_mapping-combined.json'),
-            fetch('/data/results_template.json')
-        ]);
-
-        if (!surveyResponse.ok) throw new Error(`Failed to load survey questions: ${surveyResponse.status}`);
-        if (!mappingResponse.ok) throw new Error(`Failed to load decision mapping: ${mappingResponse.status}`);
-        if (!templateResponse.ok) throw new Error(`Failed to load results template: ${templateResponse.status}`);
-
-        surveyData = await surveyResponse.json();
-        decisionMapping = await mappingResponse.json();
-        resultsTemplate = await templateResponse.json();
-
-        // Extract questions and order from JSON
-        allQuestions = surveyData.questions || [];
-        questionOrder = surveyData.questionorder || [];
-
-        console.log('✅ Data loaded successfully:', {
-            questions: allQuestions.length,
-            questionOrder: questionOrder.length,
-            mappingLoaded: !!decisionMapping,
-            templateLoaded: !!resultsTemplate
-        });
-
-        return true;
-    } catch (error) {
-        console.error('❌ Error loading JSON data:', error);
-        showError(`Error loading survey data: ${error.message}`);
-        return false;
-    }
+async function loadSurveyData() {
+    const resp = await fetch('survey_questions-combined.json');
+    surveyData = await resp.json();
+    surveyQuestions = surveyData.questions;
+    questionOrder = surveyData.question_order;
 }
 
 function showError(message) {
