@@ -24,6 +24,17 @@ async function loadSurveyData() {
     questionOrder = surveyData.question_order;
 }
 
+function isQuestionVisible(question, answers) {
+    if (!question.visible_if) return true;
+    // Example: visible_if: { question_id: "P1", equals: "No tengo sangrado actualmente" }
+    const cond = question.visible_if;
+    if (cond.question_id && cond.equals !== undefined) {
+        return answers[cond.question_id] === cond.equals;
+    }
+    // Extend for other types, e.g., includes, all, any
+    return true;
+}
+
 function showError(message) {
     document.body.innerHTML = `
         <div style="text-align: center; padding: 50px; color: red; font-family: Arial;">
