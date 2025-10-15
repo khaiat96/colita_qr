@@ -11,7 +11,10 @@ let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 3.0 - FINAL FIX - OCT 15 4:26PM');
+// === ADDED: flag for survey loaded ===
+window.surveyLoaded = false;
+
+console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -144,7 +147,7 @@ function getNextVisibleQuestionIndex(currentIndex) {
 }
 
 function getPrevVisibleQuestionIndex(currentIndex) {
-    for (let i = currentIndex - 1; i >= 0; i--) {
+    for (let i = currentQuestionIndex - 1; i >= 0; i--) {
         const qId = questionOrder[i];
         const question = getQuestionById(qId);
         if (isQuestionVisible(question, answers)) {
@@ -501,20 +504,33 @@ function showPage(pageId) {
     document.getElementById(pageId).classList.add('active');
 }
 
+// === UPDATED: startSurvey disables quiz button until loaded and logs state ===
 window.startSurvey = function() {
-    if (!surveyQuestions.length || !questionOrder.length) {
+    console.log('🚦 startSurvey called');
+    if (!window.surveyLoaded || !surveyQuestions.length || !questionOrder.length) {
         alert('Las preguntas del quiz no se han cargado aún. Intenta de nuevo en unos segundos.');
+        console.log('❌ Survey not loaded:', {
+            surveyLoaded: window.surveyLoaded,
+            surveyQuestions: surveyQuestions.length,
+            questionOrder: questionOrder.length
+        });
         return;
     }
     showPage('survey-page');
     currentQuestionIndex = 0;
     answers = {};
+    console.log('✅ Survey started, rendering first question');
     renderQuestion();
 };
 
+// === UPDATED: load survey questions, enable quiz button when ready ===
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
     isProMode = false;
+
+    // Disable the quiz button until loaded
+    const quizBtn = document.getElementById('take-quiz-btn');
+    if (quizBtn) quizBtn.disabled = true;
 
     try {
         console.log('🔍 Loading survey questions...');
@@ -527,9 +543,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         const surveyData = await resp.json();
         surveyQuestions = surveyData.questions;
         questionOrder = surveyData.question_order;
-        
+        window.surveyLoaded = true;
         console.log('✅ Loaded', surveyQuestions.length, 'questions');
-        
+
+        // Enable quiz button now
+        if (quizBtn) quizBtn.disabled = false;
+
         // Debug P2
         const p2 = surveyQuestions.find(q => q.id === 'P2');
         if (p2) {
@@ -544,5 +563,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     } catch (err) {
         console.error('❌ Error:', err);
         alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
+        // Quiz can't be taken
+        if (quizBtn) quizBtn.disabled = true;
     }
 });
