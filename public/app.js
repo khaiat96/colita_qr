@@ -480,4 +480,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // All button handlers are attached to window above so inline onclick works.
     // Your waitlist & email form logic can remain as before.
+
+    // Add this function in app.js (after Supabase client is initialized)
+    
+async function fetchWaitlist() {
+    let { data, error } = await supabase
+        .from('waitlist')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+    if (error) {
+        console.error('Error fetching waitlist:', error);
+        return [];
+    }
+    return data; // An array of waitlist entries
+}
 });
