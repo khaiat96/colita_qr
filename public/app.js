@@ -1,6 +1,6 @@
 // Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 
 // Debug mode: Enable with window.DEBUG_SURVEY = true or ?debug=1
@@ -229,7 +229,7 @@ function getPrevVisibleIndex(fromIndex) {
     return idx;
 }
 
-// Main render function (patched for compound support!)
+// Main render function (patched for compound support and multi_select bug fix!)
 function renderQuestion() {
     const questionOrder = window.questionOrder || [];
     const surveyQuestions = window.surveyQuestions || [];
@@ -284,6 +284,11 @@ function renderQuestion() {
     if (!question) {
         document.getElementById('survey-content').innerHTML = `<p>Error: Question ${qId} not found</p>`;
         return;
+    }
+
+    // PATCH: Always initialize answers[qId] as [] for multi_select questions!
+    if (question.type === "multi_select" && !answers[qId]) {
+        answers[qId] = [];
     }
 
     let html = '';
@@ -349,6 +354,8 @@ function renderQuestion() {
                 });
                 html += `</div>`;
             } else if (item.type === 'multi_select') {
+                // PATCH: Always initialize answers[item.id] as [] for multi_select items in compound
+                if (!answers[item.id]) answers[item.id] = [];
                 html += `<div class="options-container">`;
                 item.options.forEach(option => {
                     const isSelected = answers[item.id] && answers[item.id].includes(option.value);
@@ -382,7 +389,7 @@ function renderQuestion() {
         });
         html += `</div>`;
     } else if (question.type === 'multi_select') {
-        if (!answers[qId]) answers[qId] = [];
+        // PATCH: Always initialize answers[qId] as [] for multi_select questions (already done above)
         html += `<div class="options-container">`;
         question.options.forEach(option => {
             const isSelected = answers[qId] && answers[qId].includes(option.value);
