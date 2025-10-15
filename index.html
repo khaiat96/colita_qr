@@ -1,20 +1,154 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Colita de Rana – Quiz de Salud Menstrual</title>
-  <meta name="description" content="Descubre tu tipo de ciclo con nuestro quiz de elementos y recibe recomendaciones personalizadas para tu cuidado menstrual." />
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colita de Rana - Quiz de Salud Menstrual</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="app" aria-live="polite"></main>
-  <footer id="footer"></footer>
-  <script src="app.js"></script>
-      <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loading-spinner"></div>
-        <p>Calculando tu perfil energético...</p>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen active">
+            <div class="loading-container">
+                <div class="logo">🐸 Colita de Rana</div>
+                <div class="loading-spinner"></div>
+                <p>Cargando tu quiz personalizado...</p>
+            </div>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen">
+            <div class="container">
+                <header>
+                    <h1>🐸 Colita de Rana</h1>
+                    <p class="subtitle">Medicina herbal personalizada para tu ciclo menstrual</p>
+                </header>
+
+                <div class="welcome-content">
+                    <h2>Haz el quiz y recibe tu plan personalizado para tu ciclo</h2>
+                    <p class="description">Tu información es confidencial, se usa solo para darte orientación educativa y tips suaves para tu ciclo.</p>
+
+                    <div class="mode-selector">
+                        <h3>Elige tu modalidad:</h3>
+                        <div class="mode-options">
+                            <button id="regular-mode" class="mode-btn">
+                                <div class="mode-title">Encuesta rápida</div>
+                                <div class="mode-desc">≈3 min</div>
+                            </button>
+                            <button id="pro-mode" class="mode-btn">
+                                <div class="mode-title">Survey Pro</div>
+                                <div class="mode-desc">≈5 min (mejor precisión)</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="privacy-notice">
+                        <input type="checkbox" id="data-opt-in">
+                        <label for="data-opt-in">Autorizo el uso anónimo de mis respuestas para mejorar este sistema.</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Survey Screen -->
+        <div id="survey-screen" class="screen">
+            <div class="container">
+                <div class="survey-header">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="current-question">1</span> de <span id="total-questions">--</span>
+                    </div>
+                    <button id="mode-switch-btn" class="mode-switch">Cambiar a rápida</button>
+                </div>
+
+                <div class="question-container">
+                    <div class="question-content">
+                        <h2 id="question-title"></h2>
+                        <p id="question-help" class="help-text"></p>
+                        <div id="question-options" class="options-container"></div>
+                    </div>
+                </div>
+
+                <div class="survey-navigation">
+                    <button id="prev-btn" class="nav-btn secondary" disabled>Atrás</button>
+                    <button id="next-btn" class="nav-btn primary">Siguiente</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Info Screen -->
+        <div id="contact-screen" class="screen">
+            <div class="container">
+                <div class="contact-content">
+                    <h2>¡Casi listo! 📧</h2>
+                    <p>Para enviarte tus resultados personalizados, necesitamos:</p>
+
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="user-name">Nombre *</label>
+                            <input type="text" id="user-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-email">Email *</label>
+                            <input type="email" id="user-email" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Ver mis resultados</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="container">
+                <div id="results-content">
+                    <!-- Results will be populated dynamically -->
+                </div>
+
+                <div class="results-actions">
+                    <button id="pro-upgrade-btn" class="upgrade-btn">
+                        ✨ Tomar versión Pro para mayor precisión
+                    </button>
+                    <button id="restart-btn" class="secondary-btn">
+                        Hacer quiz de nuevo
+                    </button>
+                </div>
+
+                <div class="waitlist-footer">
+                    <div class="footer-content">
+                        <h3>🌟 Únete a la lista de espera</h3>
+                        <p>Recibe acceso temprano al primer sistema personalizado de medicina herbal para la salud menstrual.</p>
+                        <ul class="benefits-list">
+                            <li>💰 Descuento de miembra fundadora</li>
+                            <li>🔔 Notificaciones de lanzamiento</li>
+                            <li>🎯 Acceso prioritario a tu kit personalizado</li>
+                            <li>📚 Guías gratuitas de salud menstrual</li>
+                        </ul>
+                        <form id="waitlist-form">
+                            <input type="email" placeholder="Tu email" required>
+                            <button type="submit">Unirme a la lista</button>
+                        </form>
+                        <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Screen -->
+        <div id="error-screen" class="screen">
+            <div class="container">
+                <div class="error-content">
+                    <h2>⚠️ Error</h2>
+                    <p id="error-message">Ha ocurrido un error inesperado.</p>
+                    <button id="retry-btn" class="primary-btn">Intentar de nuevo</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script src="app.js"></script>
 </body>
 </html>

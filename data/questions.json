@@ -1,4 +1,4 @@
-"survey_questions-combined-v5.3.1.json": {
+"survey_questions-combined.json": {
   "meta": {
     "version": "survey_questions-combined-v5.3.2.json",
     "language": "es-MX",
@@ -199,7 +199,7 @@
   "P3_quick_test_frio_sequedad",
   "P4",
   "P7",         // ← P7 now comes before P5
-  "P7b_durante",
+  "P7_durante",
   "P5",         // ← P5 now comes after P7
   "P5b_preferencia_termica_bebidas",
   "P6",
@@ -758,7 +758,7 @@
           }
         ]
       },
-      { "id": "P7b_durante",
+      { "id": "P7_durante",
         "type": "multi_select",
         "title": "¿Qué días del periodo son más intensos? 🔎",
         "help_text": "Selecciona todos los días. (1 = primer día del sangrado)",
