@@ -1,6 +1,6 @@
 // Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy[...]
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 
 // Debug mode: Enable with window.DEBUG_SURVEY = true or ?debug=1
@@ -53,54 +53,73 @@ async function loadResultsTemplate() {
     window.resultsTemplate = await resp.json();
 }
 
-// Helper: Check visible_if logic
+// Helper: Check visible_if logic (AGGRESSIVE P1 FIX)
 function isQuestionVisible(question, answers) {
-    if (!question || !question.visible_if) return true;
+    // Always show first questions (P0_contraception, P1)
+    if (!question) return false;
+    if (question.id === "P0_contraception" || question.id === "P1") return true;
+
+    // AGGRESSIVE: Hide ALL P1_* questions unless P1 = "No tengo sangrado actualmente"
+    if (question.id.startsWith("P1_")) {
+        const p1Answer = answers["P1"];
+        const shouldShow = p1Answer === "No tengo sangrado actualmente";
+        if (isDebug()) {
+            console.log(`🔍 Aggressive P1_* check for ${question.id}: P1="${p1Answer}" -> ${shouldShow ? 'SHOW' : 'HIDE'}`);
+        }
+        return shouldShow;
+    }
+
+    // Otherwise normal logic
     const cond = question.visible_if;
-    if (isDebug()) console.log(`Checking visible_if for ${question.id}`, {answers, cond});
+    if (!cond) return true;
 
     // equals (strict string match)
     if (cond.question_id && typeof cond.equals !== "undefined") {
-        if (isDebug()) console.log(`Comparing answer: "${answers[cond.question_id]}" with expected: "${cond.equals}"`);
         return answers[cond.question_id] === cond.equals;
     }
+
     // includes (array or single)
     if (cond.question_id && cond.includes) {
         const ans = answers[cond.question_id];
-        if (Array.isArray(cond.includes)) {
-            if (Array.isArray(ans)) return cond.includes.some(val => ans.includes(val));
-            return cond.includes.includes(ans);
-        } else {
-            if (Array.isArray(ans)) return ans.includes(cond.includes);
-            return ans === cond.includes;
-        }
+        const inclArr = Array.isArray(cond.includes) ? cond.includes : [cond.includes];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return inclArr.some(val => ansArr.includes(val));
     }
-    // includes_any (array)
-    if (cond.question_id && cond.includes_any) {
+
+    // not_includes (single or array)
+    if (cond.question_id && cond.not_includes) {
         const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) return cond.includes_any.some(val => ans.includes(val));
-        return cond.includes_any.includes(ans);
+        const notInclArr = Array.isArray(cond.not_includes) ? cond.not_includes : [cond.not_includes];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return notInclArr.every(val => !ansArr.includes(val));
     }
-    // not_includes_any (array)
-    if (cond.question_id && cond.not_includes_any) {
-        const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) return cond.not_includes_any.every(val => !ans.includes(val));
-        return !cond.not_includes_any.includes(ans);
-    }
+
     // not_in (array)
     if (cond.question_id && cond.not_in) {
         const ans = answers[cond.question_id];
-        if (Array.isArray(ans)) return cond.not_in.every(val => !ans.includes(val));
-        return !cond.not_in.includes(ans);
+        const notInArr = Array.isArray(cond.not_in) ? cond.not_in : [cond.not_in];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return notInArr.every(val => !ansArr.includes(val));
     }
-    // all: array of visible_if conditions (for compound cases)
+
+    // includes_any (array)
+    if (cond.question_id && cond.includes_any) {
+        const ans = answers[cond.question_id];
+        const inclAnyArr = Array.isArray(cond.includes_any) ? cond.includes_any : [cond.includes_any];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return inclAnyArr.some(val => ansArr.includes(val));
+    }
+
+    // Compound: all (array of conditions)
     if (cond.all && Array.isArray(cond.all)) {
         return cond.all.every(subCond => isQuestionVisible({visible_if: subCond}, answers));
     }
-    // any: array of visible_if conditions (for compound cases)
+
+    // Compound: any (array of conditions)
     if (cond.any && Array.isArray(cond.any)) {
         return cond.any.some(subCond => isQuestionVisible({visible_if: subCond}, answers));
     }
+
     // Default: show
     return true;
 }
@@ -115,7 +134,6 @@ function getNextVisibleIndex(fromIndex) {
         window.answers
       )
     ) {
-      if (isDebug()) console.log(`Skipping hidden question at ${idx} (${window.questionOrder[idx]})`);
       idx++;
     }
     return idx;
@@ -136,19 +154,6 @@ function getPrevVisibleIndex(fromIndex) {
     return idx;
 }
 
-async function fetchWaitlist() {
-    let { data, error } = await supabase
-        .from('waitlist')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-    if (error) {
-        console.error('Error fetching waitlist:', error);
-        return [];
-    }
-    return data; // An array of waitlist entries
-}
-
 // Main render function
 function renderQuestion() {
     const questionOrder = window.questionOrder || [];
@@ -161,7 +166,6 @@ function renderQuestion() {
         const qId = questionOrder[currentIndex];
         const question = surveyQuestions.find(q => q.id === qId);
         if (isQuestionVisible(question, answers)) break;
-        if (isDebug()) console.log(`renderQuestion: Skipping hidden question idx=${currentIndex}, id=${qId}`);
         currentIndex++;
     }
 
@@ -175,14 +179,10 @@ function renderQuestion() {
     const qId = questionOrder[currentIndex];
     const question = surveyQuestions.find(q => q.id === qId);
 
-    if (isDebug()) {
-        console.log(`Rendering question idx=${currentIndex}, id=${qId}, answers=`, window.answers);
-    }
-
     let optionsHtml = "";
 
     if (question.type === 'multi_select' || question.type === 'single_choice') {
-        question.options.forEach(option => {
+        question.options?.forEach(option => {
             optionsHtml += `
                 <div class="option" data-value="${option.value}" onclick="selectOption('${option.value}', ${question.type === 'multi_select'})">
                     ${option.label}
@@ -190,12 +190,13 @@ function renderQuestion() {
             `;
         });
     } else if (question.type === 'slider') {
+        const sliderValue = answers[question.id] !== undefined ? answers[question.id] : question.min;
         optionsHtml = `
             <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
-                value="${answers[question.id] || question.min}" id="slider-input"
+                value="${sliderValue}" id="slider-input"
                 oninput="document.getElementById('slider-value').innerText = this.value"
                 onchange="selectSlider('${question.id}', this.value)">
-            <span id="slider-value">${answers[question.id] || question.min}</span>
+            <span id="slider-value">${sliderValue}</span>
         `;
     } else {
         optionsHtml = `<div>No options for this question type.</div>`;
@@ -238,8 +239,6 @@ window.selectOption = function(value, isMultiSelect) {
         window.answers[qId] = value;
     }
 
-    if (isDebug()) console.log(`selectOption: Saved answer for ${qId}:`, window.answers[qId]);
-
     // Move to next visible question!
     window.currentQuestionIndex = getNextVisibleIndex(currentIndex);
     renderQuestion();
@@ -247,8 +246,6 @@ window.selectOption = function(value, isMultiSelect) {
 
 window.selectSlider = function(qId, value) {
     window.answers[qId] = Number(value);
-    if (isDebug()) console.log(`selectSlider: Saved slider for ${qId}:`, window.answers[qId]);
-    // Jump to next visible question!
     window.currentQuestionIndex = getNextVisibleIndex(window.currentQuestionIndex);
     renderQuestion();
 };
