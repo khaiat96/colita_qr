@@ -11,6 +11,78 @@ let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
 
+// ==================== WAITLIST FUNCTIONS ====================
+
+// Scroll to waitlist section on landing page
+window.scrollToWaitlist = function() {
+    const waitlistSection = document.getElementById('waitlist-section');
+    if (waitlistSection) {
+        waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+// Handle main waitlist form (on landing page)
+document.addEventListener('DOMContentLoaded', function() {
+    const mainWaitlistForm = document.getElementById('main-waitlist-form');
+    if (mainWaitlistForm) {
+        mainWaitlistForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('main-waitlist-name').value;
+            const email = document.getElementById('main-waitlist-email').value;
+            
+            try {
+                // Send to webhook
+                await fetch(WAITLIST_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, source: 'landing_page' })
+                });
+                
+                // Save to Supabase
+                await supabase.from('waitlist').insert([{ name, email, source: 'landing_page' }]);
+                
+                alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+                mainWaitlistForm.reset();
+            } catch (error) {
+                console.error('Error joining waitlist:', error);
+                alert('Hubo un error. Por favor intenta de nuevo.');
+            }
+        });
+    }
+    
+    // Handle results waitlist form
+    const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+    if (resultsWaitlistForm) {
+        resultsWaitlistForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('results-waitlist-name').value;
+            const email = document.getElementById('results-waitlist-email').value;
+            
+            try {
+                // Send to webhook
+                await fetch(WAITLIST_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, source: 'results_page' })
+                });
+                
+                // Save to Supabase
+                await supabase.from('waitlist').insert([{ name, email, source: 'results_page' }]);
+                
+                alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+                resultsWaitlistForm.reset();
+            } catch (error) {
+                console.error('Error joining waitlist:', error);
+                alert('Hubo un error. Por favor intenta de nuevo.');
+            }
+        });
+    }
+});
+
+// ==================== UTILITY FUNCTIONS ====================
+
 // Utility function to get question by id
 function getQuestionById(qId) {
     return surveyQuestions.find(q => q.id === qId);
@@ -88,6 +160,7 @@ function getNextVisibleQuestionIndex(currentIndex) {
     }
     return -1;
 }
+
 function getPrevVisibleQuestionIndex(currentIndex) {
     for (let i = currentIndex - 1; i >= 0; i--) {
         const qId = questionOrder[i];
@@ -99,13 +172,14 @@ function getPrevVisibleQuestionIndex(currentIndex) {
     return -1;
 }
 
-// Survey rendering
+// ==================== SURVEY RENDERING ====================
+
 function renderQuestion() {
     // Defensive: always land on a visible question
     let qId = questionOrder[currentQuestionIndex];
     let question = getQuestionById(qId);
 
-    // If current is not visible, auto-skip forward (robust recursion, never get stuck!)
+    // If current is not visible, auto-skip forward
     while (question && !isQuestionVisible(question, answers)) {
         const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
         if (nextIdx > -1) {
@@ -123,21 +197,21 @@ function renderQuestion() {
         return;
     }
 
-    // Defensive patch for multi_select answer initialization
-    if (question.type === "multiselect" && !answers[qId]) {  // ✅ Fixed: removed underscore
+    // Defensive patch for multiselect answer initialization
+    if (question.type === "multiselect" && !answers[qId]) {
         answers[qId] = [];
     }
 
     // Defensive check: Ensure survey-content exists
     const surveyContent = document.getElementById('survey-content');
-    if (!surveyContent) return; // Prevent error if DOM not ready
+    if (!surveyContent) return;
 
     let optionsHtml = '';
 
-    // Handle multi_select, single_choice, slider, etc.
-    if (question.type === 'multiselect' || question.type === 'single_choice') {  // ✅ Fixed
+    // Handle multiselect, single_choice, slider
+    if (question.type === 'multiselect' || question.type === 'single_choice') {
         question.options.forEach((option, index) => {
-        const isMultiSelect = question.type === 'multiselect';  // ✅ Fixed
+            const isMultiSelect = question.type === 'multiselect';
             const optionClass = isMultiSelect ? 'option multi-select' : 'option';
             const selected = isMultiSelect 
                 ? (answers[question.id] && answers[question.id].includes(option.value)) 
@@ -176,6 +250,7 @@ function renderQuestion() {
     updateProgress();
     updateNavigation();
 }
+
 window.selectOption = function(value, isMultiSelect) {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
@@ -190,8 +265,8 @@ window.selectOption = function(value, isMultiSelect) {
         if (index > -1) {
             currentAnswers.splice(index, 1);
         } else {
-            // If max_selected, enforce
-            if (question.validation && question.validation.max_selected && currentAnswers.length >= question.validation.max_selected) {
+            // If maxselected, enforce
+            if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
                 currentAnswers.shift();
             }
             currentAnswers.push(value);
@@ -228,33 +303,22 @@ function updateProgress() {
         const q = getQuestionById(questionOrder[i]);
         if (isQuestionVisible(q, answers)) visibleCount++;
     }
-    // Total visible questions (up to this point)
     const totalVisible = questionOrder.filter(qId => isQuestionVisible(getQuestionById(qId), answers)).length;
     const progress = ((visibleCount) / totalVisible) * 100;
     document.getElementById('progress-bar').style.width = `${progress}%`;
     document.getElementById('progress-text').textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
 }
 
-// PATCH: Navigation logic to handle optional multi_select and always skip hidden questions!
 function updateNavigation() {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
     let hasAnswer = false;
 
-    // Enhanced debug
-    console.log('🔧 Navigation Debug:', {
-        qId,
-        type: question.type,
-        validation: question.validation,
-        currentAnswer: answers[qId]
-    });
-
-    if (question.type === 'multiselect') {  // ✅ Fixed: removed underscore
+    if (question.type === 'multiselect') {
         const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
-        const minSelected = question.validation?.minselected ?? 1;  // ✅ Fixed: removed underscore
+        const minSelected = question.validation?.minselected ?? 1;
 
         if (minSelected === 0) {
-            // Accept both [] and undefined as "valid" for navigation
             hasAnswer = true;
         } else {
             hasAnswer = selected.length >= minSelected;
@@ -274,9 +338,10 @@ function updateNavigation() {
     document.getElementById('back-btn').style.display = 
         getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
 }
-// Navigation
+
+// ==================== NAVIGATION ====================
+
 window.nextQuestion = function() {
-    // Defensive: always land on visible question
     let nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
     while (nextIdx > -1 && !isQuestionVisible(getQuestionById(questionOrder[nextIdx]), answers)) {
         nextIdx = getNextVisibleQuestionIndex(nextIdx);
@@ -300,7 +365,8 @@ window.previousQuestion = function() {
     }
 };
 
-// Results calculation (same as before, you can adapt for dynamic scoring)
+// ==================== RESULTS CALCULATION ====================
+
 function calculateResults() {
     const scores = {
         tension: 0,
@@ -310,7 +376,6 @@ function calculateResults() {
         sequedad: 0
     };
 
-    // Calculate scores based on answers
     surveyQuestions.forEach(question => {
         const answer = answers[question.id];
         if (!answer) return;
@@ -342,30 +407,23 @@ function calculateResults() {
 }
 
 async function finishSurvey() {
-    // Show loading
     document.getElementById('loading-modal').classList.add('show');
-
-    // Calculate results
     const dominantPattern = calculateResults();
 
-    // Save to Supabase
     try {
         await supabase
             .from('survey_responses')
-            .insert([
-                {
-                    session_id: sessionId,
-                    answers: answers,
-                    result_pattern: dominantPattern,
-                    is_pro_mode: isProMode,
-                    created_at: new Date().toISOString()
-                }
-            ]);
+            .insert([{
+                session_id: sessionId,
+                answers: answers,
+                result_pattern: dominantPattern,
+                is_pro_mode: isProMode,
+                created_at: new Date().toISOString()
+            }]);
     } catch (error) {
         console.error('Error saving to Supabase:', error);
     }
 
-    // Hide loading
     setTimeout(() => {
         document.getElementById('loading-modal').classList.remove('show');
         showResults(dominantPattern);
@@ -441,7 +499,8 @@ function showResults(patternKey) {
 
     showPage('results-page');
 }
-// Email and waitlist forms: unchanged from before—ensure any fetches/IDs match your HTML!
+
+// ==================== PAGE NAVIGATION ====================
 
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
@@ -450,7 +509,7 @@ function showPage(pageId) {
     document.getElementById(pageId).classList.add('active');
 }
 
-function startSurvey() {
+window.startSurvey = function() {
     if (!surveyQuestions.length || !questionOrder.length) {
         alert('Las preguntas del quiz no se han cargado aún. Intenta de nuevo en unos segundos.');
         return;
@@ -459,7 +518,9 @@ function startSurvey() {
     currentQuestionIndex = 0;
     answers = {};
     renderQuestion();
-}
+};
+
+// ==================== INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
@@ -468,25 +529,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         console.log('🔍 Loading survey_questions-combined.json...');
         const resp = await fetch('survey_questions-combined.json');
-        console.log('📡 Fetch response:', resp.status, resp.statusText, resp.url);
+        console.log('📡 Fetch response:', resp.status, resp.statusText);
         
         if (!resp.ok) {
             throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
         }
         
-        console.log('📄 Parsing JSON...');
         const surveyData = await resp.json();
-        console.log('✅ Survey data loaded:', surveyData);
-        console.log('📊 Questions found:', surveyData.questions?.length);
-        console.log('📋 Question order:', surveyData.question_order?.length);
+        console.log('✅ Survey data loaded:', surveyData.questions?.length, 'questions');
         
         surveyQuestions = surveyData.questions;
         questionOrder = surveyData.question_order;
-        console.log('✅ Data assigned successfully');
         
     } catch (err) {
-        console.error('❌ Detailed loading error:', err);
-        console.error('❌ Error stack:', err.stack);
+        console.error('❌ Error loading survey:', err);
         alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     }
 });
