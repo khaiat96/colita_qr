@@ -1,9 +1,8 @@
-"decision_mapping-combined.json":
-{
+"decision_mapping-combined.json":{
   "meta": {
-    "version": "decision_mapping-combined-v5.3.3.json",
+    "version": "decision_mapping-combined-v5.4.0.json",
     "language": "es-MX",
-    "description": "Combined Regular + Pro v5.3.3: motor unificado con selector de modo; actualizado para alinear IDs con survey v5.2.1; integra P0_contraception (atenuación de sangrado/spotting, guardas para amenorrea por anticonceptivos y ajuste de triage bajo flujo); mantiene reglas avanzadas de Pro y diferencias de ponderación; usa bloqueo/deficiencia solo como desempate.",
+    "description": "Combined Regular + Pro v5.4.0: añade nuevas preguntas Pro (patrón/olor/duración del flujo, dolor por calidad, capa de lengua, digestión, sensibilidad al clima, mastalgia y acné cíclico) para >95% precisión estimada en diferenciación de ejes; mantiene selector de modo y recalcula con respuestas existentes al subir a Pro.",
     "content_safety": {
       "blocklist": [
         "1:3",
@@ -64,7 +63,17 @@
       "P9_alcohol",
       "P0_contraception",
       "P1_amenorrea_contexto",
-      "P1_motivo_no_ciclo"
+      "P1_motivo_no_ciclo",
+      "P2_duracion_dias",
+      "P2_patron_flujo",
+      "P2_olor",
+      "P2q_dolor_caracter",
+      "P3_capa_lingual",
+      "P9_digestion_transito",
+      "P9_sensibilidad_clima",
+      "P7_mastalgia_premenstrual",
+      "P2_spot_pre_post",
+      "P8_acne_ciclico"
     ],
     "min_core_plus_support": true,
     "top_min_points": 3,
@@ -201,7 +210,7 @@
       {
         "value": "Manchado entre reglas",
         "scores": {
-          "humedad": 1
+          "calor": 1
         },
         "modes": [
           "pro"
@@ -307,7 +316,7 @@
         "scores": {}
       }
     ],
-    "P2q_color": [
+    "P2_color": [
       {
         "value": "rojo_brillante",
         "scores": {
@@ -333,7 +342,7 @@
         }
       }
     ],
-    "P2q_textura": [
+    "P2_textura": [
       {
         "value": "coagulos",
         "scores": {
@@ -414,7 +423,7 @@
         ]
       }
     ],
-    "P2q_coagulo_tamano": [
+    "P2_coagulo_tamano": [
       {
         "value": "<1cm",
         "scores": {},
@@ -441,7 +450,7 @@
         ]
       }
     ],
-    "P2q_productos_por_dia": [
+    "P2_productos_por_dia": [
       {
         "value": "1–3",
         "scores": {}
@@ -1010,6 +1019,282 @@
         "value": "antecedentes_tiroideos",
         "scores": {}
       }
+    ],
+    "P2_duracion_dias": [
+      {
+        "value": "1-2",
+        "scores": {
+          "sequedad": 1,
+          "frio": 1
+        }
+      },
+      {
+        "value": "3-6",
+        "scores": {}
+      },
+      {
+        "value": "7+",
+        "scores": {
+          "humedad": 1
+        }
+      }
+    ],
+    "P2_patron_flujo": [
+      {
+        "value": "empieza_termina_marron",
+        "scores": {
+          "sequedad": 1
+        }
+      },
+      {
+        "value": "oleadas_inundaciones",
+        "scores": {
+          "calor": 1
+        }
+      },
+      {
+        "value": "goteo_lento_prolongado",
+        "scores": {
+          "humedad": 1
+        }
+      },
+      {
+        "value": "intermitente",
+        "scores": {
+          "tension": 1
+        }
+      }
+    ],
+    "P2_olor": [
+      {
+        "value": "fuerte_acido",
+        "scores": {
+          "calor": 1
+        }
+      },
+      {
+        "value": "olor_humedo",
+        "scores": {
+          "humedad": 1
+        }
+      },
+      {
+        "value": "metalico_leve_sin_olor",
+        "scores": {}
+      }
+    ],
+    "P2q_dolor_caracter": [
+      {
+        "value": "punzante_localizado",
+        "scores": {
+          "tension": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "sordo_pesado",
+        "scores": {
+          "humedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "ardor_caliente",
+        "scores": {
+          "calor": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "espasmodico",
+        "scores": {
+          "tension": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      }
+    ],
+    "P3_capa_lingual": [
+      {
+        "value": "capa_gruesa_pegajosa",
+        "scores": {
+          "humedad": 2
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "capa_amarilla",
+        "scores": {
+          "calor": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "capa_blanca",
+        "scores": {
+          "frio": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "sin_capa_seca",
+        "scores": {
+          "sequedad": 2
+        },
+        "modes": [
+          "pro"
+        ]
+      }
+    ],
+    "P9_digestion_transito": [
+      {
+        "value": "estrenimiento",
+        "scores": {
+          "sequedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "sueltas_pegajosas",
+        "scores": {
+          "humedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "regular",
+        "scores": {},
+        "modes": [
+          "pro"
+        ]
+      }
+    ],
+    "P9_sensibilidad_clima": [
+      {
+        "value": "calor_me_agobia",
+        "scores": {
+          "calor": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "siempre_con_frio",
+        "scores": {
+          "frio": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "depende",
+        "scores": {},
+        "modes": [
+          "pro"
+        ]
+      }
+    ],
+    "P7_mastalgia_premenstrual": [
+      {
+        "value": "si_con_hinchazon",
+        "scores": {
+          "humedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "si_sin_hinchazon",
+        "scores": {
+          "tension": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "no",
+        "scores": {},
+        "modes": [
+          "pro"
+        ]
+      }
+    ],
+    "P2_spot_pre_post": [
+      {
+        "value": "antes",
+        "scores": {
+          "sequedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "despues",
+        "scores": {
+          "humedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "entre",
+        "scores": {
+          "tension": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      }
+    ],
+    "P8_acne_ciclico": [
+      {
+        "value": "acne_caliente_rojo",
+        "scores": {
+          "calor": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "acne_humedo_lento",
+        "scores": {
+          "humedad": 1
+        },
+        "modes": [
+          "pro"
+        ]
+      },
+      {
+        "value": "no",
+        "scores": {},
+        "modes": [
+          "pro"
+        ]
+      }
     ]
   },
   "additive_scoring": [
@@ -1183,7 +1468,7 @@
       ]
     },
     {
-      "question_id": "P2q_cantidad",
+      "question_id": "P2_cantidad",
       "range_map": [
         {
           "min": 0,
@@ -1229,7 +1514,7 @@
           "max_points_per_axis": 1
         },
         {
-          "question_id": "P2q_textura",
+          "question_id": "P2_textura",
           "max_points_per_axis": 2
         },
         {
@@ -1265,7 +1550,7 @@
       "reduce_scores": {
         "sources": [
           "P2",
-          "P2q_cantidad"
+          "P2_cantidad"
         ],
         "keys_containing": [
           "Sangrado",
@@ -1292,8 +1577,8 @@
       "core_domains_for_mixed": [
         "P2",
         "P3",
-        "P2q_color",
-        "P2q_textura"
+        "P2_color",
+        "P2_textura"
       ],
       "three_way_mix_only_if_shared_dimension": true,
       "shared_dimensions": {
@@ -1338,11 +1623,11 @@
           "require": {
             "all": [
               {
-                "question_id": "P2q_color",
+                "question_id": "P2_color",
                 "equals": "rojo_oscuro"
               },
               {
-                "question_id": "P2q_textura",
+                "question_id": "P2_textura",
                 "includes": [
                   "coagulos"
                 ]
@@ -1561,11 +1846,11 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_cantidad",
+            "question_id": "P2_cantidad",
             "at_least": 9
           },
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_brillante"
           }
         ]
@@ -1585,7 +1870,7 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_oscuro"
           },
           {
@@ -1616,7 +1901,7 @@
             ]
           },
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "in": [
               "rojo_brillante"
             ]
@@ -1628,7 +1913,7 @@
             ]
           },
           {
-            "question_id": "P2q_cantidad",
+            "question_id": "P2_cantidad",
             "at_least": 9
           }
         ],
@@ -1659,13 +1944,13 @@
             ]
           },
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "in": [
               "rojo_brillante"
             ]
           },
           {
-            "question_id": "P2q_cantidad",
+            "question_id": "P2_cantidad",
             "at_least": 9
           }
         ],
@@ -1689,13 +1974,13 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_cantidad",
+            "question_id": "P2_cantidad",
             "at_least": 9
           },
           {
             "either": [
               {
-                "question_id": "P2q_color",
+                "question_id": "P2_color",
                 "in": [
                   "rojo_brillante"
                 ]
@@ -1749,13 +2034,13 @@
                 ]
               },
               {
-                "question_id": "P2q_color",
+                "question_id": "P2_color",
                 "in": [
                   "rojo_brillante"
                 ]
               },
               {
-                "question_id": "P2q_cantidad",
+                "question_id": "P2_cantidad",
                 "at_least": 9
               }
             ]
@@ -1783,7 +2068,7 @@
           {
             "either": [
               {
-                "question_id": "P2q_color",
+                "question_id": "P2_color",
                 "equals": "rojo_brillante"
               },
               {
@@ -1818,11 +2103,11 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_oscuro"
           },
           {
-            "question_id": "P2q_textura",
+            "question_id": "P2_textura",
             "includes": [
               "coagulos"
             ]
@@ -1847,7 +2132,7 @@
         "ignore_scores_from": {
           "questions": [
             "P4",
-            "P2q_cantidad",
+            "P2_cantidad",
             "P2_spotting_frecuencia",
             "P2_spotting_context",
             "P6"
@@ -1865,12 +2150,12 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_brillante"
           },
           {
             "not_in": {
-              "question_id": "P2q_textura",
+              "question_id": "P2_textura",
               "values": [
                 "coagulos",
                 "aguado"
@@ -1887,7 +2172,7 @@
                 ]
               },
               {
-                "question_id": "P2q_cantidad",
+                "question_id": "P2_cantidad",
                 "at_least": 9
               }
             ]
@@ -1897,8 +2182,8 @@
       "effect": {
         "ignore_scores_from": {
           "questions": [
-            "P2q_cantidad",
-            "P2q_textura"
+            "P2_cantidad",
+            "P2_textura"
           ],
           "axis": "humedad"
         }
@@ -1913,7 +2198,7 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_textura",
+            "question_id": "P2_textura",
             "includes": [
               "coagulos"
             ]
@@ -1953,11 +2238,11 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_oscuro"
           },
           {
-            "question_id": "P2q_cantidad",
+            "question_id": "P2_cantidad",
             "at_least": 7
           }
         ]
@@ -2048,7 +2333,7 @@
         "adjust_scores_if": {
           "when_any": [
             {
-              "question_id": "P2q_color",
+              "question_id": "P2_color",
               "equals": "rojo_brillante"
             },
             {
@@ -2079,7 +2364,7 @@
         "adjust_scores_if": {
           "when_any": [
             {
-              "question_id": "P2q_color",
+              "question_id": "P2_color",
               "equals": "rojo_brillante"
             },
             {
@@ -2104,7 +2389,7 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_oscuro"
           },
           {
@@ -2142,7 +2427,7 @@
       "apply_if": {
         "all": [
           {
-            "question_id": "P2q_color",
+            "question_id": "P2_color",
             "equals": "rojo_brillante"
           },
           {
@@ -2151,7 +2436,7 @@
           },
           {
             "not_in": {
-              "question_id": "P2q_textura",
+              "question_id": "P2_textura",
               "values": [
                 "coagulos"
               ]
@@ -2188,7 +2473,7 @@
             "equals": "durante"
           },
           {
-            "question_id": "P7b_durante",
+            "question_id": "P7_durante",
             "includes_any": [
               "1",
               "2"
@@ -2215,7 +2500,7 @@
             "equals": "durante"
           },
           {
-            "question_id": "P7b_durante",
+            "question_id": "P7_durante",
             "includes_any": [
               "1",
               "2"
@@ -2224,13 +2509,13 @@
           {
             "either": [
               {
-                "question_id": "P2q_textura",
+                "question_id": "P2_textura",
                 "includes": [
                   "coagulos"
                 ]
               },
               {
-                "question_id": "P2q_coagulo_tamano",
+                "question_id": "P2_coagulo_tamano",
                 "equals": ">2.4cm"
               }
             ]
@@ -2292,6 +2577,52 @@
         "regular",
         "pro"
       ]
+    },
+    "pro_flow_flooding_heat_bonus": {
+      "enabled": true,
+      "apply_if": {
+        "all": [
+          {
+            "question_id": "P2_patron_flujo",
+            "equals": "oleadas_inundaciones"
+          },
+          {
+            "question_id": "P2_cantidad",
+            "at_least": 9
+          }
+        ]
+      },
+      "effect": {
+        "adjust_scores": {
+          "calor": 1
+        }
+      },
+      "modes": [
+        "pro"
+      ]
+    },
+    "pro_drip_long_damp_bonus": {
+      "enabled": true,
+      "apply_if": {
+        "all": [
+          {
+            "question_id": "P2_patron_flujo",
+            "equals": "goteo_lento_prolongado"
+          },
+          {
+            "question_id": "P2_duracion_dias",
+            "equals": "7+"
+          }
+        ]
+      },
+      "effect": {
+        "adjust_scores": {
+          "humedad": 1
+        }
+      },
+      "modes": [
+        "pro"
+      ]
     }
   },
   "confidence": {
@@ -2299,19 +2630,29 @@
       "prefer_domains": [
         "P3",
         "P2",
-        "P2q_color",
-        "P2q_textura"
+        "P2_color",
+        "P2_textura"
       ],
       "secondary_domains": [
         "P4",
         "P5",
         "P6",
         "P7",
-        "P2q_cantidad",
+        "P2_cantidad",
         "P3_quick_test_frio_sequedad",
         "P2_spotting_frecuencia",
         "P2_spotting_context",
-        "P2q_coagulo_tamano"
+        "P2_coagulo_tamano",
+        "P3_capa_lingual",
+        "P2_patron_flujo",
+        "P2_olor",
+        "P2_duracion_dias",
+        "P2q_dolor_caracter",
+        "P9_digestion_transito",
+        "P9_sensibilidad_clima",
+        "P7_mastalgia_premenstrual",
+        "P2_spot_pre_post",
+        "P8_acne_ciclico"
       ]
     },
     "labels": {
@@ -2353,7 +2694,7 @@
                 ]
               },
               {
-                "question_id": "P2q_cantidad",
+                "question_id": "P2_cantidad",
                 "at_least": 7
               }
             ]
@@ -2374,7 +2715,7 @@
       "visible_if": {
         "any": [
           {
-            "question_id": "P2q_productos_por_dia",
+            "question_id": "P2_productos_por_dia",
             "equals": ">=7"
           },
           {
@@ -2382,19 +2723,19 @@
               {
                 "either": [
                   {
-                    "question_id": "P2q_textura",
+                    "question_id": "P2_textura",
                     "includes": [
                       "coagulos"
                     ]
                   },
                   {
-                    "question_id": "P2q_coagulo_tamano",
+                    "question_id": "P2_coagulo_tamano",
                     "equals": ">2.4cm"
                   }
                 ]
               },
               {
-                "question_id": "P2q_cantidad",
+                "question_id": "P2_cantidad",
                 "at_least": 8
               }
             ]
@@ -2503,8 +2844,8 @@
     "log_core_points_from_domains": [
       "P2",
       "P3",
-      "P2q_color",
-      "P2q_textura"
+      "P2_color",
+      "P2_textura"
     ],
     "log_missing_questions": [
       "P2_margen_calor_humedad",
@@ -2515,8 +2856,8 @@
     "detect_after_domains": [
       "P2",
       "P3",
-      "P2q_color",
-      "P2q_textura"
+      "P2_color",
+      "P2_textura"
     ],
     "margin_threshold": 0,
     "max_extra_prompts": 2,
@@ -2559,7 +2900,7 @@
         ],
         "modes": [
           "regular"
-        ]
+          ]
       },
       {
         "top2": [
