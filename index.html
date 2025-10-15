@@ -1,151 +1,259 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colita de Rana - Quiz de Salud Menstrual</title>
+    <title>Colita de Rana - Tu medicina personalizada</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div id="app">
-        <!-- Loading Screen -->
-        <div id="loading-screen" class="screen active">
-            <div class="loading-container">
-                <div class="logo">🐸 Colita de Rana</div>
-                <div class="loading-spinner"></div>
-                <p>Cargando tu quiz personalizado...</p>
-            </div>
-        </div>
-
-        <!-- Welcome Screen -->
-        <div id="welcome-screen" class="screen">
+    <!-- Landing Page -->
+    <div id="landing-page" class="page active">
+        <header class="header">
             <div class="container">
-                <header>
-                    <h1>🐸 Colita de Rana</h1>
-                    <p class="subtitle">Medicina herbal personalizada para tu ciclo menstrual</p>
-                </header>
-
-                <div class="welcome-content">
-                    <h2>Haz el quiz y recibe tu plan personalizado para tu ciclo</h2>
-                    <p class="description">Tu información es confidencial, se usa solo para darte orientación educativa y tips suaves para tu ciclo.</p>
-
-                    <div class="mode-selector">
-                        <h3>Elige tu modalidad:</h3>
-                        <div class="mode-options">
-                            <button id="regular-mode" class="mode-btn">
-                                <div class="mode-title">Encuesta rápida</div>
-                                <div class="mode-desc">≈3 min</div>
-                            </button>
-                            <button id="pro-mode" class="mode-btn">
-                                <div class="mode-title">Survey Pro</div>
-                                <div class="mode-desc">≈5 min (mejor precisión)</div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="privacy-notice">
-                        <input type="checkbox" id="data-opt-in">
-                        <label for="data-opt-in">Autorizo el uso anónimo de mis respuestas para mejorar este sistema.</label>
-                    </div>
+                <div class="logo">
+                    <h1>🌿 Colita de Rana</h1>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Survey Screen -->
-        <div id="survey-screen" class="screen">
-            <div class="container">
-                <div class="survey-header">
-                    <div class="progress-bar">
-                        <div class="progress-fill"></div>
+        <main class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h1 class="hero-title">
+                    <span>Tu ciclo es único.</span>
+                    <span>Tu medicina también.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México. Cada mujer tiene un patrón único de síntomas que merece una medicina única.
+                </p>
+                <button class="btn-primary" onclick="scrollToWaitlist()">
+                    Llévame a la lista de espera
+                </button>
+            </section>
+
+            <!-- Secondary Section -->
+            <section class="secondary-section">
+                <h2>Descubre consejos adaptados a tu patrón menstrual:</h2>
+                <p class="section-subtitle">
+                    Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.
+                </p>
+                <button class="btn-primary" onclick="startSurvey()">
+                    Toma el quiz
+                </button>
+            </section>
+
+            <!-- Elements Section -->
+            <section class="elements-section">
+                <h2>Los 4 elementos en tu ciclo</h2>
+                <p class="section-subtitle">
+                    Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.
+                </p>
+
+                <div class="elements-grid">
+                    <div class="element-card">
+                        <h3>Aire 🌬️</h3>
+                        <p class="element-pattern">Tensión</p>
+                        <ul>
+                            <li>Nervio alto y espasmos</li>
+                            <li>Síntomas cambiantes</li>
+                            <li>Mejora con respiración y estiramientos</li>
+                        </ul>
                     </div>
-                    <div class="progress-text">
-                        <span id="current-question">1</span> de <span id="total-questions">--</span>
+
+                    <div class="element-card">
+                        <h3>Fuego 🔥</h3>
+                        <p class="element-pattern">Calor</p>
+                        <ul>
+                            <li>Rojo brillante/abundante</li>
+                            <li>Irritabilidad, calor/sed</li>
+                            <li>Mejora con frescor e hidratación</li>
+                        </ul>
                     </div>
-                    <button id="mode-switch-btn" class="mode-switch">Cambiar a rápida</button>
-                </div>
 
-                <div class="question-container">
-                    <div class="question-content">
-                        <h2 id="question-title"></h2>
-                        <p id="question-help" class="help-text"></p>
-                        <div id="question-options" class="options-container"></div>
+                    <div class="element-card">
+                        <h3>Tierra ⛰️</h3>
+                        <p class="element-pattern">Retención (humedad)</p>
+                        <ul>
+                            <li>Pesadez/hinchazón</li>
+                            <li>Coágulos o espesor</li>
+                            <li>Mejora con movimiento y ligereza</li>
+                        </ul>
+                    </div>
+
+                    <div class="element-card">
+                        <h3>Agua 💧</h3>
+                        <p class="element-pattern">Sequedad</p>
+                        <ul>
+                            <li>Flujo escaso</li>
+                            <li>Sed/sequedad</li>
+                            <li>Mejora con hidratación y grasas buenas</li>
+                        </ul>
                     </div>
                 </div>
+            </section>
 
-                <div class="survey-navigation">
-                    <button id="prev-btn" class="nav-btn secondary" disabled>Atrás</button>
-                    <button id="next-btn" class="nav-btn primary">Siguiente</button>
-                </div>
-            </div>
-        </div>
+            <!-- Waitlist Section -->
+            <section id="waitlist-section" class="waitlist-section">
+                <div class="waitlist-content">
+                    <h2>🌟 Únete a la lista de espera</h2>
+                    <p class="waitlist-description">
+                        Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
+                    </p>
 
-        <!-- Contact Info Screen -->
-        <div id="contact-screen" class="screen">
-            <div class="container">
-                <div class="contact-content">
-                    <h2>¡Casi listo! 📧</h2>
-                    <p>Para enviarte tus resultados personalizados, necesitamos:</p>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">💰 Descuento de miembro fundador</div>
+                        <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
+                        <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
+                        <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
+                    </div>
 
-                    <form id="contact-form">
-                        <div class="form-group">
-                            <label for="user-name">Nombre *</label>
-                            <input type="text" id="user-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="user-email">Email *</label>
-                            <input type="email" id="user-email" required>
-                        </div>
-                        <button type="submit" class="submit-btn">Ver mis resultados</button>
+                    <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+
+                    <form id="main-waitlist-form" class="main-waitlist-form">
+                        <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
+                        <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
+                        <button type="submit" class="btn-primary">
+                            Unirme a la lista de espera
+                        </button>
                     </form>
                 </div>
+            </section>
+        </main>
+
+        <!-- Medical Disclaimer -->
+        <footer class="medical-disclaimer">
+            <div class="container">
+                <p>Este contenido es informativo y no sustituye atención médica.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Survey Page -->
+    <div id="survey-page" class="page">
+        <div class="survey-container">
+            <div class="survey-header">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-bar"></div>
+                </div>
+                <p class="progress-text" id="progress-text">Pregunta 1 de 8</p>
+            </div>
+
+            <div id="pro-mode-indicator" class="pro-mode-indicator" style="display: none;">
+                ✨ Versión PRO - Evaluación Avanzada
+            </div>
+            
+            <div class="survey-content" id="survey-content">
+                <!-- Survey questions will be populated here -->
+            </div>
+
+            <div class="survey-navigation">
+                <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display: none;">
+                    ← Anterior
+                </button>
+                <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
+                    Siguiente →
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- Results Screen -->
-        <div id="results-screen" class="screen">
-            <div class="container">
-                <div id="results-content">
-                    <!-- Results will be populated dynamically -->
+    <!-- Results Page -->
+    <div id="results-page" class="page">
+        <div class="results-container">
+            <div class="results-card" id="results-card">
+                <!-- Results will be populated here -->
+            </div>
+
+            <div class="email-section">
+                <div class="email-header">
+                    <h3 class="email-title">Obtén tus resultados completos</h3>
+                    <p class="email-description">Recibe tu análisis detallado con consejos personalizados por fase del ciclo.</p>
                 </div>
-
-                <div class="results-actions">
-                    <button id="pro-upgrade-btn" class="upgrade-btn">
-                        ✨ Tomar versión Pro para mayor precisión
+                
+                <div class="email-benefits">
+                    <div class="benefit-item">📋 Análisis completo de tu patrón energético</div>
+                    <div class="benefit-item">🌙 Consejos específicos por fase del ciclo</div>
+                    <div class="benefit-item">🌿 Recomendaciones herbales personalizadas</div>
+                    <div class="benefit-item">📚 Guía de estilo de vida adaptada</div>
+                </div>
+                
+                <form id="email-form" class="email-form">
+                    <input type="text" id="user-name" placeholder="Tu nombre" required>
+                    <input type="email" id="user-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Obtener resultados completos por email
                     </button>
-                    <button id="restart-btn" class="secondary-btn">
-                        Hacer quiz de nuevo
+                </form>
+                
+                <div class="pro-section">
+                    <button class="btn-pro" onclick="startProSurvey()">
+                        Toma la versión PRO
                     </button>
+                    <p class="pro-description">Evaluación más profunda con recomendaciones avanzadas</p>
+                </div>
+            </div>
+            
+            <!-- Results Page Footer -->
+            <div class="results-footer">
+                <h3>🌟 Únete a la lista de espera</h3>
+                <p class="waitlist-description">
+                    Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
+                </p>
+
+                <div class="benefits-grid">
+                    <div class="benefit-item">💰 Descuento de miembro fundador</div>
+                    <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
+                    <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
+                    <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
                 </div>
 
-                <div class="waitlist-footer">
-                    <div class="footer-content">
-                        <h3>🌟 Únete a la lista de espera</h3>
-                        <p>Recibe acceso temprano al primer sistema personalizado de medicina herbal para la salud menstrual.</p>
-                        <ul class="benefits-list">
-                            <li>💰 Descuento de miembra fundadora</li>
-                            <li>🔔 Notificaciones de lanzamiento</li>
-                            <li>🎯 Acceso prioritario a tu kit personalizado</li>
-                            <li>📚 Guías gratuitas de salud menstrual</li>
-                        </ul>
-                        <form id="waitlist-form">
-                            <input type="email" placeholder="Tu email" required>
-                            <button type="submit">Unirme a la lista</button>
-                        </form>
-                        <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-                    </div>
-                </div>
+                <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+
+                <form id="results-waitlist-form" class="results-footer-form">
+                    <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
+                    <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Unirme a la lista de espera
+                    </button>
+                </form>
             </div>
         </div>
+    </div>
 
-        <!-- Error Screen -->
-        <div id="error-screen" class="screen">
-            <div class="container">
-                <div class="error-content">
-                    <h2>⚠️ Error</h2>
-                    <p id="error-message">Ha ocurrido un error inesperado.</p>
-                    <button id="retry-btn" class="primary-btn">Intentar de nuevo</button>
+    <!-- Waitlist Page -->
+    <div id="waitlist-page" class="page">
+        <div class="waitlist-container">
+            <div class="waitlist-content">
+                <h2>🌟 Únete a la lista de espera</h2>
+                <p>Recibe acceso temprano al primer sistema de herbolaria personalizada para tu ciclo menstrual en México.</p>
+
+                <div class="benefits-list">
+                    <div class="benefit">💰 Descuento de miembro fundador</div>
+                    <div class="benefit">🔔 Notificaciones de lanzamiento</div>
+                    <div class="benefit">🎯 Acceso prioritario a tu kit personalizado</div>
+                    <div class="benefit">📚 Guías gratuitas de salud menstrual</div>
                 </div>
+
+                <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+
+                <form id="waitlist-form" class="waitlist-form">
+                    <input type="text" id="waitlist-name" placeholder="Tu nombre" required>
+                    <input type="email" id="waitlist-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">
+                        Unirme a la lista de espera
+                    </button>
+                </form>
             </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="modal">
+        <div class="modal-content">
+            <div class="spinner"></div>
+            <p>Procesando tu evaluación...</p>
         </div>
     </div>
 
