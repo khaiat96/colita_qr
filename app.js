@@ -33,29 +33,78 @@ function getQuestionById(qId) {
     return surveyQuestions.find(q => q.id === qId);
 }
 
-// Helper: Evaluate visible_if condition (supports common cases)
+// Improved Helper: Evaluate visible_if condition (supports all common cases from the JSON)
 function isQuestionVisible(question, answers) {
     if (!question.visible_if) return true;
-
     const cond = question.visible_if;
 
-    // Support {question_id, equals}
+    // Simple: question_id + equals
     if (cond.question_id && typeof cond.equals !== "undefined") {
         return answers[cond.question_id] === cond.equals;
     }
-    // Support {question_id, includes}
+    // question_id + includes (single value)
     if (cond.question_id && cond.includes) {
         const ans = answers[cond.question_id];
         if (Array.isArray(ans)) return ans.includes(cond.includes);
         return ans === cond.includes;
     }
-    // Support {all: [...]}, {any: [...]}
+    // question_id + includes_any (array)
+    if (cond.question_id && cond.includes_any) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) {
+            return cond.includes_any.some(val => ans.includes(val));
+        }
+        return cond.includes_any.includes(ans);
+    }
+    // question_id + not_includes_any (array)
+    if (cond.question_id && cond.not_includes_any) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) {
+            return cond.not_includes_any.every(val => !ans.includes(val));
+        }
+        return !cond.not_includes_any.includes(ans);
+    }
+    // question_id + not_in (array)
+    if (cond.question_id && cond.not_in) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) {
+            return cond.not_in.every(val => !ans.includes(val));
+        }
+        return !cond.not_in.includes(ans);
+    }
+    // question_id + at_least (for sliders)
+    if (cond.question_id && typeof cond.at_least !== "undefined") {
+        const ans = answers[cond.question_id];
+        return typeof ans === "number" && ans >= cond.at_least;
+    }
+    // question_id + at_most (for sliders)
+    if (cond.question_id && typeof cond.at_most !== "undefined") {
+        const ans = answers[cond.question_id];
+        return typeof ans === "number" && ans <= cond.at_most;
+    }
+    // Compound: all (array of conditions)
     if (cond.all) {
         return cond.all.every(sub => isQuestionVisible({visible_if: sub}, answers));
     }
+    // Compound: any (array of conditions)
     if (cond.any) {
         return cond.any.some(sub => isQuestionVisible({visible_if: sub}, answers));
     }
+    // not_includes (single value)
+    if (cond.question_id && cond.not_includes) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) return !ans.includes(cond.not_includes);
+        return ans !== cond.not_includes;
+    }
+    // not_equals
+    if (cond.question_id && typeof cond.not_equals !== "undefined") {
+        return answers[cond.question_id] !== cond.not_equals;
+    }
+    // missing
+    if (cond.missing) {
+        return typeof answers[cond.missing] === "undefined";
+    }
+    // Default fallback
     return true;
 }
 
