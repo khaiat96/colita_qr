@@ -17,9 +17,10 @@ window.showPage = function(pageId) {
 };
 
 window.startSurvey = function() {
-    // Survey initialization logic; if you have variables to reset, do so here.
     window.showPage('survey-page');
-    // Additional logic for starting your survey, if needed
+    window.currentQuestionIndex = 0;
+    window.answers = {};
+    renderQuestion();
 };
 
 window.scrollToWaitlist = function() {
@@ -33,11 +34,8 @@ window.scrollToWaitlist = function() {
 // Survey Data Loading Functions
 // ----------------------------------------------------
 
-// You MUST have these async functions defined for your quiz to load.
-// Make sure the corresponding JSON files are present in your public directory.
-
 async function loadSurveyJSON() {
-    const resp = await fetch('survey_questions-combined.json');
+    const resp = await fetch('data/survey_questions-combined.json');
     if (!resp.ok) throw new Error("survey_questions-combined.json not found");
     const surveyData = await resp.json();
     window.surveyQuestions = surveyData.questions;
@@ -45,19 +43,89 @@ async function loadSurveyJSON() {
 }
 
 async function loadDecisionMapping() {
-    const resp = await fetch('decision_mapping-combined.json');
+    const resp = await fetch('data/decision_mapping-combined.json');
     if (!resp.ok) throw new Error("decision_mapping-combined.json not found");
     window.decisionMapping = await resp.json();
 }
 
 async function loadResultsTemplate() {
-    const resp = await fetch('results_template.json');
+    const resp = await fetch('data/results_template.json');
     if (!resp.ok) throw new Error("results_template.json not found");
     window.resultsTemplate = await resp.json();
 }
 
 // ----------------------------------------------------
-// Your existing form and survey logic
+// Survey Rendering and Option Selection
+// ----------------------------------------------------
+
+function renderQuestion() {
+    const currentIndex = window.currentQuestionIndex || 0;
+    const questionOrder = window.questionOrder || [];
+    const surveyQuestions = window.surveyQuestions || [];
+    const answers = window.answers || {};
+
+    if (!questionOrder.length || !surveyQuestions.length) {
+        document.getElementById('survey-content').innerHTML = "<div>No hay preguntas disponibles.</div>";
+        return;
+    }
+
+    const qId = questionOrder[currentIndex];
+    const question = surveyQuestions.find(q => q.id === qId);
+
+    if (!question) {
+        document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
+        return;
+    }
+
+    // Build options HTML
+    let optionsHtml = "";
+    if (question.options && Array.isArray(question.options)) {
+        question.options.forEach(option => {
+            optionsHtml += `
+                <div class="option" data-value="${option.value}" onclick="selectOption('${option.value}', ${question.type === 'multi_select'})">
+                    ${option.label}
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('survey-content').innerHTML = `
+        <div class="question">
+            <h3>${question.title}</h3>
+            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ""}
+            <div class="options">${optionsHtml}</div>
+        </div>
+    `;
+}
+
+window.selectOption = function(value, isMultiSelect) {
+    const currentIndex = window.currentQuestionIndex || 0;
+    const questionOrder = window.questionOrder || [];
+    const surveyQuestions = window.surveyQuestions || [];
+    const qId = questionOrder[currentIndex];
+    const question = surveyQuestions.find(q => q.id === qId);
+
+    if (!question) return;
+
+    if (isMultiSelect) {
+        if (!window.answers[qId]) window.answers[qId] = [];
+        const arr = window.answers[qId];
+        if (arr.includes(value)) {
+            window.answers[qId] = arr.filter(v => v !== value);
+        } else {
+            window.answers[qId].push(value);
+        }
+    } else {
+        window.answers[qId] = value;
+    }
+
+    // Move to next question
+    window.currentQuestionIndex = currentIndex + 1;
+    renderQuestion();
+};
+
+// ----------------------------------------------------
+// Waitlist Form Logic
 // ----------------------------------------------------
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -110,7 +178,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     if (resp.ok) {
                         alert('¡Gracias por unirte a la lista de espera!');
                         form.reset();
-                        // No reroute to landing page!
                     } else {
                         throw new Error('No se pudo enviar tu información.');
                     }
