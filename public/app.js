@@ -135,9 +135,9 @@ function renderQuestion() {
     let optionsHtml = '';
 
     // Handle multi_select, single_choice, slider, etc.
-if (question.type === 'multiselect' || question.type === 'single_choice') {  // ✅ Fixed
+    if (question.type === 'multiselect' || question.type === 'single_choice') {  // ✅ Fixed
         question.options.forEach((option, index) => {
-const isMultiSelect = question.type === 'multiselect';  // ✅ Fixed
+        const isMultiSelect = question.type === 'multiselect';  // ✅ Fixed
             const optionClass = isMultiSelect ? 'option multi-select' : 'option';
             const selected = isMultiSelect 
                 ? (answers[question.id] && answers[question.id].includes(option.value)) 
