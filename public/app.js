@@ -239,27 +239,41 @@ function updateProgress() {
 function updateNavigation() {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
+    let hasAnswer = false;
 
-    let hasAnswer;
-    if (question.type === "multi_select" && question.validation && question.validation.min_selected === 0) {
-        hasAnswer = true;
-    } else if (question.type === "multi_select") {
-        hasAnswer = answers[question.id] && answers[question.id].length >= (question.validation?.min_selected ?? 0);
-    } else if (question.type === "single_choice") {
-        hasAnswer = !!answers[question.id];
-    } else if (question.type === "slider") {
-        hasAnswer = typeof answers[question.id] === "number";
+    // Enhanced debug
+    console.log('🔧 Navigation Debug:', {
+        qId,
+        type: question.type,
+        validation: question.validation,
+        currentAnswer: answers[qId]
+    });
+
+    if (question.type === 'multi_select') {
+        const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
+        const minSelected = question.validation?.min_selected ?? 1;
+
+        if (minSelected === 0) {
+            // Accept both [] and undefined as "valid" for navigation
+            hasAnswer = true;
+        } else {
+            hasAnswer = selected.length >= minSelected;
+        }
+    } else if (question.type === 'single_choice') {
+        hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+    } else if (question.type === 'slider') {
+        hasAnswer = typeof answers[qId] === 'number';
     } else {
-        hasAnswer = !!answers[question.id];
+        hasAnswer = !!answers[qId];
     }
 
-    // Enable/disable next button accordingly
+    // Enable/disable next button
     document.getElementById('next-btn').disabled = !hasAnswer;
 
-    // Show/hide back button
-    document.getElementById('back-btn').style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) > -1 ? 'block' : 'none';
+    // Show/hide back button  
+    document.getElementById('back-btn').style.display = 
+        getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
 }
-
 // Navigation
 window.nextQuestion = function() {
     // Defensive: always land on visible question
