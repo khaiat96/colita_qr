@@ -41,10 +41,8 @@ async function loadResultsTemplate() {
 
 // Helper: Find question by ID, supports top-level and nested (compound/grouped) questions
 function getQuestionById(qId) {
-    // Top-level
     let question = surveyQuestions.find(q => q.id === qId);
     if (question) return question;
-    // Compound/grouped: items or questions array
     for (const q of surveyQuestions) {
         if (q.items) {
             let subQ = q.items.find(sub => sub.id === qId);
@@ -62,7 +60,6 @@ function getQuestionById(qId) {
 function isQuestionVisible(question, answers) {
     if (!question.visible_if) return true;
     const cond = question.visible_if;
-
     if (cond.question_id && cond.includes) {
         const ans = answers[cond.question_id];
         if (Array.isArray(cond.includes)) {
@@ -159,7 +156,6 @@ function getPrevVisibleQuestionIndex(fromIndex) {
 }
 
 // Page navigation functions
-
 window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -225,7 +221,6 @@ function renderQuestion() {
     const surveyContent = document.getElementById('survey-content');
     let optionsHtml = '';
 
-    // Support compound and grouped question types, only render visible subquestions
     if (question.type === 'compound' || question.type === 'grouped') {
         let subQuestions = question.items || question.questions;
         optionsHtml = subQuestions.filter(subQ => isQuestionVisible(subQ, answers)).map((subQuestion) => {
@@ -300,7 +295,6 @@ function renderQuestion() {
     updateNavigation();
 }
 
-// Update selectOption and selectSlider to accept an override question ID for sub-questions
 window.selectOption = function(value, isMultiSelect, qIdOverride) {
     const qId = qIdOverride || questionOrder[currentQuestionIndex];
     let question = getQuestionById(qId);
@@ -353,7 +347,6 @@ function updateNavigation() {
     const question = getQuestionById(qId);
     let hasAnswer = false;
 
-    // For compound/grouped questions: check if all required sub-questions are answered and visible
     if (question && (question.type === 'compound' || question.type === 'grouped')) {
         let subQuestions = question.items || question.questions;
         hasAnswer = subQuestions.filter(subQ => isQuestionVisible(subQ, answers)).every(subQ => {
@@ -412,7 +405,6 @@ function calculateResults() {
     };
 
     surveyQuestions.forEach(question => {
-        // For compound/grouped questions, also check sub-questions
         if (question.type === 'compound' || question.type === 'grouped') {
             let subQuestions = question.items || question.questions;
             subQuestions.forEach(subQ => {
@@ -461,9 +453,7 @@ function calculateResults() {
 
 async function finishSurvey() {
     document.getElementById('loading-modal').classList.add('show');
-
     const dominantPattern = calculateResults();
-
     try {
         await supabase
             .from('survey_responses')
@@ -479,7 +469,6 @@ async function finishSurvey() {
     } catch (error) {
         console.error('Error saving to Supabase:', error);
     }
-
     setTimeout(() => {
         document.getElementById('loading-modal').classList.remove('show');
         showResults(dominantPattern);
@@ -521,4 +510,88 @@ function showResults(patternKey) {
                 'Mejoría con movimiento suave'
             ]
         },
-       
+        sequedad: {
+            element: 'Agua 💧',
+            pattern: 'Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga',
+            characteristics: [
+                'Sangrado muy escaso o ausente',
+                'Sed y sequedad',
+                'Cansancio, sueño no reparador',
+                'Rigidez articular',
+                'Irritabilidad por agotamiento'
+            ]
+        }
+    };
+    const pattern = elementPatterns[patternKey];
+    const resultsCard = document.getElementById('results-card');
+    const characteristicsHtml = pattern.characteristics.map(char => `<li>${char}</li>`).join('');
+    const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
+    resultsCard.innerHTML = `
+        ${proModeText}
+        <h2>${pattern.element}</h2>
+        <h3>${pattern.pattern}</h3>
+        <ul class="characteristics">
+            ${characteristicsHtml}
+        </ul>
+        <div class="disclaimer">
+            <strong>Nota importante:</strong> Esta evaluación es orientativa y no sustituye el consejo médico profesional. Consulta siempre con un profesional de la salud para cualquier problema menstrual.
+        </div>
+    `;
+    showPage('results-page');
+}
+
+// Waitlist form handler for all pages
+document.addEventListener('DOMContentLoaded', async function() {
+    showPage('landing-page');
+    isProMode = false;
+    try {
+        await loadSurveyJSON();
+        await loadDecisionMapping();
+        await loadResultsTemplate();
+    } catch (err) {
+        alert('No se pudieron cargar las preguntas del quiz.');
+        console.error(err);
+    }
+    // List of waitlist forms on all pages
+    const waitlistForms = [
+        document.getElementById('waitlist-form'),
+        document.getElementById('main-waitlist-form'),
+        document.getElementById('results-waitlist-form')
+    ];
+    waitlistForms.forEach(form => {
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                // Find the name/email input fields in the form
+                const nameInput = form.querySelector('input[type="text"], input[name="name"]');
+                const emailInput = form.querySelector('input[type="email"], input[name="email"]');
+                const name = nameInput ? nameInput.value.trim() : '';
+                const email = emailInput ? emailInput.value.trim() : '';
+                if (!name || !email) {
+                    alert('Por favor ingresa tu nombre y correo.');
+                    return;
+                }
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+                try {
+                    const resp = await fetch(WAITLIST_WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email })
+                    });
+                    if (resp.ok) {
+                        alert('¡Gracias por unirte a la lista de espera!');
+                        form.reset();
+                        // Do NOT reroute to landing page
+                        // Optionally, show a thank you modal or keep user on same page
+                    } else {
+                        throw new Error('No se pudo enviar tu información.');
+                    }
+                } catch (err) {
+                    alert('Error al enviar. Intenta de nuevo.');
+                }
+                if (submitBtn) submitBtn.disabled = false;
+            });
+        }
+    });
+});

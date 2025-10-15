@@ -6,6 +6,10 @@
     <title>Colita de Rana - Tu medicina personalizada</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
 </head>
 <body>
     <!-- Landing Page -->
@@ -33,11 +37,14 @@
                 <p class="section-subtitle">
                     Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.
                 </p>
-                <button class="btn-primary" onclick="startSurvey()">
+                <button class="btn-primary" onclick="showPage('survey-page')">
                     Toma el quiz
                 </button>
+                <button class="btn-primary" onclick="showPage('waitlist-page')">
+                    Ir a la lista de espera
+                </button>
             </section>
-        
+
             <!-- Elements Section -->
             <section class="elements-section">
                 <h2>Los 4 elementos en tu ciclo</h2>
@@ -97,7 +104,6 @@
                         <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
                     </div>
                     <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-                    <!-- Waitlist Form for landing page -->
                     <form id="main-waitlist-form" class="main-waitlist-form">
                         <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
                         <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
@@ -132,14 +138,9 @@
             </div>
             <div class="survey-content" id="survey-content">
                 <!-- Survey questions will be populated here -->
-            </div>
-            <div class="survey-navigation">
-                <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display: none;">
-                    ← Anterior
-                </button>
-                <button class="btn-primary" id="next-btn" onclick="nextQuestion()" disabled>
-                    Siguiente →
-                </button>
+                <p>¿Cómo te sientes hoy?</p>
+                <button class="btn-primary" onclick="showPage('results-page')">Ver resultados</button>
+                <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
             </div>
         </div>
     </div>
@@ -152,6 +153,8 @@
         <div class="results-container">
             <div class="results-card" id="results-card">
                 <!-- Results will be populated here -->
+                <h2>Resultados</h2>
+                <p>¡Este es tu resultado de ejemplo!</p>
             </div>
             <div class="email-section">
                 <form id="email-form" class="email-form">
@@ -162,7 +165,7 @@
                     </button>
                 </form>
                 <div class="pro-section">
-                    <button class="simplified-pro-button" onclick="startProSurvey()">
+                    <button class="simplified-pro-button" onclick="showPage('survey-page')">
                         Toma la versión PRO
                     </button>
                 </div>
@@ -176,6 +179,7 @@
                         Unirme a la lista de espera
                     </button>
                 </form>
+                <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
             </div>
         </div>
     </div>
@@ -195,6 +199,7 @@
                         Unirme a la lista de espera
                     </button>
                 </form>
+                <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
             </div>
         </div>
     </div>
@@ -206,6 +211,49 @@
             <p>Procesando tu evaluación...</p>
         </div>
     </div>
-    <script src="app.js"></script>
+
+    <script>
+    // Basic navigation handler
+    window.showPage = function(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        var page = document.getElementById(pageId);
+        if (page) page.classList.add('active');
+    };
+
+    window.scrollToWaitlist = function() {
+        var waitlistSection = document.getElementById('waitlist-section');
+        if (waitlistSection) {
+            waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    // Waitlist form handler for all pages
+    function setupWaitlistForms() {
+        var forms = [
+            document.getElementById('main-waitlist-form'),
+            document.getElementById('results-waitlist-form'),
+            document.getElementById('waitlist-form')
+        ];
+        forms.forEach(function(form) {
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var name = form.querySelector('input[type="text"]').value.trim();
+                    var email = form.querySelector('input[type="email"]').value.trim();
+                    if (!name || !email) {
+                        alert('Por favor ingresa tu nombre y correo.');
+                        return;
+                    }
+                    alert('¡Gracias por unirte a la lista de espera!\nNombre: ' + name + '\nEmail: ' + email);
+                    form.reset();
+                });
+            }
+        });
+    }
+
+    window.onload = function() {
+        setupWaitlistForms();
+    };
+    </script>
 </body>
 </html>
