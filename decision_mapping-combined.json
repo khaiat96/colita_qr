@@ -37,8 +37,7 @@
     "core_domains": [
       "P2",
       "P3",
-      "P2q_color",
-      "P2q_textura"
+      "P2_periodo_calidad",
     ],
     "support_domains": [
       "P4",
@@ -48,18 +47,14 @@
       "P3_hinchazon_modificador",
       "P1_onset_timing",
       "P1_no_cycle_desde_cuando",
-      "P2q_dolor_empeora",
-      "P2q_cantidad",
       "P3_quick_test_frio_sequedad",
       "P2_margen_calor_humedad",
       "P2b_margen_calor_humedad",
-      "P2q_productos_por_dia",
       "P8_sequedad_detalle",
       "P8_que_alivia_sequedad",
       "P8_contexto_sequedad",
       "P2_spotting_frecuencia",
       "P2_spotting_context",
-      "P2q_coagulo_tamano",
       "P5b_preferencia_termica_bebidas",
       "P9_sueno_calidad",
       "P9_estres",
