@@ -341,13 +341,17 @@ function renderQuestion() {
 
     // Next button logic
     let hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
-    // Always allow next for optional multi_select questions (like P2, P2_spot_pre_post, etc)
-    if (question.type === "multi_select" && question.validation && question.validation.min_selected === 0) {
-    hasAnswer = true;
+    // Always allow next for optional multi_select questions
+    if (
+        question.type === "multi_select" &&
+        question.validation &&
+        question.validation.min_selected === 0
+    ) {
+        hasAnswer = true;
     }
     if (hasAnswer || question.type === 'slider') {
-    html += `<button class="btn-primary" onclick="goToNextQuestion()">Siguiente →</button>`;
-}
+        html += `<button class="btn-primary" onclick="goToNextQuestion()">Siguiente →</button>`;
+    }
 
     html += `</div>`;
 
