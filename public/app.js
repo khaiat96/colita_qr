@@ -2,6 +2,8 @@
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 
 let questionOrder = [];
 let surveyQuestions = [];
@@ -142,7 +144,10 @@ function renderQuestion() {
         answers[qId] = [];
     }
 
+    // Defensive check: Ensure survey-content exists
     const surveyContent = document.getElementById('survey-content');
+    if (!surveyContent) return; // Prevent error if DOM not ready
+
     let optionsHtml = '';
 
     // Handle multi_select, single_choice, slider, etc.
@@ -187,7 +192,6 @@ function renderQuestion() {
     updateProgress();
     updateNavigation();
 }
-
 window.selectOption = function(value, isMultiSelect) {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
@@ -432,8 +436,25 @@ function showResults(patternKey) {
 
     showPage('results-page');
 }
-
 // Email and waitlist forms: unchanged from before—ensure any fetches/IDs match your HTML!
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    document.getElementById(pageId).classList.add('active');
+}
+
+function startSurvey() {
+    if (!surveyQuestions.length || !questionOrder.length) {
+        alert('Las preguntas del quiz no se han cargado aún. Intenta de nuevo en unos segundos.');
+        return;
+    }
+    showPage('survey-page');
+    currentQuestionIndex = 0;
+    answers = {};
+    renderQuestion();
+}
 
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
