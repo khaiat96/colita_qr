@@ -110,6 +110,20 @@ function isQuestionVisible(question, answers) {
         return inclAnyArr.some(val => ansArr.includes(val));
     }
 
+    // not_includes_any (array) 
+    if (cond.question_id && cond.not_includes_any) {
+        const ans = answers[cond.question_id];
+        const notInclArr = Array.isArray(cond.not_includes_any) ? cond.not_includes_any : [cond.not_includes_any];
+        const ansArr = Array.isArray(ans) ? ans : [ans];
+        return notInclArr.every(val => !ansArr.includes(val));
+    }
+
+    // at_least (number comparison)
+    if (cond.question_id && typeof cond.at_least !== "undefined") {
+        const ans = Number(answers[cond.question_id]) || 0;
+        return ans >= cond.at_least;
+    }
+
     // Compound: all (array of conditions)
     if (cond.all && Array.isArray(cond.all)) {
         return cond.all.every(subCond => isQuestionVisible({visible_if: subCond}, answers));
@@ -128,13 +142,13 @@ function isQuestionVisible(question, answers) {
 function getNextVisibleIndex(fromIndex) {
     let idx = fromIndex + 1;
     while (
-      idx < window.questionOrder.length &&
-      !isQuestionVisible(
-        window.surveyQuestions.find(q => q.id === window.questionOrder[idx]),
-        window.answers
-      )
+        idx < window.questionOrder.length &&
+        !isQuestionVisible(
+            window.surveyQuestions.find(q => q.id === window.questionOrder[idx]),
+            window.answers
+        )
     ) {
-      idx++;
+        idx++;
     }
     return idx;
 }
@@ -143,13 +157,13 @@ function getNextVisibleIndex(fromIndex) {
 function getPrevVisibleIndex(fromIndex) {
     let idx = fromIndex - 1;
     while (
-      idx >= 0 &&
-      !isQuestionVisible(
-        window.surveyQuestions.find(q => q.id === window.questionOrder[idx]),
-        window.answers
-      )
+        idx >= 0 &&
+        !isQuestionVisible(
+            window.surveyQuestions.find(q => q.id === window.questionOrder[idx]),
+            window.answers
+        )
     ) {
-      idx--;
+        idx--;
     }
     return idx;
 }
@@ -172,52 +186,156 @@ function renderQuestion() {
     window.currentQuestionIndex = currentIndex;
 
     if (currentIndex >= questionOrder.length) {
-        document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
+        // Survey completed - calculate pattern and save
+        document.getElementById('survey-content').innerHTML = `
+            <div class="completion-message">
+                <h3>🎉 ¡Encuesta completada!</h3>
+                <p>Calculando tu patrón menstrual...</p>
+                <div id="save-status">Procesando...</div>
+                <div id="pattern-result" style="margin-top: 20px; display: none;"></div>
+            </div>
+        `;
+
+        // Calculate and save results
+        submitCompleteSurveyWithResults(answers).then(result => {
+            const statusDiv = document.getElementById('save-status');
+            const patternDiv = document.getElementById('pattern-result');
+
+            if (result.success) {
+                statusDiv.innerHTML = '✅ Respuestas guardadas correctamente';
+                patternDiv.innerHTML = `
+                    <h4>Tu Patrón: ${result.pattern.period_pattern}</h4>
+                    <p>Confianza: ${result.pattern.pattern_confidence}</p>
+                    ${result.pattern.is_mixed_pattern ? '<p>🔄 Patrón mixto detectado</p>' : ''}
+                `;
+                patternDiv.style.display = 'block';
+            } else {
+                statusDiv.innerHTML = '⚠️ Error guardando respuestas: ' + result.error;
+            }
+        });
+
         return;
     }
 
     const qId = questionOrder[currentIndex];
     const question = surveyQuestions.find(q => q.id === qId);
 
-    let optionsHtml = "";
+    if (!question) {
+        document.getElementById('survey-content').innerHTML = `<p>Error: Question ${qId} not found</p>`;
+        return;
+    }
 
-    if (question.type === 'multi_select' || question.type === 'single_choice') {
-        question.options?.forEach(option => {
-            optionsHtml += `
-                <div class="option" data-value="${option.value}" onclick="selectOption('${option.value}', ${question.type === 'multi_select'})">
-                    ${option.label}
+    let html = '';
+
+    // Progress indicator
+    const totalQuestions = questionOrder.length;
+    const progressPercent = Math.round((currentIndex / totalQuestions) * 100);
+    html += `
+        <div class="progress-container">
+            <div class="progress-bar" style="width: ${progressPercent}%"></div>
+        </div>
+        <div class="progress-text">${currentIndex + 1} de ${totalQuestions}</div>
+    `;
+
+    // Question title
+    html += `<h3 class="question-title">${question.title}</h3>`;
+
+    // Question description
+    if (question.description) {
+        html += `<p class="question-description">${question.description}</p>`;
+    }
+
+    // Render based on question type
+    if (question.type === 'single_choice') {
+        html += `<div class="options-container">`;
+        question.options.forEach(option => {
+            const isSelected = answers[qId] === option.value;
+            html += `
+                <div class="option ${isSelected ? 'selected' : ''}" 
+                     onclick="selectOption('${option.value}', false)">
+                    <div class="option-indicator"></div>
+                    <span class="option-text">${option.label}</span>
                 </div>
             `;
         });
+        html += `</div>`;
+
+    } else if (question.type === 'multi_select') {
+        html += `<div class="options-container">`;
+        question.options.forEach(option => {
+            const isSelected = answers[qId] && answers[qId].includes(option.value);
+            html += `
+                <div class="option ${isSelected ? 'selected' : ''}" 
+                     onclick="selectOption('${option.value}', true)">
+                    <div class="option-indicator"></div>
+                    <span class="option-text">${option.label}</span>
+                </div>
+            `;
+        });
+        html += `</div>`;
+
     } else if (question.type === 'slider') {
         const sliderValue = answers[question.id] !== undefined ? answers[question.id] : question.min;
-        optionsHtml = `
-            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
-                value="${sliderValue}" id="slider-input"
-                oninput="document.getElementById('slider-value').innerText = this.value"
-                onchange="selectSlider('${question.id}', this.value)">
-            <span id="slider-value">${sliderValue}</span>
+        html += `
+            <div class="slider-container">
+                <div class="slider-labels">
+                    <span>${question.min_label || question.min}</span>
+                    <span>${question.max_label || question.max}</span>
+                </div>
+                <input type="range" min="${question.min}" max="${question.max}" step="${question.step || 1}" 
+                       value="${sliderValue}" id="slider-input"
+                       oninput="document.getElementById('slider-value').innerText = this.value; window.answers['${question.id}'] = Number(this.value)">
+                <div class="slider-value">
+                    Valor: <span id="slider-value">${sliderValue}</span>
+                </div>
+            </div>
         `;
-    } else {
-        optionsHtml = `<div>No options for this question type.</div>`;
+
+    } else if (question.type === 'compound') {
+        html += `<div class="compound-container">`;
+        question.questions.forEach(subQ => {
+            html += `<div class="sub-question">`;
+            html += `<h4>${subQ.title}</h4>`;
+            if (subQ.type === 'single_choice') {
+                html += `<div class="options-container">`;
+                subQ.options.forEach(option => {
+                    const isSelected = answers[subQ.id] === option.value;
+                    html += `
+                        <div class="option ${isSelected ? 'selected' : ''}" 
+                             onclick="selectCompoundOption('${subQ.id}', '${option.value}')">
+                            <div class="option-indicator"></div>
+                            <span class="option-text">${option.label}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+        });
+        html += `</div>`;
     }
 
-    document.getElementById('survey-content').innerHTML = `
-        <div class="question">
-            <h3>${question.title}</h3>
-            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ""}
-            <div class="options">${optionsHtml}</div>
-        </div>
-    `;
+    // Navigation buttons
+    html += `<div class="navigation-buttons">`;
 
-    // Navigation
-    document.getElementById('next-btn').onclick = nextQuestion;
-    document.getElementById('back-btn').onclick = previousQuestion;
-    document.getElementById('back-btn').style.display = getPrevVisibleIndex(currentIndex) >= 0 ? 'block' : 'none';
-    document.getElementById('next-btn').disabled = !(window.answers[qId]);
+    // Back button
+    const prevIndex = getPrevVisibleIndex(currentIndex);
+    if (prevIndex >= 0) {
+        html += `<button class="btn-secondary" onclick="goToPreviousQuestion()">← Anterior</button>`;
+    }
+
+    // Next button
+    const hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+    if (hasAnswer || question.type === 'slider') {
+        html += `<button class="btn-primary" onclick="goToNextQuestion()">Siguiente →</button>`;
+    }
+
+    html += `</div>`;
+
+    document.getElementById('survey-content').innerHTML = html;
 }
 
-// Handles single/multi-select answers and always skips to next visible
+// Selection functions
 window.selectOption = function(value, isMultiSelect) {
     const currentIndex = window.currentQuestionIndex || 0;
     const questionOrder = window.questionOrder || [];
@@ -239,84 +357,344 @@ window.selectOption = function(value, isMultiSelect) {
         window.answers[qId] = value;
     }
 
-    // Move to next visible question!
+    if (isDebug()) console.log(`selectOption: Saved answer for ${qId}:`, window.answers[qId]);
+
+    // Move to next visible question automatically for single choice
+    if (!isMultiSelect) {
+        window.currentQuestionIndex = getNextVisibleIndex(currentIndex);
+        renderQuestion();
+    } else {
+        // Just re-render to update selection state for multi-select
+        renderQuestion();
+    }
+};
+
+window.selectCompoundOption = function(subQuestionId, value) {
+    window.answers[subQuestionId] = value;
+    if (isDebug()) console.log(`selectCompoundOption: Saved answer for ${subQuestionId}:`, value);
+    renderQuestion();
+};
+
+window.goToNextQuestion = function() {
+    const currentIndex = window.currentQuestionIndex || 0;
     window.currentQuestionIndex = getNextVisibleIndex(currentIndex);
     renderQuestion();
 };
 
-window.selectSlider = function(qId, value) {
-    window.answers[qId] = Number(value);
-    window.currentQuestionIndex = getNextVisibleIndex(window.currentQuestionIndex);
+window.goToPreviousQuestion = function() {
+    const currentIndex = window.currentQuestionIndex || 0;
+    window.currentQuestionIndex = getPrevVisibleIndex(currentIndex);
     renderQuestion();
 };
 
-function nextQuestion() {
-    window.currentQuestionIndex = getNextVisibleIndex(window.currentQuestionIndex);
-    renderQuestion();
-}
-function previousQuestion() {
-    window.currentQuestionIndex = getPrevVisibleIndex(window.currentQuestionIndex);
-    renderQuestion();
-}
-
-// Waitlist Form Logic
+// Initialize when page loads
 document.addEventListener('DOMContentLoaded', async function() {
-    showPage('landing-page');
-    window.isProMode = false;
-
     try {
-        await loadSurveyJSON();
-        await loadDecisionMapping();
-        await loadResultsTemplate();
-    } catch (err) {
-        alert('No se pudieron cargar las preguntas del quiz.');
-        console.error(err);
+        await Promise.all([
+            loadSurveyJSON(),
+            loadDecisionMapping(),
+            loadResultsTemplate()
+        ]);
+        console.log('✅ All survey data loaded successfully');
+    } catch (error) {
+        console.error('❌ Error loading survey data:', error);
+        document.getElementById('survey-content').innerHTML = `
+            <div class="error-message">
+                <h3>Error loading survey</h3>
+                <p>${error.message}</p>
+                <p>Please make sure all JSON files are present in the same directory.</p>
+            </div>
+        `;
+    }
+});
+
+// =================================================================
+// ENHANCED SURVEY FUNCTIONS - PATTERN CALCULATION AND SAVING
+// =================================================================
+
+// Function to calculate period pattern
+function calculatePeriodPattern(answers) {
+    const scores = {
+        tension: 0,
+        calor: 0,
+        frio: 0,
+        humedad: 0,
+        sequedad: 0
+    };
+
+    if (isDebug()) console.log('🧮 Calculating pattern for answers:', answers);
+
+    // P2 symptom scoring
+    if (answers.P2 && Array.isArray(answers.P2)) {
+        answers.P2.forEach(symptom => {
+            if (symptom.includes('Sangrado abundante (rojo brillante')) scores.calor += 3;
+            if (symptom.includes('Sangrado abundante (prolongado, con coágulos')) {
+                scores.humedad += 3;
+                scores.frio += 1;
+            }
+            if (symptom.includes('Dolor o cólicos')) scores.tension += 3;
+            if (symptom.includes('Hinchazón o retención')) scores.humedad += 2;
+            if (symptom.includes('Sangrado escaso o ausente')) {
+                scores.sequedad += 2;
+                scores.frio += 2;
+            }
+            if (symptom.includes('Fatiga o cansancio extremo')) scores.sequedad += 2;
+            if (symptom.includes('Cambios de humor')) scores.tension += 2;
+        });
     }
 
-    // List of waitlist forms on all pages
-    const waitlistForms = [
-        document.getElementById('waitlist-form'),
-        document.getElementById('main-waitlist-form'),
-        document.getElementById('results-waitlist-form')
-    ];
+    // P3 scoring
+    if (answers.P3 && Array.isArray(answers.P3)) {
+        answers.P3.forEach(sign => {
+            if (sign.includes('Calor, enrojecimiento')) scores.calor += 2;
+            if (sign.includes('Frío en manos/pies')) scores.frio += 2;
+            if (sign.includes('Hinchazón, pesadez')) scores.humedad += 2;
+            if (sign.includes('Sequedad')) scores.sequedad += 2;
+            if (sign.includes('Lengua pálida')) scores.frio += 1;
+        });
+    }
 
-    waitlistForms.forEach(form => {
-        if (form) {
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
+    // Slider scores
+    if (answers.P2_hinchazon_severidad) {
+        const severity = Number(answers.P2_hinchazon_severidad);
+        if (severity >= 9) scores.humedad += 3;
+        else if (severity >= 7) scores.humedad += 2;
+        else if (severity >= 5) scores.humedad += 1;
+    }
 
-                const nameInput = form.querySelector('input[type="text"], input[name="name"]');
-                const emailInput = form.querySelector('input[type="email"], input[name="email"]');
-                const name = nameInput ? nameInput.value.trim() : '';
-                const email = emailInput ? emailInput.value.trim() : '';
+    if (answers.P2_fatiga_severidad) {
+        const fatigue = Number(answers.P2_fatiga_severidad);
+        if (fatigue >= 8) scores.sequedad += 2;
+        else if (fatigue >= 6) scores.sequedad += 1;
+    }
 
-                if (!name || !email) {
-                    alert('Por favor ingresa tu nombre y correo.');
-                    return;
-                }
+    if (answers.P2_animo_severidad) {
+        const mood = Number(answers.P2_animo_severidad);
+        if (mood >= 8) scores.tension += 2;
+        else if (mood >= 6) scores.tension += 1;
+    }
 
-                const submitBtn = form.querySelector('button[type="submit"]');
-                if (submitBtn) submitBtn.disabled = true;
+    // Determine primary pattern
+    const sortedScores = Object.entries(scores).sort(([,a], [,b]) => b - a);
+    const topPattern = sortedScores[0][0];
+    const topScore = sortedScores[0][1];
+    const secondPattern = sortedScores[1][0];
+    const secondScore = sortedScores[1][1];
 
-                try {
-                    const resp = await fetch(WAITLIST_WEBHOOK, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name, email })
-                    });
+    const margin = topScore - secondScore;
+    let confidence = 'Baja';
+    if (margin >= 3) confidence = 'Alta';
+    else if (margin >= 2) confidence = 'Media';
 
-                    if (resp.ok) {
-                        alert('¡Gracias por unirte a la lista de espera!');
-                        form.reset();
-                    } else {
-                        throw new Error('No se pudo enviar tu información.');
-                    }
-                } catch (err) {
-                    alert('Error al enviar. Intenta de nuevo.');
-                }
+    // Check for mixed patterns
+    const isMixed = margin <= 1 && topScore >= 2 && secondScore >= 2;
 
-                if (submitBtn) submitBtn.disabled = false;
-            });
+    const result = {
+        period_pattern: isMixed ? `${topPattern}${secondPattern}` : topPattern,
+        pattern_confidence: confidence,
+        is_mixed_pattern: isMixed,
+        mixed_patterns: isMixed ? [topPattern, secondPattern] : null,
+        tension_score: scores.tension,
+        calor_score: scores.calor,
+        frio_score: scores.frio,
+        humedad_score: scores.humedad,
+        sequedad_score: scores.sequedad,
+        total_score: Object.values(scores).reduce((a, b) => a + b, 0),
+        margin: margin
+    };
+
+    if (isDebug()) console.log('🎯 Pattern calculated:', result);
+    return result;
+}
+
+// Function to extract triage flags
+function extractTriageFlags(answers, patternResults) {
+    const flags = {};
+
+    // Heavy flow triage
+    if (answers.P2 && Array.isArray(answers.P2)) {
+        const hasHeavyFlow = answers.P2.some(symptom => symptom.includes('Sangrado abundante'));
+        const highQuantity = Number(answers.P2_cantidad) >= 7;
+        const frequentChange = answers.P2_abundancia === '1h';
+
+        if (hasHeavyFlow && (highQuantity || frequentChange)) {
+            flags.heavy_flow = {
+                severity: 'high',
+                reason: 'Sangrado abundante con cambio frecuente de productos'
+            };
         }
-    });
-});
+    }
+
+    // Pain triage  
+    if (answers.P2 && answers.P2.includes('Dolor o cólicos')) {
+        const painSeverity = Number(answers.P2_dolor_severidad);
+        if (painSeverity >= 9) {
+            flags.severe_pain = {
+                severity: 'high',
+                reason: 'Dolor de intensidad 9-10/10'
+            };
+        }
+    }
+
+    // Low flow triage
+    if (answers.P1 === 'Irregular (varía >7 días entre ciclos)' &&
+        answers.P2 && answers.P2.includes('Sangrado escaso o ausente')) {
+        flags.low_flow = {
+            severity: 'medium',
+            reason: 'Irregularidad con sangrado escaso'
+        };
+    }
+
+    return flags;
+}
+
+// Enhanced function to submit complete survey with pattern results
+async function submitCompleteSurveyWithResults(answers) {
+    if (isDebug()) console.log('📊 Submitting complete survey with pattern calculation...', answers);
+
+    try {
+        // 1. Calculate period pattern
+        const patternResults = calculatePeriodPattern(answers);
+
+        // 2. Extract triage flags
+        const triageFlags = extractTriageFlags(answers, patternResults);
+
+        // 3. Extract key fields
+        const extractedFields = {
+            p1_cycle_regularity: answers.P1 || null,
+            p2_symptoms: answers.P2 || [],
+            p7_symptom_timing: answers.P7 || null,
+            contraception_type: answers.P0_contraception || null
+        };
+
+        // 4. Prepare complete survey data
+        const surveyData = {
+            answers: answers,
+            period_pattern: patternResults.period_pattern,
+            pattern_confidence: patternResults.pattern_confidence,
+            is_mixed_pattern: patternResults.is_mixed_pattern,
+            mixed_patterns: patternResults.mixed_patterns,
+            tension_score: patternResults.tension_score,
+            calor_score: patternResults.calor_score,
+            frio_score: patternResults.frio_score,
+            humedad_score: patternResults.humedad_score,
+            sequedad_score: patternResults.sequedad_score,
+            ...extractedFields,
+            triage_flags: triageFlags,
+            has_heavy_flow_flag: !!triageFlags.heavy_flow,
+            has_pain_flag: !!triageFlags.severe_pain,
+            has_low_flow_flag: !!triageFlags.low_flow,
+            survey_version: 'v5.4.0',
+            mode: window.currentMode || 'regular',
+            session_id: window.sessionId || generateSessionId(),
+            user_agent: navigator.userAgent,
+            started_at: window.surveyStartTime || new Date().toISOString(),
+            completed_at: new Date().toISOString()
+        };
+
+        // 5. Save to Supabase
+        const { data, error } = await supabase
+            .from('survey_responses')
+            .insert([surveyData])
+            .select();
+
+        if (error) {
+            console.error('❌ Supabase save error:', error);
+            throw error;
+        }
+
+        if (isDebug()) console.log('✅ Complete survey saved:', data);
+
+        // 6. Optional: Send email notification
+        try {
+            const emailData = {
+                type: 'survey_results',
+                survey_id: data[0].id,
+                period_pattern: patternResults.period_pattern,
+                pattern_confidence: patternResults.pattern_confidence,
+                key_answers: extractedFields,
+                scores: {
+                    tension: patternResults.tension_score,
+                    calor: patternResults.calor_score,
+                    frio: patternResults.frio_score,
+                    humedad: patternResults.humedad_score,
+                    sequedad: patternResults.sequedad_score
+                },
+                triage_flags: triageFlags,
+                completed_at: surveyData.completed_at
+            };
+
+            fetch(WAITLIST_WEBHOOK, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(emailData)
+            }).then(response => {
+                if (response.ok) {
+                    if (isDebug()) console.log('✅ Results email sent');
+                } else {
+                    console.warn('⚠️ Email webhook failed, but survey saved successfully');
+                }
+            }).catch(emailError => {
+                console.warn('⚠️ Email sending failed:', emailError.message);
+            });
+        } catch (emailError) {
+            console.warn('⚠️ Email notification error:', emailError.message);
+        }
+
+        return { 
+            success: true, 
+            data: data[0], 
+            pattern: patternResults,
+            triage: triageFlags
+        };
+
+    } catch (error) {
+        console.error('❌ Complete survey submission error:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// Utility functions
+function generateSessionId() {
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Enhanced data status checker
+async function checkEnhancedDataStatus() {
+    try {
+        const { data: recentSurveys, error } = await supabase
+            .from('survey_responses')
+            .select('id, period_pattern, pattern_confidence, completed_at')
+            .order('completed_at', { ascending: false })
+            .limit(5);
+
+        if (error) {
+            console.error('❌ Database connection failed:', error);
+            return { connected: false, error: error.message };
+        }
+
+        console.log('✅ Database Status:');
+        console.log('📊 Recent surveys:', recentSurveys?.length || 0);
+
+        if (recentSurveys?.length > 0) {
+            console.log('🎯 Recent patterns:', 
+                recentSurveys.map(s => `${s.period_pattern} (${s.pattern_confidence})`));
+        }
+
+        return {
+            connected: true,
+            survey_count: recentSurveys?.length || 0,
+            recent_surveys: recentSurveys
+        };
+
+    } catch (error) {
+        console.error('❌ Data status check failed:', error);
+        return { connected: false, error: error.message };
+    }
+}
+
+// Initialize session tracking
+if (!window.sessionId) {
+    window.sessionId = generateSessionId();
+    window.surveyStartTime = new Date().toISOString();
+}
