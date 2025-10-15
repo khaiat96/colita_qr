@@ -6,10 +6,6 @@ const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iot
 // Initialize Supabase client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ----------------------------------------------------
-// ADD THESE GLOBAL FUNCTIONS SO BUTTONS WILL WORK
-// ----------------------------------------------------
-
 window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
     const target = document.getElementById(pageId);
@@ -30,10 +26,7 @@ window.scrollToWaitlist = function() {
     }
 };
 
-// ----------------------------------------------------
 // Survey Data Loading Functions
-// ----------------------------------------------------
-
 async function loadSurveyJSON() {
     const resp = await fetch('survey_questions-combined.json');
     if (!resp.ok) throw new Error("survey_questions-combined.json not found");
@@ -54,14 +47,12 @@ async function loadResultsTemplate() {
     window.resultsTemplate = await resp.json();
 }
 
-// ----------------------------------------------------
 // Helper: Check visible_if logic
-// ----------------------------------------------------
 function isQuestionVisible(question, answers) {
     if (!question.visible_if) return true;
     const cond = question.visible_if;
 
-    // equals
+    // equals (strict string match)
     if (cond.question_id && typeof cond.equals !== "undefined") {
         return answers[cond.question_id] === cond.equals;
     }
@@ -101,9 +92,7 @@ function isQuestionVisible(question, answers) {
     return true;
 }
 
-// ----------------------------------------------------
 // Survey Rendering and Option Selection
-// ----------------------------------------------------
 function renderQuestion() {
     const questionOrder = window.questionOrder || [];
     const surveyQuestions = window.surveyQuestions || [];
@@ -171,6 +160,7 @@ window.selectOption = function(value, isMultiSelect) {
 
     if (!question) return;
 
+    // Save the exact value (full string) as the answer
     if (isMultiSelect) {
         if (!window.answers[qId]) window.answers[qId] = [];
         const arr = window.answers[qId];
@@ -180,10 +170,9 @@ window.selectOption = function(value, isMultiSelect) {
             window.answers[qId].push(value);
         }
     } else {
-        window.answers[qId] = value;
+        window.answers[qId] = value; // Must be the exact JSON option value!
     }
 
-    // Move to next question
     window.currentQuestionIndex = currentIndex + 1;
     renderQuestion();
 };
@@ -195,10 +184,7 @@ window.selectSlider = function(qId, value) {
     renderQuestion();
 };
 
-// ----------------------------------------------------
 // Waitlist Form Logic
-// ----------------------------------------------------
-
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
     window.isProMode = false;
@@ -224,7 +210,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
-                // Find the name/email input fields in the form
                 const nameInput = form.querySelector('input[type="text"], input[name="name"]');
                 const emailInput = form.querySelector('input[type="email"], input[name="email"]');
                 const name = nameInput ? nameInput.value.trim() : '';
@@ -235,7 +220,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     return;
                 }
 
-                // Optionally disable button to prevent double submit
                 const submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
 
