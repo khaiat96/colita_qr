@@ -35,7 +35,7 @@ window.scrollToWaitlist = function() {
 // ----------------------------------------------------
 
 async function loadSurveyJSON() {
-    const resp = await fetch('data/survey_questions-combined.json');
+    const resp = await fetch('survey_questions-combined.json');
     if (!resp.ok) throw new Error("survey_questions-combined.json not found");
     const surveyData = await resp.json();
     window.surveyQuestions = surveyData.questions;
@@ -43,13 +43,13 @@ async function loadSurveyJSON() {
 }
 
 async function loadDecisionMapping() {
-    const resp = await fetch('data/decision_mapping-combined.json');
+    const resp = await fetch('decision_mapping-combined.json');
     if (!resp.ok) throw new Error("decision_mapping-combined.json not found");
     window.decisionMapping = await resp.json();
 }
 
 async function loadResultsTemplate() {
-    const resp = await fetch('data/results_template.json');
+    const resp = await fetch('results_template.json');
     if (!resp.ok) throw new Error("results_template.json not found");
     window.resultsTemplate = await resp.json();
 }
