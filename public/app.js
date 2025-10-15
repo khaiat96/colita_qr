@@ -55,31 +55,78 @@ async function loadResultsTemplate() {
 }
 
 // ----------------------------------------------------
+// Helper: Check visible_if logic
+// ----------------------------------------------------
+function isQuestionVisible(question, answers) {
+    if (!question.visible_if) return true;
+    const cond = question.visible_if;
+
+    if (cond.question_id && typeof cond.equals !== "undefined") {
+        return answers[cond.question_id] === cond.equals;
+    }
+    if (cond.question_id && cond.includes) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) return ans.includes(cond.includes);
+        return ans === cond.includes;
+    }
+    if (cond.question_id && cond.includes_any) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) {
+            return cond.includes_any.some(val => ans.includes(val));
+        }
+        return cond.includes_any.includes(ans);
+    }
+    if (cond.question_id && cond.not_includes_any) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) {
+            return cond.not_includes_any.every(val => !ans.includes(val));
+        }
+        return !cond.not_includes_any.includes(ans);
+    }
+    if (cond.question_id && cond.not_in) {
+        const ans = answers[cond.question_id];
+        if (Array.isArray(ans)) {
+            return cond.not_in.every(val => !ans.includes(val));
+        }
+        return !cond.not_in.includes(ans);
+    }
+    // Add more logic as needed for your schema!
+    return true;
+}
+
+// ----------------------------------------------------
 // Survey Rendering and Option Selection
 // ----------------------------------------------------
-
 function renderQuestion() {
-    const currentIndex = window.currentQuestionIndex || 0;
     const questionOrder = window.questionOrder || [];
     const surveyQuestions = window.surveyQuestions || [];
     const answers = window.answers || {};
+    let currentIndex = window.currentQuestionIndex || 0;
 
-    if (!questionOrder.length || !surveyQuestions.length) {
-        document.getElementById('survey-content').innerHTML = "<div>No hay preguntas disponibles.</div>";
+    // Find the next visible question
+    while (currentIndex < questionOrder.length) {
+        const qId = questionOrder[currentIndex];
+        const question = surveyQuestions.find(q => q.id === qId);
+        if (isQuestionVisible(question, answers)) {
+            break;
+        }
+        currentIndex++;
+    }
+
+    window.currentQuestionIndex = currentIndex;
+
+    // End of survey
+    if (currentIndex >= questionOrder.length) {
+        document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
         return;
     }
 
     const qId = questionOrder[currentIndex];
     const question = surveyQuestions.find(q => q.id === qId);
 
-    if (!question) {
-        document.getElementById('survey-content').innerHTML = "<div>Encuesta completada.</div>";
-        return;
-    }
-
-    // Build options HTML
     let optionsHtml = "";
-    if (question.options && Array.isArray(question.options)) {
+
+    if (question.type === 'multi_select' || question.type === 'single_choice') {
         question.options.forEach(option => {
             optionsHtml += `
                 <div class="option" data-value="${option.value}" onclick="selectOption('${option.value}', ${question.type === 'multi_select'})">
@@ -87,6 +134,16 @@ function renderQuestion() {
                 </div>
             `;
         });
+    } else if (question.type === 'slider') {
+        optionsHtml = `
+            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
+                value="${answers[question.id] || question.min}" id="slider-input"
+                oninput="document.getElementById('slider-value').innerText = this.value"
+                onchange="selectSlider('${question.id}', this.value)">
+            <span id="slider-value">${answers[question.id] || question.min}</span>
+        `;
+    } else {
+        optionsHtml = `<div>No options for this question type.</div>`;
     }
 
     document.getElementById('survey-content').innerHTML = `
@@ -98,6 +155,7 @@ function renderQuestion() {
     `;
 }
 
+// Handles single/multi-select answers
 window.selectOption = function(value, isMultiSelect) {
     const currentIndex = window.currentQuestionIndex || 0;
     const questionOrder = window.questionOrder || [];
@@ -121,6 +179,13 @@ window.selectOption = function(value, isMultiSelect) {
 
     // Move to next question
     window.currentQuestionIndex = currentIndex + 1;
+    renderQuestion();
+};
+
+// Handles slider answers
+window.selectSlider = function(qId, value) {
+    window.answers[qId] = Number(value);
+    window.currentQuestionIndex = (window.currentQuestionIndex || 0) + 1;
     renderQuestion();
 };
 
