@@ -1,7 +1,6 @@
 // Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xldppdop';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 
 // Initialize Supabase client
@@ -30,6 +29,16 @@ async function loadSurveyJSON() {
     questionOrder = surveyData.question_order;
 }
 
+async function loadDecisionMapping() {
+    const resp = await fetch('/data/decision_mapping-combined.json');
+    decisionMapping = await resp.json();
+}
+
+async function loadResultsTemplate() {
+    const resp = await fetch('/data/results_template.json');
+    resultsTemplate = await resp.json();
+}
+
 // Helper: Find question by ID, supports top-level and nested (compound/grouped) questions
 function getQuestionById(qId) {
     // Top-level
@@ -54,7 +63,6 @@ function isQuestionVisible(question, answers) {
     if (!question.visible_if) return true;
     const cond = question.visible_if;
 
-    // Support both array and string for includes
     if (cond.question_id && cond.includes) {
         const ans = answers[cond.question_id];
         if (Array.isArray(cond.includes)) {
@@ -65,7 +73,6 @@ function isQuestionVisible(question, answers) {
             return ans === cond.includes;
         }
     }
-    // Same for includes_any
     if (cond.question_id && cond.includes_any) {
         const ans = answers[cond.question_id];
         if (Array.isArray(cond.includes_any)) {
@@ -76,7 +83,6 @@ function isQuestionVisible(question, answers) {
             return ans === cond.includes_any;
         }
     }
-    // Same for not_includes_any
     if (cond.question_id && cond.not_includes_any) {
         const ans = answers[cond.question_id];
         if (Array.isArray(cond.not_includes_any)) {
@@ -87,7 +93,6 @@ function isQuestionVisible(question, answers) {
             return ans !== cond.not_includes_any;
         }
     }
-    // Same for not_in
     if (cond.question_id && cond.not_in) {
         const ans = answers[cond.question_id];
         if (Array.isArray(cond.not_in)) {
@@ -98,7 +103,6 @@ function isQuestionVisible(question, answers) {
             return ans !== cond.not_in;
         }
     }
-    // Same for equals
     if (cond.question_id && cond.equals !== undefined) {
         const ans = answers[cond.question_id];
         if (Array.isArray(cond.equals)) {
@@ -108,7 +112,6 @@ function isQuestionVisible(question, answers) {
             return ans === cond.equals;
         }
     }
-    // at_least / at_most
     if (cond.question_id && typeof cond.at_least !== "undefined") {
         const ans = answers[cond.question_id];
         return typeof ans === "number" && ans >= cond.at_least;
@@ -117,25 +120,20 @@ function isQuestionVisible(question, answers) {
         const ans = answers[cond.question_id];
         return typeof ans === "number" && ans <= cond.at_most;
     }
-    // Compound: all (array of conditions)
     if (cond.all) {
         return cond.all.every(sub => isQuestionVisible({visible_if: sub}, answers));
     }
-    // Compound: any (array of conditions)
     if (cond.any) {
         return cond.any.some(sub => isQuestionVisible({visible_if: sub}, answers));
     }
-    // not_includes (single value)
     if (cond.question_id && cond.not_includes) {
         const ans = answers[cond.question_id];
         if (Array.isArray(ans)) return !ans.includes(cond.not_includes);
         return ans !== cond.not_includes;
     }
-    // not_equals
     if (cond.question_id && typeof cond.not_equals !== "undefined") {
         return answers[cond.question_id] !== cond.not_equals;
     }
-    // missing
     if (cond.missing) {
         return typeof answers[cond.missing] === "undefined";
     }
@@ -161,6 +159,7 @@ function getPrevVisibleQuestionIndex(fromIndex) {
 }
 
 // Page navigation functions
+
 window.showPage = function(pageId) {
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
@@ -168,6 +167,8 @@ window.showPage = function(pageId) {
     document.getElementById(pageId).classList.add('active');
 };
 
+
+// Put this in app.js (should already exist)
 window.startSurvey = function() {
     isProMode = false;
     showPage('survey-page');
@@ -301,7 +302,6 @@ function renderQuestion() {
 // Update selectOption and selectSlider to accept an override question ID for sub-questions
 window.selectOption = function(value, isMultiSelect, qIdOverride) {
     const qId = qIdOverride || questionOrder[currentQuestionIndex];
-    // Find question or sub-question by qId
     let question = getQuestionById(qId);
     if (!question) return;
 
@@ -360,7 +360,7 @@ function updateNavigation() {
                 return !!answers[subQ.id];
             }
             if (subQ.type === 'multi_select') {
-                return answers[subQ.id] && answers[subQ.id].length > 0;
+                return Array.isArray(answers[subQ.id]) && answers[subQ.id].length > 0;
             }
             if (subQ.type === 'slider') {
                 return typeof answers[subQ.id] !== 'undefined';
@@ -368,11 +368,15 @@ function updateNavigation() {
             return true;
         });
     } else if (question) {
-        hasAnswer = answers[question.id] && (
-            question.type === 'single_choice' ? 
-            answers[question.id] : 
-            Array.isArray(answers[question.id]) && answers[question.id].length > 0
-        );
+        if (question.type === 'slider') {
+            hasAnswer = typeof answers[question.id] !== 'undefined';
+        } else if (question.type === 'single_choice') {
+            hasAnswer = !!answers[question.id];
+        } else if (question.type === 'multi_select') {
+            hasAnswer = Array.isArray(answers[question.id]) && answers[question.id].length > 0;
+        } else {
+            hasAnswer = !!answers[question.id];
+        }
     }
 
     document.getElementById('next-btn').disabled = !hasAnswer;
@@ -397,17 +401,221 @@ window.previousQuestion = function() {
     }
 };
 
-// ...rest unchanged (results, finishSurvey, etc.)...
+function calculateResults() {
+    const scores = {
+        tension: 0,
+        calor: 0,
+        frio: 0,
+        humedad: 0,
+        sequedad: 0
+    };
 
+    surveyQuestions.forEach(question => {
+        // For compound/grouped questions, also check sub-questions
+        if (question.type === 'compound' || question.type === 'grouped') {
+            let subQuestions = question.items || question.questions;
+            subQuestions.forEach(subQ => {
+                const answer = answers[subQ.id];
+                if (!answer) return;
+                const answerArray = Array.isArray(answer) ? answer : [answer];
+                if (subQ.options) {
+                    answerArray.forEach(value => {
+                        const option = subQ.options.find(opt => opt.value === value);
+                        if (option && option.scores) {
+                            Object.keys(option.scores).forEach(key => {
+                                scores[key] += option.scores[key];
+                            });
+                        }
+                    });
+                }
+            });
+        } else {
+            const answer = answers[question.id];
+            if (!answer) return;
+            const answerArray = Array.isArray(answer) ? answer : [answer];
+            if (question.options) {
+                answerArray.forEach(value => {
+                    const option = question.options.find(opt => opt.value === value);
+                    if (option && option.scores) {
+                        Object.keys(option.scores).forEach(key => {
+                            scores[key] += option.scores[key];
+                        });
+                    }
+                });
+            }
+        }
+    });
+
+    let maxScore = 0;
+    let dominantPattern = 'sequedad';
+    ['tension', 'calor', 'humedad', 'sequedad'].forEach(pattern => {
+        if (scores[pattern] > maxScore) {
+            maxScore = scores[pattern];
+            dominantPattern = pattern;
+        }
+    });
+
+    return dominantPattern;
+}
+
+async function finishSurvey() {
+    document.getElementById('loading-modal').classList.add('show');
+
+    const dominantPattern = calculateResults();
+
+    try {
+        await supabase
+            .from('survey_responses')
+            .insert([
+                {
+                    session_id: sessionId,
+                    answers: answers,
+                    result_pattern: dominantPattern,
+                    is_pro_mode: isProMode,
+                    created_at: new Date().toISOString()
+                }
+            ]);
+    } catch (error) {
+        console.error('Error saving to Supabase:', error);
+    }
+
+    setTimeout(() => {
+        document.getElementById('loading-modal').classList.remove('show');
+        showResults(dominantPattern);
+    }, 2000);
+}
+
+function showResults(patternKey) {
+    const elementPatterns = {
+        tension: {
+            element: 'Viento/Aire 🌬️',
+            pattern: 'Exceso de Viento con espasmo uterino y nervioso',
+            characteristics: [
+                'Dolor cólico o punzante (espasmos)',
+                'Síntomas irregulares/cambiantes',
+                'Ansiedad, hipervigilancia',
+                'Sensibilidad al estrés',
+                'Respiración entrecortada con dolor'
+            ]
+        },
+        calor: {
+            element: 'Fuego 🔥',
+            pattern: 'Exceso de Fuego: calor interno, sangrado abundante, irritabilidad',
+            characteristics: [
+                'Flujo rojo brillante/abundante',
+                'Sensación de calor/sed/enrojecimiento',
+                'Irritabilidad premenstrual',
+                'Sueño ligero',
+                'Digestión rápida/acidez'
+            ]
+        },
+        humedad: {
+            element: 'Tierra ⛰️',
+            pattern: 'Exceso de Tierra: pesadez, retención, coágulos',
+            characteristics: [
+                'Hinchazón/pesadez',
+                'Coágulos o flujo espeso',
+                'Digestión lenta de grasas',
+                'Letargo postcomida',
+                'Mejoría con movimiento suave'
+            ]
+        },
+        sequedad: {
+            element: 'Agua 💧',
+            pattern: 'Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga',
+            characteristics: [
+                'Sangrado muy escaso o ausente',
+                'Sed y sequedad',
+                'Cansancio, sueño no reparador',
+                'Rigidez articular',
+                'Irritabilidad por agotamiento'
+            ]
+        }
+    };
+    const pattern = elementPatterns[patternKey];
+
+    const resultsCard = document.getElementById('results-card');
+    const characteristicsHtml = pattern.characteristics.map(char => 
+        `<li>${char}</li>`
+    ).join('');
+    const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
+
+    resultsCard.innerHTML = `
+        ${proModeText}
+        <h2>${pattern.element}</h2>
+        <h3>${pattern.pattern}</h3>
+        <ul class="characteristics">
+            ${characteristicsHtml}
+        </ul>
+        <div class="disclaimer">
+            <strong>Nota importante:</strong> Esta evaluación es orientativa y no sustituye el consejo médico profesional. Consulta siempre con un profesional de la salud para cualquier problema menstrual.
+        </div>
+    `;
+
+    showPage('results-page');
+}
+
+// Waitlist form handler for all pages
 document.addEventListener('DOMContentLoaded', async function() {
     showPage('landing-page');
     isProMode = false;
 
     try {
         await loadSurveyJSON();
-        // ...load other files as needed...
+        await loadDecisionMapping();
+        await loadResultsTemplate();
     } catch (err) {
         alert('No se pudieron cargar las preguntas del quiz.');
         console.error(err);
     }
+
+    // List of waitlist forms on all pages
+    const waitlistForms = [
+        document.getElementById('waitlist-form'),
+        document.getElementById('main-waitlist-form'),
+        document.getElementById('results-waitlist-form')
+    ];
+
+    waitlistForms.forEach(form => {
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Find the name/email input fields in the form
+                const nameInput = form.querySelector('input[type="text"], input[name="name"]');
+                const emailInput = form.querySelector('input[type="email"], input[name="email"]');
+                const name = nameInput ? nameInput.value.trim() : '';
+                const email = emailInput ? emailInput.value.trim() : '';
+
+                if (!name || !email) {
+                    alert('Por favor ingresa tu nombre y correo.');
+                    return;
+                }
+
+                // Optionally disable button to prevent double submit
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+
+                try {
+                    const resp = await fetch(WAITLIST_WEBHOOK, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email })
+                    });
+
+                    if (resp.ok) {
+                        alert('¡Gracias por unirte a la lista de espera!');
+                        form.reset();
+                        showPage('landing-page'); // Or show confirmation
+                    } else {
+                        throw new Error('No se pudo enviar tu información.');
+                    }
+                } catch (err) {
+                    alert('Error al enviar. Intenta de nuevo.');
+                }
+
+                if (submitBtn) submitBtn.disabled = false;
+            });
+        }
+    });
 });
