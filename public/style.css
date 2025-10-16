@@ -408,8 +408,8 @@ pre code {
 }
 
 .logo-between-sections {
-  margin-top: 10px;    /* tighten above */
-  margin-bottom: 20px; /* keep some space below */
+  margin-top: 5px;    /* tighten above */
+  margin-bottom: 10px; /* keep some space below */
 }
 
 .container {
