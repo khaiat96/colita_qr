@@ -191,35 +191,21 @@ function renderQuestion() {
   if (!surveyContent) return;
 
   let optionsHtml = '';
+// Inside your renderQuestion() where optionsHtml is built:
+question.options.forEach((option) => {
+  const isMulti = question.type === 'multiselect';
+  const optionClass = isMulti ? 'option multi-select' : 'option';
+  const selected = isMulti 
+    ? (answers[qId] && answers[qId].includes(option.value))
+    : answers[qId] === option.value;
 
-  if (question.type === 'multiselect' || question.type === 'single_choice') {
-    question.options.forEach((option) => {
-      const isMulti = question.type === 'multiselect';
-      const optionClass = isMulti ? 'option multi-select' : 'option';
-      const selected = isMulti
-        ? answers[qId].includes(option.value)
-        : answers[qId] === option.value;
-
-      optionsHtml += `
-        <div class="${optionClass}${selected ? ' selected' : ''}"
-             data-value="${option.value}"
-             onclick="selectOption('${qId}','${option.value}', ${isMulti})">
-          ${option.label}
-        </div>`;
-    });
-  } else if (question.type === 'slider') {
-    optionsHtml = `
-      <input type="range"
-             min="${question.min}" max="${question.max}" step="${question.step}"
-             value="${answers[qId] != null ? answers[qId] : question.min}"
-             id="slider-input"
-             oninput="selectSlider('${qId}', this.value)">
-      <span id="slider-value">
-        ${answers[qId] != null ? answers[qId] : question.min}
-      </span>`;
-  } else {
-    optionsHtml = `<div>No options for this question type.</div>`;
-  }
+  optionsHtml += `
+    <div class="${optionClass}${selected ? ' selected' : ''}"
+         data-value="${option.value}"
+         onclick="selectOption('${qId}', '${option.value}', ${isMulti})">
+      ${option.label}
+    </div>`;
+});
 
   surveyContent.innerHTML = `
     <div class="question">
@@ -242,14 +228,14 @@ function renderQuestion() {
   updateNavigation();
 }
 
-// Updated validation logic in nextQuestion()
+// In nextQuestion()
 function nextQuestion() {
   const qId = questionOrder[currentQuestionIndex];
   const question = getQuestionById(qId);
 
-  // Only validate if question.required is true
+  // Only validate if 'required' !== false
   if (question.required !== false) {
-    if (question.type === 'multiselect' && answers[qId].length === 0) {
+    if (question.type === 'multiselect' && answers[qId]?.length === 0) {
       alert('Por favor selecciona al menos una opción.');
       return;
     }
@@ -267,18 +253,15 @@ function nextQuestion() {
     finishSurvey();
   }
 }
-
-window.selectOption = function(value, isMultiSelect) {
-    const qId = questionOrder[currentQuestionIndex];
+// New selectOption function
+window.selectOption = function(qId, value, isMultiSelect) {
     const question = getQuestionById(qId);
+    if (!question) return;
 
     if (isMultiSelect) {
-        if (!answers[question.id]) {
-            answers[question.id] = [];
-        }
-        const currentAnswers = answers[question.id];
+        if (!answers[qId]) answers[qId] = [];
+        const currentAnswers = answers[qId];
         const index = currentAnswers.indexOf(value);
-
         if (index > -1) {
             currentAnswers.splice(index, 1);
         } else {
@@ -287,17 +270,16 @@ window.selectOption = function(value, isMultiSelect) {
             }
             currentAnswers.push(value);
         }
-
-        document.querySelectorAll('.option').forEach(option => {
-            if (option.dataset.value === value) {
-                option.classList.toggle('selected');
+        // Toggle visual class
+        document.querySelectorAll(`[data-value="${value}"]`).forEach(elem => {
+            if (elem.dataset.value === value) {
+                elem.classList.toggle('selected');
             }
         });
     } else {
-        answers[question.id] = value;
-        document.querySelectorAll('.option').forEach(option => {
-            option.classList.remove('selected');
-        });
+        answers[qId] = value;
+        // Update visual states
+        document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
         document.querySelector(`[data-value="${value}"]`).classList.add('selected');
     }
 
