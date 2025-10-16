@@ -14,7 +14,6 @@
             <h1 class="brand-name">🌿 Colita de Rana</h1>
         </header>
         <main class="container">
-            <!-- Hero Section -->
             <section class="hero">
                 <h1 class="hero-title">
                     <span>Tu ciclo es único.</span>
@@ -108,7 +107,6 @@
                         <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
                     </div>
                     <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
-                    <!-- Waitlist Form for landing page -->
                     <form id="main-waitlist-form" class="main-waitlist-form">
                         <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
                         <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
@@ -135,15 +133,19 @@
             <div class="results-card" id="results-card">
                 <!-- Full detailed results will be populated here by JS -->
             </div>
-            <section id="email-results-form-section" style="display:none; margin-top:30px;">
-                <form id="email-results-form" class="results-footer-form">
-                    <h3>¿Quieres recibir tu reporte completo por email?</h3>
-                    <input type="text" id="email-results-name" placeholder="Tu nombre" required>
-                    <input type="email" id="email-results-email" placeholder="tu@email.com" required>
-                    <button type="submit" class="btn-primary">Enviar mi reporte</button>
-                </form>
-            </section>
-            <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
+            <div class="results-footer">
+                <section id="email-results-form-section" style="display:none; margin-top:0;">
+                    <form id="email-results-form" class="results-footer-form">
+                        <h3>¿Quieres recibir tu reporte completo por email?</h3>
+                        <input type="text" id="email-results-name" placeholder="Tu nombre" required>
+                        <input type="email" id="email-results-email" placeholder="tu@email.com" required>
+                        <button type="submit" class="btn-primary btn-block">Enviar mi reporte</button>
+                    </form>
+                </section>
+                <div class="results-actions">
+                    <button class="btn-primary btn-block" onclick="showPage('landing-page')">Volver al inicio</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -194,7 +196,6 @@
             <p>Procesando tu evaluación...</p>
         </div>
     </div>
-    <!-- IMPORTANT: script tag must be at the end of body -->
     <script src="app.js"></script>
 </body>
 </html>
