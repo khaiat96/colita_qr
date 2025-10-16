@@ -854,7 +854,7 @@ body {
 }
 
 .secondary-section .btn-secondary {
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 /* Logo Between Sections - Centered with no border */
@@ -863,7 +863,7 @@ body {
     justify-content: center;
     align-items: center;
     margin: 5px auto;
-    max-width: 400px;
+    max-width: 350px;
     padding: 0;
 }
 
