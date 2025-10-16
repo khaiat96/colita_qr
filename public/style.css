@@ -861,7 +861,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 32px 0; /* Adjust spacing as needed */
+  margin: 22px 0; /* Adjust spacing as needed */
 }
 .logo-between-sections img {
   max-width: 100%;
