@@ -2,6 +2,7 @@
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
+const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/yoursendreportwebhook'; // <--- Replace with your real report email webhook!
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let questionOrder = [];
@@ -10,6 +11,7 @@ let answers = {};
 let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
+let resultsTemplate = null;
 
 // === ADDED: flag for survey loaded ===
 window.surveyLoaded = false;
@@ -48,27 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
-  if (resultsWaitlistForm) {
-    resultsWaitlistForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const name = document.getElementById('results-waitlist-name').value;
-      const email = document.getElementById('results-waitlist-email').value;
-      try {
-        await fetch(WAITLIST_WEBHOOK, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, source: 'results_page' })
-        });
-        await supabase.from('waitlist').insert([{ name, email, source: 'results_page' }]);
-        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
-        resultsWaitlistForm.reset();
-      } catch (error) {
-        console.error('Error joining waitlist:', error);
-        alert('Hubo un error. Por favor intenta de nuevo.');
-      }
-    });
-  }
+  // REMOVE resultsWaitlistForm handler
+  // (replaced with email-report form below)
 });
 
 // ==================== UTILITY FUNCTIONS ====================
@@ -306,10 +289,8 @@ window.selectOption = function(qId, value, isMultiSelect) {
   console.log("Option clicked:", { qId, value, isMultiSelect });
 
   // Find the question type for this qId (may be item inside compound/grouped)
-  // Try compound item first
   let question = getQuestionById(qId);
   if (!question) {
-    // fallback: try to find item by id in compound/grouped questions
     for (const q of surveyQuestions) {
       if (q.type === 'compound' && Array.isArray(q.items)) {
         const found = q.items.find(item => item.id === qId);
@@ -328,8 +309,7 @@ window.selectOption = function(qId, value, isMultiSelect) {
   }
   if (!question) return;
 
-  // Determine selector for options (scoped for compound/grouped/sub-question)
-  let optionSelector = `.option[data-qid="${qId}"]`; // Default for top-level
+  let optionSelector = `.option[data-qid="${qId}"]`;
   if (document.querySelector(`.sub-option[data-qid="${qId}"]`)) {
     optionSelector = `.sub-option[data-qid="${qId}"]`;
   } else if (document.querySelector(`.group-option[data-qid="${qId}"]`)) {
@@ -348,23 +328,19 @@ window.selectOption = function(qId, value, isMultiSelect) {
       }
       currentAnswers.push(value);
     }
-    // Only update the relevant options for this qId and value
     document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(elem => {
       elem.classList.toggle('selected');
     });
   } else {
     answers[qId] = value;
-    // Remove selected from all in this sub-question
     document.querySelectorAll(`${optionSelector}`).forEach(option => {
       option.classList.remove('selected');
     });
-    // Add selected to the clicked option
     document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(option => {
       option.classList.add('selected');
     });
   }
 
-  // Debug: log answers for compound items!
   console.log("answers state after click:", JSON.stringify(answers));
   window.updateNavigation();
 };
@@ -439,127 +415,124 @@ function calculateResults() {
   return dominantPattern;
 }
 
-async function finishSurvey() {
-  document.getElementById('loading-modal').classList.add('show');
-  const dominantPattern = calculateResults();
+// ==================== DETAILED RESULTS RENDERING ====================
 
-  try {
-    await supabase
-      .from('survey_responses')
-      .insert([{
-        session_id: sessionId,
-        answers: answers,
-        result_pattern: dominantPattern,
-        is_pro_mode: isProMode,
-        created_at: new Date().toISOString()
-      }]);
-  } catch (error) {
-    console.error('Error saving to Supabase:', error);
-  }
-
-  setTimeout(() => {
-    document.getElementById('loading-modal').classList.remove('show');
-    showResults(dominantPattern);
-  }, 2000);
+// Helper to safely get nested property from template
+function getTemplateSection(section, patternKey) {
+  if (!resultsTemplate || !resultsTemplate[section]) return null;
+  return resultsTemplate[section][patternKey] || resultsTemplate[section]['by_pattern']?.[patternKey] || null;
 }
 
-function showResults(patternKey) {
-  const elementPatterns = {
-    tension: {
-      element: 'Viento/Aire 🌬️',
-      pattern: 'Exceso de Viento con espasmo uterino y nervioso',
-      characteristics: [
-        'Dolor cólico o punzante (espasmos)',
-        'Síntomas irregulares/cambiantes',
-        'Ansiedad, hipervigilancia',
-        'Sensibilidad al estrés',
-        'Respiración entrecortada con dolor'
-      ]
-    },
-    calor: {
-      element: 'Fuego 🔥',
-      pattern: 'Exceso de Fuego: calor interno, sangrado abundante, irritabilidad',
-      characteristics: [
-        'Flujo rojo brillante/abundante',
-        'Sensación de calor/sed/enrojecimiento',
-        'Irritabilidad premenstrual',
-        'Sueño ligero',
-        'Digestión rápida/acidez'
-      ]
-    },
-    humedad: {
-      element: 'Tierra ⛰️',
-      pattern: 'Exceso de Tierra: pesadez, retención, coágulos',
-      characteristics: [
-        'Hinchazón/pesadez',
-        'Coágulos o flujo espeso',
-        'Digestión lenta de grasas',
-        'Letargo postcomida',
-        'Mejoría con movimiento suave'
-      ]
-    },
-    sequedad: {
-      element: 'Agua 💧',
-      pattern: 'Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga',
-      characteristics: [
-        'Sangrado muy escaso o ausente',
-        'Sed y sequedad',
-        'Cansancio, sueño no reparador',
-        'Rigidez articular',
-        'Irritabilidad por agotamiento'
-      ]
-    }
-  };
-  const pattern = elementPatterns[patternKey];
-
-  const resultsCard = document.getElementById('results-card');
-  const characteristicsHtml = pattern.characteristics.map(char => 
-    `<li>${char}</li>`
-  ).join('');
-  const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
-
-  resultsCard.innerHTML = `
-    ${proModeText}
-    <h2>${pattern.element}</h2>
-    <h3>${pattern.pattern}</h3>
-    <ul class="characteristics">
-      ${characteristicsHtml}
-    </ul>
-    <div class="disclaimer">
-      <strong>Nota importante:</strong> Esta evaluación es orientativa y no sustituye el consejo médico profesional. Consulta siempre con un profesional de la salud para cualquier problema menstrual.
+function renderCareTips(patternKey) {
+  const tips = resultsTemplate?.care_tips?.by_pattern?.[patternKey] || [];
+  if (!tips.length) return '';
+  return `
+    <div class="recommendations">
+      <h4>Mini-hábitos por patrón</h4>
+      <ul class="recommendations-list">
+        ${tips.map(tip => `<li>${tip}</li>`).join('')}
+      </ul>
     </div>
   `;
+}
+
+function renderPhaseAdvice(patternKey) {
+  const phaseSections = resultsTemplate?.phase?.generic || {};
+  let html = `<div class="recommendations"><h4>Tips de cuidado por fase del ciclo</h4>`;
+  Object.keys(phaseSections).forEach(phaseKey => {
+    const phase = phaseSections[phaseKey];
+    html += `<div class="phase-block"><h5>${phase.label}</h5>`;
+    html += `<div>${phase.about}</div>`;
+    if (phase.foods) html += `<ul>${phase.foods.map(f => `<li>${f}</li>`).join('')}</ul>`;
+    html += `</div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+function renderPatternCard(patternKey) {
+  const card = resultsTemplate?.pattern_card?.single?.[patternKey] || {};
+  if (!card.pattern_explainer) return '';
+  return `
+    <div class="pattern-description">${card.pattern_explainer}</div>
+    <ul class="characteristics">
+      ${(card.characteristics || []).map(char => `<li>${char}</li>`).join('')}
+    </ul>
+  `;
+}
+
+// Main function to show results with full template
+function showResults(patternKey) {
+  // Show pro mode indicator if needed
+  const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
+
+  // Compose detailed results from the template
+  let html = `
+    ${proModeText}
+    <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || ''}</h2>
+    <h3>${resultsTemplate?.summary?.single?.replace('{{label_top}}', resultsTemplate?.labels?.[patternKey] || patternKey)}</h3>
+    ${renderPatternCard(patternKey)}
+    <div class="element-explainer">${getTemplateSection('element_explainer', patternKey)?.[0] || ''}</div>
+    ${renderCareTips(patternKey)}
+    ${renderPhaseAdvice(patternKey)}
+    <div class="disclaimer">
+      <strong>Nota importante:</strong> ${resultsTemplate?.meta?.disclaimer || 'Esta evaluación es orientativa y no sustituye el consejo médico profesional.'}
+    </div>
+  `;
+
+  // Inject into the results-card
+  document.getElementById('results-card').innerHTML = html;
+
+  // Show email form
+  document.getElementById('email-results-form-section').style.display = 'block';
 
   showPage('results-page');
 }
 
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(page => {
-    page.classList.remove('active');
-  });
-  document.getElementById(pageId).classList.add('active');
+// ==================== EMAIL RESULTS FORM ====================
+
+async function sendFullResultsReport(name, email) {
+  // Prepare the "full report" as HTML/text
+  // You can customize this to send all template sections, answers, and result summary
+  const patternKey = calculateResults();
+  const reportHtml = document.getElementById('results-card').innerHTML;
+
+  // Send to webhook (or Supabase, or email API)
+  try {
+    await fetch(EMAIL_REPORT_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, email,
+        session_id: sessionId,
+        answers,
+        pattern: patternKey,
+        html_report: reportHtml
+      }),
+    });
+    alert('¡Tu reporte completo ha sido enviado a tu correo!');
+  } catch (err) {
+    alert('Hubo un error al enviar el reporte. Intenta de nuevo.');
+    console.error('Error sending report:', err);
+  }
 }
 
-// === UPDATED: startSurvey disables quiz button until loaded and logs state ===
-window.startSurvey = function() {
-  console.log('🚦 startSurvey called');
-  if (!window.surveyLoaded || !surveyQuestions.length || !questionOrder.length) {
-    alert('Las preguntas del quiz no se han cargado aún. Intenta de nuevo en unos segundos.');
-    console.log('❌ Survey not loaded:', {
-      surveyLoaded: window.surveyLoaded,
-      surveyQuestions: surveyQuestions.length,
-      questionOrder: questionOrder.length
+// Email form handler
+document.addEventListener('DOMContentLoaded', function() {
+  const emailResultsForm = document.getElementById('email-results-form');
+  if (emailResultsForm) {
+    emailResultsForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('email-results-name').value;
+      const email = document.getElementById('email-results-email').value;
+      await sendFullResultsReport(name, email);
+      emailResultsForm.reset();
     });
-    return;
   }
-  showPage('survey-page');
-  currentQuestionIndex = 0;
-  answers = {};
-  console.log('✅ Survey started, rendering first question');
-  renderQuestion();
-};
+});
 
-// === UPDATED: load survey questions, enable quiz button when ready ===
+// ==================== INITIALIZE + LOAD TEMPLATE ====================
+
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
   isProMode = false;
@@ -578,6 +551,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
+    // Load results template
+    const templateResp = await fetch('results_template.json');
+    resultsTemplate = await templateResp.json();
+
     // Normalize type values for singlechoice
     surveyQuestions.forEach(q => {
       if (q.type === 'singlechoice') {
@@ -588,23 +565,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.surveyLoaded = true;
     console.log('✅ Loaded', surveyQuestions.length, 'questions');
 
-    // Enable quiz button now
     if (quizBtn) quizBtn.disabled = false;
-
-    // Debug P2
-    const p2 = surveyQuestions.find(q => q.id === 'P2');
-    if (p2) {
-      console.log('🎯 P2 Config:', {
-        id: p2.id,
-        type: p2.type,
-        validation: p2.validation,
-        optionsCount: p2.options.length
-      });
-    }
   } catch (err) {
     console.error('❌ Error:', err);
     alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
-    // Quiz can't be taken
     if (quizBtn) quizBtn.disabled = true;
   }
 });
@@ -625,7 +589,6 @@ function updateProgress() {
 
 // ==================== NAVIGATION LOGIC (CRITICAL) ====================
 
-// This function must be global for inline event handlers to work!
 window.updateNavigation = function() {
     const qId = questionOrder[currentQuestionIndex];
     const question = getQuestionById(qId);
@@ -642,7 +605,6 @@ window.updateNavigation = function() {
     } else if (question.type === 'slider') {
         hasAnswer = typeof answers[qId] === 'number';
     } else if (question.type === 'compound' && Array.isArray(question.items)) {
-        // Only allow Next if ALL sub-questions (items) have valid answers
         hasAnswer = question.items.every(item => {
             if (item.type === 'multiselect') {
                 const selected = Array.isArray(answers[item.id]) ? answers[item.id] : [];
@@ -674,13 +636,10 @@ window.updateNavigation = function() {
         hasAnswer = !!answers[qId];
     }
 
-    // Enable/disable next button
     const nextBtn = document.getElementById('next-btn');
     if (nextBtn) {
         nextBtn.disabled = !hasAnswer;
     }
-
-    // Show/hide back button  
     const backBtn = document.getElementById('back-btn');
     if (backBtn) {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';

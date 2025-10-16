@@ -21,35 +21,33 @@
                     <span>Tu medicina también.</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México. Cada mujer tiene un patrón único de síntomas que merece un trato único.
+                    Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México. Cada mujer tiene un patrón único de síntomas que merece una medicina única.
                 </p>
                 <button class="btn-primary" onclick="scrollToWaitlist()">
                     Llévame a la lista de espera
                 </button>
             </section>
 
-        <!-- LOGO BETWEEN SECTIONS -->
-        <div class="logo-between-sections">    
-        <img src="assets/logo.png" alt="Colita de Rana Logo">
-        </div>
+            <!-- LOGO BETWEEN SECTIONS -->
+            <div class="logo-between-sections">    
+                <img src="assets/logo.png" alt="Colita de Rana Logo">
+            </div>
 
             <!-- Secondary Section -->
-<section class="secondary-section">
-    <h2>Descubre consejos adaptados a tu patrón menstrual:</h2>
-    <p class="section-subtitle">
-        Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.
-    </p>
-    <button
-        class="btn-primary"
-        id="take-quiz-btn"
-        onclick="startSurvey()"
-        disabled
-    >
-        Toma el quiz
-    </button>
-</section>
-
-
+            <section class="secondary-section">
+                <h2>Descubre consejos adaptados a tu patrón menstrual:</h2>
+                <p class="section-subtitle">
+                    Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.
+                </p>
+                <button
+                    class="btn-primary"
+                    id="take-quiz-btn"
+                    onclick="startSurvey()"
+                    disabled
+                >
+                    Toma el quiz
+                </button>
+            </section>
 
             <!-- Elements Section -->
             <section class="elements-section">
@@ -135,13 +133,16 @@
         </header>
         <div class="results-container">
             <div class="results-card" id="results-card">
-                <!-- Results will be populated here by JS -->
+                <!-- Full detailed results will be populated here by JS -->
             </div>
-            <form id="results-waitlist-form" class="results-footer-form">
-                <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
-                <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
-                <button type="submit" class="btn-primary">Unirme a la lista de espera</button>
-            </form>
+            <section id="email-results-form-section" style="display:none; margin-top:30px;">
+                <form id="email-results-form" class="results-footer-form">
+                    <h3>¿Quieres recibir tu reporte completo por email?</h3>
+                    <input type="text" id="email-results-name" placeholder="Tu nombre" required>
+                    <input type="email" id="email-results-email" placeholder="tu@email.com" required>
+                    <button type="submit" class="btn-primary">Enviar mi reporte</button>
+                </form>
+            </section>
             <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
         </div>
     </div>
