@@ -240,12 +240,13 @@
         }
       ]
     },
-    {
-      "id": "P2",
-      "type": "multiselect",
-      "title": "En los últimos 3 ciclos, qué síntomas aplican?",
-      "help_text": "Selecciona hasta 3. Si es abundante, elige el tipo que mejor lo describe.",
-      "options": [
+{
+       "id": "P2",
+       "type": "multiselect",
+      "required": false,
+       "title": "En los últimos 3 ciclos, qué síntomas aplican?",
+       "help_text": "Selecciona hasta 3. Si es abundante, elige el tipo que mejor lo describe.",
+       "options":  [
         {
           "label": "Dismenorrea (dolor menstrual)",
           "value": "Dismenorrea"

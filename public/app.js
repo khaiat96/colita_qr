@@ -160,77 +160,112 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 // ==================== SURVEY RENDERING ====================
 
 function renderQuestion() {
-    let qId = questionOrder[currentQuestionIndex];
-    let question = getQuestionById(qId);
+  let qId = questionOrder[currentQuestionIndex];
+  let question = getQuestionById(qId);
 
-    while (question && !isQuestionVisible(question, answers)) {
-        const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-        if (nextIdx > -1) {
-            currentQuestionIndex = nextIdx;
-            qId = questionOrder[currentQuestionIndex];
-            question = getQuestionById(qId);
-        } else {
-            finishSurvey();
-            return;
-        }
-    }
-
-    if (!question) {
-        finishSurvey();
-        return;
-    }
-
-    // Initialize answers for multiselect
-    if (question.type === "multiselect" && !answers[qId]) {
-        answers[qId] = [];
-        console.log(`✅ Initialized ${qId} as empty array`);
-    }
-
-    const surveyContent = document.getElementById('survey-content');
-    if (!surveyContent) return;
-
-    let optionsHtml = '';
-
-    if (question.type === 'multiselect' || question.type === 'single_choice') {
-        question.options.forEach((option, index) => {
-            const isMultiSelect = question.type === 'multiselect';
-            const optionClass = isMultiSelect ? 'option multi-select' : 'option';
-            const selected = isMultiSelect 
-                ? (answers[question.id] && answers[question.id].includes(option.value)) 
-                : answers[question.id] === option.value;
-            optionsHtml += `
-                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" onclick="selectOption('${option.value}', ${isMultiSelect})">
-                    ${option.label}
-                </div>
-            `;
-        });
-    } else if (question.type === 'slider') {
-        optionsHtml = `
-            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
-                value="${answers[question.id] || question.min}" id="slider-input"
-                oninput="selectSlider('${question.id}', this.value)">
-            <span id="slider-value">${answers[question.id] || question.min}</span>
-        `;
+  // Skip invisible questions
+  while (question && !isQuestionVisible(question, answers)) {
+    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    if (nextIdx > -1) {
+      currentQuestionIndex = nextIdx;
+      qId = questionOrder[currentQuestionIndex];
+      question = getQuestionById(qId);
     } else {
-        optionsHtml = `<div>No options for this question type.</div>`;
+      finishSurvey();
+      return;
     }
+  }
 
-    surveyContent.innerHTML = `
-        <div class="question">
-            <h3>${question.title}</h3>
-            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
-            <div class="options">
-                ${optionsHtml}
-            </div>
-        </div>
-        <div class="survey-navigation">
-            <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display:none;">← Anterior</button>
-            <button class="btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
-        </div>
-    `;
+  if (!question) {
+    finishSurvey();
+    return;
+  }
 
-    updateProgress();
-    updateNavigation();
+  // Initialize answers for multiselect
+  if (question.type === "multiselect" && !answers[qId]) {
+    answers[qId] = [];
+    console.log(`✅ Initialized ${qId} as empty array`);
+  }
+
+  const surveyContent = document.getElementById('survey-content');
+  if (!surveyContent) return;
+
+  let optionsHtml = '';
+
+  if (question.type === 'multiselect' || question.type === 'single_choice') {
+    question.options.forEach((option) => {
+      const isMulti = question.type === 'multiselect';
+      const optionClass = isMulti ? 'option multi-select' : 'option';
+      const selected = isMulti
+        ? answers[qId].includes(option.value)
+        : answers[qId] === option.value;
+
+      optionsHtml += `
+        <div class="${optionClass}${selected ? ' selected' : ''}"
+             data-value="${option.value}"
+             onclick="selectOption('${qId}','${option.value}', ${isMulti})">
+          ${option.label}
+        </div>`;
+    });
+  } else if (question.type === 'slider') {
+    optionsHtml = `
+      <input type="range"
+             min="${question.min}" max="${question.max}" step="${question.step}"
+             value="${answers[qId] != null ? answers[qId] : question.min}"
+             id="slider-input"
+             oninput="selectSlider('${qId}', this.value)">
+      <span id="slider-value">
+        ${answers[qId] != null ? answers[qId] : question.min}
+      </span>`;
+  } else {
+    optionsHtml = `<div>No options for this question type.</div>`;
+  }
+
+  surveyContent.innerHTML = `
+    <div class="question">
+      <h3>${question.title}</h3>
+      ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
+      <div class="options">${optionsHtml}</div>
+    </div>
+    <div class="survey-navigation">
+      <button class="btn-back" id="back-btn"
+              onclick="previousQuestion()" style="display:none;">
+        ← Anterior
+      </button>
+      <button class="btn-next" id="next-btn"
+              onclick="nextQuestion()">
+        Siguiente →
+      </button>
+    </div>`;
+
+  updateProgress();
+  updateNavigation();
+}
+
+// Updated validation logic in nextQuestion()
+function nextQuestion() {
+  const qId = questionOrder[currentQuestionIndex];
+  const question = getQuestionById(qId);
+
+  // Only validate if question.required is true
+  if (question.required !== false) {
+    if (question.type === 'multiselect' && answers[qId].length === 0) {
+      alert('Por favor selecciona al menos una opción.');
+      return;
+    }
+    if (question.type === 'single_choice' && !answers[qId]) {
+      alert('Por favor selecciona una opción.');
+      return;
+    }
+  }
+
+  const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+  if (nextIdx > -1) {
+    currentQuestionIndex = nextIdx;
+    renderQuestion();
+  } else {
+    finishSurvey();
+  }
 }
 
 window.selectOption = function(value, isMultiSelect) {

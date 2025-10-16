@@ -407,6 +407,24 @@ pre code {
   position: relative;
 }
 
+.logo-between-sections {
+  margin: 20px auto; /* Reduces vertical space around logo */
+  max-width: 90%; /* Prevents logo from touching screen edges */
+}
+
+.container {
+  padding: 1rem; /* Reduces container padding if needed */
+}
+
+/* Optional: Adjust section margins */
+.hero {
+  margin-bottom: 10px !important;
+}
+
+.secondary-section {
+  margin-top: 10px !important;
+}
+
 .btn:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
