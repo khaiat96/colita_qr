@@ -87,7 +87,7 @@ function isQuestionVisible(question, answers) {
         return shouldShow;
     }
 
-    if (!question.visible_if) return true;
+    if (!question.hasOwnProperty('visible_if') || question.visible_if === undefined) return tru
     const cond = question.visible_if;
     if (cond.question_id && typeof cond.equals !== "undefined") {
         return answers[cond.question_id] === cond.equals;
