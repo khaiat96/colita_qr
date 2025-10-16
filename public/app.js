@@ -37,31 +37,68 @@ function showPage(pageId) {
 
 function renderPhaseAdvice(patternKey) {
   const phaseSections = resultsTemplate?.phase?.generic || {};
-  let html = `<div class="tips-phase-section"><div class="tips-title">Tips de cuidado por fase del ciclo</div>`;
+  
+  // Start with the main container and title
+  let html = `
+    <div class="tips-phase-section">
+      <h3 class="tips-main-title">Tips de cuidado por fase del ciclo</h3>
+      <div class="phases-container">
+  `;
 
+  // Render each phase as its own distinct block
   Object.keys(phaseSections).forEach(phaseKey => {
     const phase = phaseSections[phaseKey];
-    html += `<div class="phase-card">
-      <div class="phase-title">${phase.label || ''}</div>
-      <div class="phase-description">${phase.about || ''}</div>`;
-
-    // Render foods in a list if present
-    if (phase.foods && phase.foods.length) {
-      html += `<ul class="phase-list">${phase.foods.map(item => `<li>${item}</li>`).join('')}</ul>`;
+    
+    html += `
+      <div class="phase-block">
+        <div class="phase-header">
+          <h4 class="phase-title">${phase.label || ''}</h4>
+          <p class="phase-description">${phase.about || ''}</p>
+        </div>
+        <div class="phase-content">
+    `;
+    
+    // Add Foods section if exists
+    if (phase.foods && phase.foods.length > 0) {
+      html += `
+        <div class="phase-item">
+          <span class="phase-label phase-foods">Alimentos:</span>
+          <span class="phase-text">${phase.foods.join(', ')}</span>
+        </div>
+      `;
     }
-
-    // Render any extra fields ("do", "avoid", etc) if present
-    if (phase.do && phase.do.length) {
-      html += `<div><span class="phase-label phase-do">Haz:</span> ${phase.do.join(', ')}</div>`;
+    
+    // Add Do section if exists
+    if (phase.do && phase.do.length > 0) {
+      html += `
+        <div class="phase-item">
+          <span class="phase-label phase-do">Haz:</span>
+          <span class="phase-text">${phase.do.join(', ')}</span>
+        </div>
+      `;
     }
-    if (phase.avoid && phase.avoid.length) {
-      html += `<div><span class="phase-label phase-avoid">Evita:</span> ${phase.avoid.join(', ')}</div>`;
+    
+    // Add Avoid section if exists
+    if (phase.avoid && phase.avoid.length > 0) {
+      html += `
+        <div class="phase-item">
+          <span class="phase-label phase-avoid">Evita:</span>
+          <span class="phase-text">${phase.avoid.join(', ')}</span>
+        </div>
+      `;
     }
-
-    html += `</div>`;
+    
+    html += `
+        </div>
+      </div>
+    `;
   });
 
-  html += `</div>`;
+  html += `
+      </div>
+    </div>
+  `;
+  
   return html;
 }
 
