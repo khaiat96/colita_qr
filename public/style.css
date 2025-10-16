@@ -508,6 +508,13 @@ pre code {
     /* Remove margin-top if present in .btn-block, use only on Volver al inicio inline if needed */
 }
 
+.volver-btn {
+    max-width: 280px;
+    font-size: 1rem;
+    padding: 12px 0;
+    margin-top: 38px; /* More space above */
+    margin-bottom: 0;
+}
 
 /* Form elements */
 .form-control {
