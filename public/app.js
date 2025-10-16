@@ -13,6 +13,14 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let isProMode = false;
 let resultsTemplate = null;
 
+window.startSurvey = function() {
+  // Set initial values, show survey page, render first question
+  currentQuestionIndex = 0;
+  answers = {};
+  showPage('survey-page');
+  renderQuestion();
+};
+
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(page => {
     page.classList.remove('active');
