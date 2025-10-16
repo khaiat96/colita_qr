@@ -240,7 +240,7 @@
         }
       ]
     },
-{
+    {
        "id": "P2",
        "type": "multiselect",
       "required": false,
@@ -284,6 +284,32 @@
         "regular"
       ]
     },
+{
+  "id": "P2_spotting_frecuencia",
+  "type": "single_choice",
+  "title": "¿Con qué frecuencia tuviste manchado entre reglas?",
+  "help_text": "Ayuda a precisar el patrón de manchado.",
+  "visible_if": {
+    "question_id": "P2",
+    "includes": ["Manchado entre reglas (spotting)"]
+  },
+  "options": [
+    {
+      "label": "Ocasionalmente",
+      "value": "spot_ocasional"
+    },
+    {
+      "label": "A veces",
+      "value": "spot_a_veces"
+    },
+    {
+      "label": "Frecuentemente",
+      "value": "spot_frecuente"
+    }
+  ],
+  "modes": ["regular", "pro"]
+},
+
     {
       "id": "P2_spotting_context",
       "type": "single_choice",
