@@ -647,7 +647,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Disable the quiz button until loaded
   const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = true;
+  if (quizBtn) quizBtn.disabled = false;
 
   try {
     console.log('🔍 Loading survey questions...');
