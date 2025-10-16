@@ -830,7 +830,7 @@ body {
 
 /* Secondary Section */
 .secondary-section {
-    padding: 60px 0;
+    padding: 10px 0;
     text-align: center;
 }
 
@@ -2529,7 +2529,7 @@ html {
     }
     
     .secondary-section {
-        padding: 40px 0;
+        padding: 20px 0;
     }
     
     .secondary-section h2 {
