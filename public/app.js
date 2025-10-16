@@ -196,7 +196,7 @@ function renderQuestion() {
                 ? (answers[qId] && answers[qId].includes(option.value)) 
                 : answers[qId] === option.value;
             optionsHtml += `
-                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" onclick="selectOption('${option.value}', ${isMultiSelect})">
+                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
                     ${option.label}
                 </div>
             `;
@@ -224,7 +224,7 @@ function renderQuestion() {
                                         ? (answers[item.id] && answers[item.id].includes(opt.value))
                                         : answers[item.id] === opt.value;
                                     return `
-                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${opt.value}', ${isMultiSelect}, '${item.id}')">
+                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
                                             ${opt.label}
                                         </div>
                                     `;
@@ -262,7 +262,7 @@ function renderQuestion() {
                                         ? (answers[group.id] && answers[group.id].includes(opt.value))
                                         : answers[group.id] === opt.value;
                                     return `
-                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${opt.value}', ${isMultiSelect}, '${group.id}')">
+                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${group.id}', '${opt.value}', ${isMultiSelect})">
                                             ${opt.label}
                                         </div>
                                     `;
@@ -307,6 +307,96 @@ function renderQuestion() {
     updateProgress();
     updateNavigation();
 }
+
+// Updated selectOption function
+window.selectOption = function(qId, value, isMultiSelect) {
+  // For debugging:
+  console.log("Option clicked:", { qId, value, isMultiSelect });
+  const question = getQuestionById(qId);
+  if (!question) return;
+
+  if (isMultiSelect) {
+    if (!answers[qId]) answers[qId] = [];
+    const currentAnswers = answers[qId];
+    const index = currentAnswers.indexOf(value);
+    if (index > -1) {
+      currentAnswers.splice(index, 1);
+    } else {
+      if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
+        currentAnswers.shift();
+      }
+      currentAnswers.push(value);
+    }
+    document.querySelectorAll(`[data-value="${value}"]`).forEach(elem => {
+      if (elem.dataset.value === value) {
+        elem.classList.toggle('selected');
+      }
+    });
+  } else {
+    answers[qId] = value;
+    document.querySelectorAll(`[data-value]`).forEach(option => {
+      option.classList.remove('selected');
+    });
+    document.querySelectorAll(`[data-value="${value}"]`).forEach(option => {
+      option.classList.add('selected');
+    });
+  }
+
+  updateNavigation();
+};
+
+// Updated selectSlider for compound/grouped items:
+window.selectSlider = function(qId, value) {
+    answers[qId] = Number(value);
+    const sliderValueSpan = document.getElementById(`slider-value-${qId}`) || document.getElementById('slider-value');
+    if (sliderValueSpan) sliderValueSpan.textContent = value;
+    updateNavigation();
+};
+
+// Updated selectOption function
+window.selectOption = function(qId, value, isMultiSelect) {
+  // For debugging:
+  console.log("Option clicked:", { qId, value, isMultiSelect });
+  const question = getQuestionById(qId);
+  if (!question) return;
+
+  if (isMultiSelect) {
+    if (!answers[qId]) answers[qId] = [];
+    const currentAnswers = answers[qId];
+    const index = currentAnswers.indexOf(value);
+    if (index > -1) {
+      currentAnswers.splice(index, 1);
+    } else {
+      if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
+        currentAnswers.shift();
+      }
+      currentAnswers.push(value);
+    }
+    document.querySelectorAll(`[data-value="${value}"]`).forEach(elem => {
+      if (elem.dataset.value === value) {
+        elem.classList.toggle('selected');
+      }
+    });
+  } else {
+    answers[qId] = value;
+    document.querySelectorAll(`[data-value]`).forEach(option => {
+      option.classList.remove('selected');
+    });
+    document.querySelectorAll(`[data-value="${value}"]`).forEach(option => {
+      option.classList.add('selected');
+    });
+  }
+
+  updateNavigation();
+};
+
+// Updated selectSlider for compound/grouped items:
+window.selectSlider = function(qId, value) {
+    answers[qId] = Number(value);
+    const sliderValueSpan = document.getElementById(`slider-value-${qId}`) || document.getElementById('slider-value');
+    if (sliderValueSpan) sliderValueSpan.textContent = value;
+    updateNavigation();
+};
 
 // Also update selectOption to allow an optional qId override for compound/grouped items:
 window.selectOption = function(value, isMultiSelect, overrideQId) {
