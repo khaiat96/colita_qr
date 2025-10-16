@@ -58,32 +58,50 @@ function renderPhaseAdvice(patternKey) {
         <div class="phase-content">
     `;
     
-    // Add Foods section if exists
+    // Add Foods section if exists with bullet points
     if (phase.foods && phase.foods.length > 0) {
       html += `
-        <div class="phase-item">
-          <span class="phase-label phase-foods">Alimentos:</span>
-          <span class="phase-text">${phase.foods.join(', ')}</span>
+        <div class="phase-subsection">
+          <div class="subsection-label">Alimentos:</div>
+          <ul class="subsection-list">
+      `;
+      phase.foods.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+      html += `
+          </ul>
         </div>
       `;
     }
     
-    // Add Do section if exists
+    // Add Do section if exists with bullet points
     if (phase.do && phase.do.length > 0) {
       html += `
-        <div class="phase-item">
-          <span class="phase-label phase-do">Haz:</span>
-          <span class="phase-text">${phase.do.join(', ')}</span>
+        <div class="phase-subsection">
+          <div class="subsection-label">Haz:</div>
+          <ul class="subsection-list">
+      `;
+      phase.do.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+      html += `
+          </ul>
         </div>
       `;
     }
     
-    // Add Avoid section if exists
+    // Add Avoid section if exists with bullet points
     if (phase.avoid && phase.avoid.length > 0) {
       html += `
-        <div class="phase-item">
-          <span class="phase-label phase-avoid">Evita:</span>
-          <span class="phase-text">${phase.avoid.join(', ')}</span>
+        <div class="phase-subsection">
+          <div class="subsection-label">Evita:</div>
+          <ul class="subsection-list">
+      `;
+      phase.avoid.forEach(item => {
+        html += `<li>${item}</li>`;
+      });
+      html += `
+          </ul>
         </div>
       `;
     }
@@ -101,6 +119,7 @@ function renderPhaseAdvice(patternKey) {
   
   return html;
 }
+
 
 // === ADDED: flag for survey loaded ===
 window.surveyLoaded = false;
