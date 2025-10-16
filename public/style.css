@@ -407,6 +407,9 @@ pre code {
   position: relative;
 }
 
+
+
+
 .logo-between-sections {
   margin-top: 5px;    /* tighten above */
   margin-bottom: 5px; /* keep some space below */
@@ -486,6 +489,25 @@ pre code {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.results-actions-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 30px;
+    gap: 0;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    /* Remove margin-top if present in .btn-block, use only on Volver al inicio inline if needed */
+}
+
 
 /* Form elements */
 .form-control {
