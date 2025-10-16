@@ -1586,6 +1586,72 @@ body {
     font-style: italic;
 }
 
+.tips-phase-section {
+    background: #28242c;
+    border-radius: 16px;
+    padding: 32px 24px;
+    margin: 32px auto 0 auto;
+    max-width: 600px;
+    box-shadow: 0 4px 28px rgba(107,115,255,0.05);
+    border: none;
+    text-align: left;
+}
+
+.tips-phase-section .tips-title {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d4aa 0%, #9c44dc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+}
+
+.phase-card {
+    background: #18171b;
+    border-radius: 18px;
+    margin-bottom: 30px;
+    padding: 20px 22px 18px 22px;
+    border: 3px solid #3fb37f;
+    box-shadow: 0 2px 12px rgba(60,255,160,0.07);
+}
+
+.phase-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #b78fff;
+    margin-bottom: 8px;
+    margin-top: 6px;
+    text-align: left;
+}
+
+.phase-description {
+    color: #e0e0e0;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-style: italic;
+    text-align: left;
+}
+
+.phase-label {
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+.phase-foods {
+    color: #6bebc6;
+}
+
+.phase-do {
+    color: #7c74e2;
+}
+
+.phase-avoid {
+    color: #e262a0;
+}
+
 .characteristics {
     list-style: none;
     text-align: left;

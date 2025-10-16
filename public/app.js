@@ -35,6 +35,25 @@ function showPage(pageId) {
   document.getElementById(pageId).classList.add('active');
 }
 
+function renderPhaseAdvice(patternKey) {
+  const phaseSections = resultsTemplate?.phase?.generic || {};
+  let html = `<div class="tips-phase-section"><div class="tips-title">Tips de cuidado por fase del ciclo</div>`;
+
+  Object.keys(phaseSections).forEach(phaseKey => {
+    const phase = phaseSections[phaseKey];
+    html += `<div class="phase-card">
+      <div class="phase-title">${phase.label || ''}</div>
+      <div class="phase-description">${phase.about || ''}</div>
+      ${phase.foods ? `<div><span class="phase-label phase-foods">Alimentos:</span> ${phase.foods.join(', ')}</div>` : ''}
+      ${phase.do ? `<div><span class="phase-label phase-do">Haz:</span> ${phase.do.join(', ')}</div>` : ''}
+      ${phase.avoid ? `<div><span class="phase-label phase-avoid">Evita:</span> ${phase.avoid.join(', ')}</div>` : ''}
+    </div>`;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
 // === ADDED: flag for survey loaded ===
 window.surveyLoaded = false;
 
