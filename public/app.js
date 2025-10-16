@@ -21,6 +21,13 @@ window.startSurvey = function() {
   renderQuestion();
 };
 
+function finishSurvey() {
+  // Calculate the dominant pattern
+  const patternKey = calculateResults();
+  // Render results using your template
+  showResults(patternKey);
+}
+
 function showPage(pageId) {
   document.querySelectorAll('.page').forEach(page => {
     page.classList.remove('active');
