@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colita de Rana - Tu medicina personalizada</title>
-    <link rel="stylesheet" href="style_modified.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -134,17 +134,22 @@
         <div class="results-container">
             <div class="results-card" id="results-card">
                 <!-- Full detailed results will be populated here by JS -->
+<!-- Enhanced Results Footer with proper button stacking -->
+            <div class="results-footer">
+                <section id="email-results-form-section" style="display:none; margin-top: 0;">
+                    <form id="email-results-form" class="results-footer-form">
+                        <h3>¿Quieres recibir tu reporte completo por email?</h3>
+                        <input type="text" id="email-results-name" placeholder="Tu nombre" required>
+                        <input type="email" id="email-results-email" placeholder="tu@email.com" required>
+                        <button type="submit" class="btn-primary">Enviar mi reporte</button>
+                    </form>
+                </section>
+                
+                <!-- Actions container for proper button stacking -->
+                <div class="results-actions">
+                    <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
+                </div>
             </div>
-            <section id="email-results-form-section" style="display:none; margin-top:30px;">
-                <form id="email-results-form" class="results-footer-form">
-                    <h3>¿Quieres recibir tu reporte completo por email?</h3>
-                    <input type="text" id="email-results-name" placeholder="Tu nombre" required>
-                    <input type="email" id="email-results-email" placeholder="tu@email.com" required>
-                    <button type="submit" class="btn-primary">Enviar mi reporte</button>
-                </form>
-            </section>
-            <button class="btn-primary" onclick="showPage('landing-page')">Volver al inicio</button>
-        </div>
     </div>
 
     <!-- Survey Page -->
