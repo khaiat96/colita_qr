@@ -145,73 +145,211 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 
 // ==================== SURVEY RENDERING ====================
 
+// Improved renderQuestion function for robust handling of all question types (single_choice, multiselect, slider, compound, grouped)
+// Also guards against undefined question objects and missing options arrays.
+
 function renderQuestion() {
-  let qId = questionOrder[currentQuestionIndex];
-  let question = getQuestionById(qId);
+    let qId = questionOrder[currentQuestionIndex];
+    let question = getQuestionById(qId);
 
-  // Skip invisible questions
-  while (question && !isQuestionVisible(question, answers)) {
-    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-    if (nextIdx > -1) {
-      currentQuestionIndex = nextIdx;
-      qId = questionOrder[currentQuestionIndex];
-      question = getQuestionById(qId);
-    } else {
-      finishSurvey();
-      return;
+    // Guard for undefined question
+    if (!question) {
+        finishSurvey();
+        return;
     }
-  }
 
-  if (!question) {
-    finishSurvey();
-    return;
-  }
+    // Skip invisible questions
+    while (question && !isQuestionVisible(question, answers)) {
+        const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+        if (nextIdx > -1) {
+            currentQuestionIndex = nextIdx;
+            qId = questionOrder[currentQuestionIndex];
+            question = getQuestionById(qId);
+        } else {
+            finishSurvey();
+            return;
+        }
+    }
 
-  // Initialize answers for multiselect
-  if (question.type === "multiselect" && !answers[qId]) {
-    answers[qId] = [];
-    console.log(`✅ Initialized ${qId} as empty array`);
-  }
+    if (!question) {
+        finishSurvey();
+        return;
+    }
 
-  const surveyContent = document.getElementById('survey-content');
-  if (!surveyContent) return;
+    // Initialize answers for multiselect
+    if (question.type === "multiselect" && !answers[qId]) {
+        answers[qId] = [];
+        console.log(`✅ Initialized ${qId} as empty array`);
+    }
 
-  let optionsHtml = '';
-  question.options.forEach((option) => {
-    const isMulti = question.type === 'multiselect';
-    const optionClass = isMulti ? 'option multi-select' : 'option';
-    const selected = isMulti 
-      ? (answers[qId] && answers[qId].includes(option.value))
-      : answers[qId] === option.value;
+    const surveyContent = document.getElementById('survey-content');
+    if (!surveyContent) return;
 
-    optionsHtml += `
-      <div class="${optionClass}${selected ? ' selected' : ''}"
-           data-value="${option.value}"
-           onclick="selectOption('${qId}', '${option.value}', ${isMulti})">
-        ${option.label}
-      </div>`;
-  });
+    let optionsHtml = '';
 
-  surveyContent.innerHTML = `
-    <div class="question">
-      <h3>${question.title}</h3>
-      ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
-      <div class="options">${optionsHtml}</div>
-    </div>
-    <div class="survey-navigation">
-      <button class="btn-back" id="back-btn"
-              onclick="previousQuestion()" style="display:none;">
-        ← Anterior
-      </button>
-      <button class="btn-next" id="next-btn"
-              onclick="nextQuestion()">
-        Siguiente →
-      </button>
-    </div>`;
+    // Handle standard option types
+    if ((question.type === 'multiselect' || question.type === 'single_choice') && Array.isArray(question.options)) {
+        question.options.forEach((option, index) => {
+            const isMultiSelect = question.type === 'multiselect';
+            const optionClass = isMultiSelect ? 'option multi-select' : 'option';
+            const selected = isMultiSelect 
+                ? (answers[qId] && answers[qId].includes(option.value)) 
+                : answers[qId] === option.value;
+            optionsHtml += `
+                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" onclick="selectOption('${option.value}', ${isMultiSelect})">
+                    ${option.label}
+                </div>
+            `;
+        });
+    } else if (question.type === 'slider') {
+        optionsHtml = `
+            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
+                value="${answers[question.id] || question.min}" id="slider-input"
+                oninput="selectSlider('${question.id}', this.value)">
+            <span id="slider-value">${answers[question.id] || question.min}</span>
+        `;
+    } else if (question.type === 'compound' && Array.isArray(question.items)) {
+        // Compound: render each item as its own mini-question
+        optionsHtml = `<div class="compound-question">
+            <div class="sub-questions">
+                ${question.items.map(item => {
+                    if ((item.type === 'multiselect' || item.type === 'single_choice') && Array.isArray(item.options)) {
+                        return `<div class="sub-question">
+                            <h4>${item.title}</h4>
+                            <div class="sub-options">
+                                ${item.options.map(opt => {
+                                    // For compound, use selectOption with item.id as qId
+                                    const isMultiSelect = item.type === 'multiselect';
+                                    const selected = isMultiSelect
+                                        ? (answers[item.id] && answers[item.id].includes(opt.value))
+                                        : answers[item.id] === opt.value;
+                                    return `
+                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${opt.value}', ${isMultiSelect}, '${item.id}')">
+                                            ${opt.label}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    } else if (item.type === 'slider') {
+                        return `<div class="sub-question">
+                            <h4>${item.title}</h4>
+                            <div class="slider-container">
+                                <input type="range" min="${item.min}" max="${item.max}" step="${item.step}" 
+                                    value="${answers[item.id] || item.min}" id="slider-input-${item.id}"
+                                    oninput="selectSlider('${item.id}', this.value)">
+                                <span id="slider-value-${item.id}">${answers[item.id] || item.min}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        return `<div class="sub-question">${item.title} (Tipo no soportado)</div>`;
+                    }
+                }).join('')}
+            </div>
+        </div>`;
+    } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
+        // Grouped: render each grouped question (like compound, but may have different structure)
+        optionsHtml = `<div class="grouped-question">
+            <div class="question-groups">
+                ${question.questions.map(group => {
+                    if ((group.type === 'multiselect' || group.type === 'single_choice') && Array.isArray(group.options)) {
+                        return `<div class="question-group">
+                            <h4>${group.title}</h4>
+                            <div class="group-options">
+                                ${group.options.map(opt => {
+                                    const isMultiSelect = group.type === 'multiselect';
+                                    const selected = isMultiSelect
+                                        ? (answers[group.id] && answers[group.id].includes(opt.value))
+                                        : answers[group.id] === opt.value;
+                                    return `
+                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${opt.value}', ${isMultiSelect}, '${group.id}')">
+                                            ${opt.label}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    } else if (group.type === 'slider') {
+                        return `<div class="question-group">
+                            <h4>${group.title}</h4>
+                            <div class="slider-container">
+                                <input type="range" min="${group.min}" max="${group.max}" step="${group.step}" 
+                                    value="${answers[group.id] || group.min}" id="slider-input-${group.id}"
+                                    oninput="selectSlider('${group.id}', this.value)">
+                                <span id="slider-value-${group.id}">${answers[group.id] || group.min}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        return `<div class="question-group">${group.title} (Tipo no soportado)</div>`;
+                    }
+                }).join('')}
+            </div>
+        </div>`;
+    } else {
+        // Fallback for unknown question type or missing options
+        optionsHtml = `<div>No options for this question type.</div>`;
+    }
 
-  updateProgress();
-  updateNavigation();
+    surveyContent.innerHTML = `
+        <div class="question">
+            <h3>${question.title}</h3>
+            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
+            <div class="options">
+                ${optionsHtml}
+            </div>
+        </div>
+        <div class="survey-navigation">
+            <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display:none;">← Anterior</button>
+            <button class="btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+        </div>
+    `;
+
+    updateProgress();
+    updateNavigation();
 }
+
+// Also update selectOption to allow an optional qId override for compound/grouped items:
+window.selectOption = function(value, isMultiSelect, overrideQId) {
+    const qId = overrideQId || questionOrder[currentQuestionIndex];
+    const question = getQuestionById(qId);
+
+    if (isMultiSelect) {
+        if (!answers[qId]) {
+            answers[qId] = [];
+        }
+        const currentAnswers = answers[qId];
+        const index = currentAnswers.indexOf(value);
+
+        if (index > -1) {
+            currentAnswers.splice(index, 1);
+        } else {
+            if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
+                currentAnswers.shift();
+            }
+            currentAnswers.push(value);
+        }
+
+        document.querySelectorAll(`[data-value="${value}"]`).forEach(option => {
+            option.classList.toggle('selected');
+        });
+    } else {
+        answers[qId] = value;
+        document.querySelectorAll(`[data-value]`).forEach(option => {
+            option.classList.remove('selected');
+        });
+        document.querySelector(`[data-value="${value}"]`).classList.add('selected');
+    }
+
+    updateNavigation();
+};
+
+// Also update selectSlider for compound/grouped items:
+window.selectSlider = function(qId, value) {
+    answers[qId] = Number(value);
+    const sliderValueSpan = document.getElementById(`slider-value-${qId}`) || document.getElementById('slider-value');
+    if (sliderValueSpan) sliderValueSpan.textContent = value;
+    updateNavigation();
+};
 
 // In nextQuestion()
 function nextQuestion() {

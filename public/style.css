@@ -857,18 +857,25 @@ body {
     margin-top: 20px;
 }
 
+/* Logo Between Sections - Centered with no border */
 .logo-between-sections {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 22px 0; /* Adjust spacing as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    max-width: 450px;
+    padding: 0;
 }
+
 .logo-between-sections img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 12px; /* Optional: rounded corners */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* Optional: subtle shadow */
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
 }
+
 
 /* Hero Section */
 .hero {
