@@ -943,25 +943,41 @@ body {
 }
 
 .btn-secondary {
-    background: transparent;
-    color: #00D4AA;
-    border: 2px solid;
-    border-image: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%) 1;
+    background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-secondary:hover {
-    background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
-    color: #ffffff;
-    box-shadow: 0 8px 25px rgba(0, 212, 170, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 212, 170, 0.4), 0 0 20px rgba(107, 115, 255, 0.3);
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .btn-back {
-    background: #3a3a3a;
+    background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
     color: #ffffff;
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-back:hover {
-    background: #4a4a4a;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 212, 170, 0.4), 0 0 20px rgba(107, 115, 255, 0.3);
+}
+
+.btn-back:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* Elements Section */
@@ -2646,4 +2662,191 @@ html {
     .email-title {
         font-size: 1.5rem;
     }
+
+    /* Results Footer Styling - Fix button positioning */
+.results-footer {
+    margin-top: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(107, 115, 255, 0.05) 100%);
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.results-footer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+}
+
+/* Button container for results page */
+.results-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.results-actions .btn-primary {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Tips de cuidado por fase del ciclo - Enhanced styling */
+.menstrual-tips-section {
+    background: linear-gradient(135deg, rgba(0, 212, 170, 0.05) 0%, rgba(107, 115, 255, 0.03) 100%);
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
+    border-radius: 20px;
+    padding: 40px;
+    margin: 30px 0;
+}
+
+.menstrual-tips-section h3 {
+    font-size: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.phase-container {
+    margin-bottom: 35px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 25px;
+    border-left: 4px solid;
+    border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
+}
+
+.phase-container:last-child {
+    margin-bottom: 0;
+}
+
+.phase-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.phase-description {
+    font-size: 1rem;
+    color: #b0b0b0;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.phase-tips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.phase-tips li {
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    border-left: 3px solid rgba(0, 212, 170, 0.5);
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 40px;
+}
+
+.phase-tips li:before {
+    content: "•";
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    font-size: 1.2rem;
+    background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+/* Mobile responsive updates */
+@media (max-width: 768px) {
+    .menstrual-tips-section {
+        padding: 25px;
+        margin: 20px 0;
+    }
+    
+    .menstrual-tips-section h3 {
+        font-size: 1.7rem;
+    }
+    
+    .phase-container {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    
+    .phase-title {
+        font-size: 1.3rem;
+    }
+    
+    .phase-tips li {
+        padding: 8px 12px;
+        padding-left: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .results-footer {
+        padding: 25px;
+    }
+    
+    .results-actions .btn-primary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .menstrual-tips-section {
+        padding: 20px;
+    }
+    
+    .menstrual-tips-section h3 {
+        font-size: 1.5rem;
+    }
+    
+    .phase-container {
+        padding: 15px;
+    }
+    
+    .phase-title {
+        font-size: 1.2rem;
+    }
+    
+    .phase-tips li {
+        padding: 8px 10px;
+        padding-left: 30px;
+        font-size: 0.85rem;
+    }
+    
+    .phase-tips li:before {
+        left: 12px;
+        top: 8px;
+        font-size: 1rem;
+    }
+    
+    .results-footer {
+        padding: 20px;
+    }
+}
 }
