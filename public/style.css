@@ -910,7 +910,7 @@ body {
 
 
 /* Buttons */
-.btn-primary, .btn-secondary, .btn-back {
+.btn-primary, .btn-secondary, .btn-back, .btn-next {
     padding: 16px 32px;
     border: none;
     border-radius: 12px;
@@ -963,6 +963,19 @@ body {
 .btn-back:hover {
     background: #4a4a4a;
 }
+
+.btn-next {
+    background: #3a3a3a;
+    color: #ffffff;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.btn-next:hover {
+    background: #4a4a4a;
+    color: #ffffff;
+}
+
 
 /* Elements Section */
 .elements-section {
