@@ -13,6 +13,13 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let isProMode = false;
 let resultsTemplate = null;
 
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  document.getElementById(pageId).classList.add('active');
+}
+
 // === ADDED: flag for survey loaded ===
 window.surveyLoaded = false;
 
