@@ -43,11 +43,22 @@ function renderPhaseAdvice(patternKey) {
     const phase = phaseSections[phaseKey];
     html += `<div class="phase-card">
       <div class="phase-title">${phase.label || ''}</div>
-      <div class="phase-description">${phase.about || ''}</div>
-      ${phase.foods ? `<div><span class="phase-label phase-foods">Alimentos:</span> ${phase.foods.join(', ')}</div>` : ''}
-      ${phase.do ? `<div><span class="phase-label phase-do">Haz:</span> ${phase.do.join(', ')}</div>` : ''}
-      ${phase.avoid ? `<div><span class="phase-label phase-avoid">Evita:</span> ${phase.avoid.join(', ')}</div>` : ''}
-    </div>`;
+      <div class="phase-description">${phase.about || ''}</div>`;
+
+    // Render foods in a list if present
+    if (phase.foods && phase.foods.length) {
+      html += `<ul class="phase-list">${phase.foods.map(item => `<li>${item}</li>`).join('')}</ul>`;
+    }
+
+    // Render any extra fields ("do", "avoid", etc) if present
+    if (phase.do && phase.do.length) {
+      html += `<div><span class="phase-label phase-do">Haz:</span> ${phase.do.join(', ')}</div>`;
+    }
+    if (phase.avoid && phase.avoid.length) {
+      html += `<div><span class="phase-label phase-avoid">Evita:</span> ${phase.avoid.join(', ')}</div>`;
+    }
+
+    html += `</div>`;
   });
 
   html += `</div>`;
