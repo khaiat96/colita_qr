@@ -79,59 +79,45 @@ function getQuestionById(qId) {
 
 function isQuestionVisible(question, answers) {
   if (!question) return false;
-  if (question.id === "P0_contraception" || question.id === "P1") return true;
+  const qId = typeof question.id === 'string' ? question.id : '';
 
-  if (question.id.startsWith("P1_")) {
-    const p1Answer = answers["P1"];
-    const shouldShow = p1Answer === "No tengo sangrado actualmente";
-    return shouldShow;
+  // always show P0 and P1
+  if (qId === 'P0_contraception' || qId === 'P1') return true;
+
+  // P1_ follow-ups
+  if (qId.startsWith('P1_')) {
+    return answers.P1 === 'No tengo sangrado actualmente';
   }
 
   if (!question.visible_if) return true;
   const cond = question.visible_if;
-  if (cond.question_id && typeof cond.equals !== "undefined") {
+
+  // equals
+  if (cond.question_id && typeof cond.equals !== 'undefined') {
     return answers[cond.question_id] === cond.equals;
   }
+  // includes
   if (cond.question_id && cond.includes) {
     const ans = answers[cond.question_id];
     const inclArr = Array.isArray(cond.includes) ? cond.includes : [cond.includes];
     const ansArr = Array.isArray(ans) ? ans : [ans];
-    return inclArr.some(val => ansArr.includes(val));
+    return inclArr.some(v => ansArr.includes(v));
   }
-  if (cond.question_id && cond.includes_any) {
-    const ans = answers[cond.question_id];
-    const inclAnyArr = Array.isArray(cond.includes_any) ? cond.includes_any : [cond.includes_any];
-    const ansArr = Array.isArray(ans) ? ans : [ans];
-    return inclAnyArr.some(val => ansArr.includes(val));
+  // not_includes, includes_any, not_in, not_includes_any, at_least...
+  // (keep your existing blocks here, none of which use question.id)
+
+  // all / any
+  if (cond.all) {
+    return cond.all.every(subCond =>
+      isQuestionVisible({ visible_if: subCond, id: '' }, answers)
+    );
   }
-  if (cond.question_id && cond.not_includes) {
-    const ans = answers[cond.question_id];
-    const notInclArr = Array.isArray(cond.not_includes) ? cond.not_includes : [cond.not_includes];
-    const ansArr = Array.isArray(ans) ? ans : [ans];
-    return notInclArr.every(val => !ansArr.includes(val));
+  if (cond.any) {
+    return cond.any.some(subCond =>
+      isQuestionVisible({ visible_if: subCond, id: '' }, answers)
+    );
   }
-  if (cond.question_id && cond.not_in) {
-    const ans = answers[cond.question_id];
-    const notInArr = Array.isArray(cond.not_in) ? cond.not_in : [cond.not_in];
-    const ansArr = Array.isArray(ans) ? ans : [ans];
-    return notInArr.every(val => !ansArr.includes(val));
-  }
-  if (cond.question_id && cond.not_includes_any) {
-    const ans = answers[cond.question_id];
-    const notInclArr = Array.isArray(cond.not_includes_any) ? cond.not_includes_any : [cond.not_includes_any];
-    const ansArr = Array.isArray(ans) ? ans : [ans];
-    return notInclArr.every(val => !ansArr.includes(val));
-  }
-  if (cond.question_id && typeof cond.at_least !== "undefined") {
-    const ans = Number(answers[cond.question_id]) || 0;
-    return ans >= cond.at_least;
-  }
-  if (cond.all && Array.isArray(cond.all)) {
-    return cond.all.every(subCond => isQuestionVisible({visible_if: subCond}, answers));
-  }
-  if (cond.any && Array.isArray(cond.any)) {
-    return cond.any.some(subCond => isQuestionVisible({visible_if: subCond}, answers));
-  }
+
   return true;
 }
 
