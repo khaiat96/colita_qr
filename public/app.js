@@ -304,7 +304,28 @@ function renderQuestion() {
 // Updated selectOption function with scoped selection for compound/grouped sub-questions
 window.selectOption = function(qId, value, isMultiSelect) {
   console.log("Option clicked:", { qId, value, isMultiSelect });
-  const question = getQuestionById(qId);
+
+  // Find the question type for this qId (may be item inside compound/grouped)
+  // Try compound item first
+  let question = getQuestionById(qId);
+  if (!question) {
+    // fallback: try to find item by id in compound/grouped questions
+    for (const q of surveyQuestions) {
+      if (q.type === 'compound' && Array.isArray(q.items)) {
+        const found = q.items.find(item => item.id === qId);
+        if (found) {
+          question = found;
+          break;
+        }
+      } else if (q.type === 'grouped' && Array.isArray(q.questions)) {
+        const found = q.questions.find(item => item.id === qId);
+        if (found) {
+          question = found;
+          break;
+        }
+      }
+    }
+  }
   if (!question) return;
 
   // Determine selector for options (scoped for compound/grouped/sub-question)
@@ -343,6 +364,8 @@ window.selectOption = function(qId, value, isMultiSelect) {
     });
   }
 
+  // Debug: log answers for compound items!
+  console.log("answers state after click:", JSON.stringify(answers));
   window.updateNavigation();
 };
 
@@ -350,6 +373,7 @@ window.selectSlider = function(qId, value) {
     answers[qId] = Number(value);
     const sliderValueSpan = document.getElementById(`slider-value-${qId}`) || document.getElementById('slider-value');
     if (sliderValueSpan) sliderValueSpan.textContent = value;
+    console.log("answers state after slider:", JSON.stringify(answers));
     window.updateNavigation();
 };
 
