@@ -862,7 +862,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 40px auto;
+    margin: 10px auto;
     max-width: 450px;
     padding: 0;
 }

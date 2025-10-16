@@ -193,7 +193,7 @@ function renderQuestion() {
                 ? (answers[qId] && answers[qId].includes(option.value)) 
                 : answers[qId] === option.value;
             optionsHtml += `
-                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
+                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" data-qid="${qId}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
                     ${option.label}
                 </div>
             `;
@@ -219,7 +219,7 @@ function renderQuestion() {
                                         ? (answers[item.id] && answers[item.id].includes(opt.value))
                                         : answers[item.id] === opt.value;
                                     return `
-                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
+                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${item.id}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
                                             ${opt.label}
                                         </div>
                                     `;
@@ -256,7 +256,7 @@ function renderQuestion() {
                                         ? (answers[group.id] && answers[group.id].includes(opt.value))
                                         : answers[group.id] === opt.value;
                                     return `
-                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" onclick="selectOption('${group.id}', '${opt.value}', ${isMultiSelect})">
+                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${group.id}" onclick="selectOption('${group.id}', '${opt.value}', ${isMultiSelect})">
                                             ${opt.label}
                                         </div>
                                     `;
@@ -301,11 +301,19 @@ function renderQuestion() {
     updateNavigation();
 }
 
-// Updated selectOption function
+// Updated selectOption function with scoped selection for compound/grouped sub-questions
 window.selectOption = function(qId, value, isMultiSelect) {
   console.log("Option clicked:", { qId, value, isMultiSelect });
   const question = getQuestionById(qId);
   if (!question) return;
+
+  // Determine selector for options (scoped for compound/grouped/sub-question)
+  let optionSelector = `.option[data-qid="${qId}"]`; // Default for top-level
+  if (document.querySelector(`.sub-option[data-qid="${qId}"]`)) {
+    optionSelector = `.sub-option[data-qid="${qId}"]`;
+  } else if (document.querySelector(`.group-option[data-qid="${qId}"]`)) {
+    optionSelector = `.group-option[data-qid="${qId}"]`;
+  }
 
   if (isMultiSelect) {
     if (!answers[qId]) answers[qId] = [];
@@ -319,17 +327,18 @@ window.selectOption = function(qId, value, isMultiSelect) {
       }
       currentAnswers.push(value);
     }
-    document.querySelectorAll(`[data-value="${value}"]`).forEach(elem => {
-      if (elem.dataset.value === value) {
-        elem.classList.toggle('selected');
-      }
+    // Only update the relevant options for this qId and value
+    document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(elem => {
+      elem.classList.toggle('selected');
     });
   } else {
     answers[qId] = value;
-    document.querySelectorAll(`[data-value]`).forEach(option => {
+    // Remove selected from all in this sub-question
+    document.querySelectorAll(`${optionSelector}`).forEach(option => {
       option.classList.remove('selected');
     });
-    document.querySelectorAll(`[data-value="${value}"]`).forEach(option => {
+    // Add selected to the clicked option
+    document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(option => {
       option.classList.add('selected');
     });
   }
