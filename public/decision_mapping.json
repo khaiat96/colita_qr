@@ -15,502 +15,531 @@
       "consent_data_usage",
       "consent_data_safety"
     ],
-    "last_updated": "2025-10-17",
-    "validation_timestamp": "2025-10-17T12:59:00-06:00",
-    "validation_status": "PASSED",
-    "auto_fixes_applied": 58,
-    "deployment_ready": true,
-    "validated_by": "QA Integration Engineer"
   },
-  "decision_map": {
-    "P0_nombre": {
-      "context_note": "Name field for personalization - no scoring impact"
-    },
-    "consent_data_usage": {
-      "context_note": "Data usage consent - no scoring impact"
-    },
-    "consent_data_safety": {
-      "context_note": "Data safety consent - no scoring impact"
-    },
-    "P0_contraception": {
-      "hormonal_sistemica": {
-        "context_note": "Hormonal contraception may suppress natural patterns"
+{ "scoring": {
+    "P0_contraception": [
+      {
+        "value": "hormonal_sistemica",
+        "scores": {
+          "context_note": "Hormonal contraception may suppress natural patterns"
+        }
       },
-      "hormonal_larga": {
-        "context_note": "Long-acting hormonal may suppress natural patterns more strongly"
+      {
+        "value": "hormonal_larga",
+        "scores": {
+          "context_note": "Long-acting hormonal may suppress natural patterns more strongly"
+        }
       },
-      "ninguna": {
-        "context_note": "Natural cycle patterns observable"
+      {
+        "value": "ninguna",
+        "scores": {
+          "context_note": "Natural cycle patterns observable"
+        }
       }
-    },
-    "P1_regularity": {
-      "Regular (24–35 días)": {
+    ],
+    "P1_regularity": [
+      {
+        "value": "Regular (24–35 días)",
         "scores": {}
       },
-      "Irregular (varía >7 días entre ciclos)": {
+      {
+        "value": "Irregular (varía >7 días entre ciclos)",
         "scores": {
           "tension": 2,
           "sequedad": 1
         }
       },
-      "No tengo sangrado actualmente": {
+      {
+        "value": "No tengo sangrado actualmente",
         "scores": {
           "sequedad": 3,
           "frio": 2
         }
       }
-    },
-    "P1_no_cycle_desde_cuando": {
-      "<3m": {
+    ],
+    "P1_no_cycle_desde_cuando": [
+      {
+        "value": "<3m",
         "scores": {
           "sequedad": 1,
           "frio": 1
         }
       },
-      "3–6m": {
+      {
+        "value": "3–6m",
         "scores": {
           "sequedad": 2,
           "frio": 2
         }
       },
-      ">6m": {
+      {
+        "value": ">6m",
         "scores": {
           "sequedad": 3,
           "frio": 3
         }
       }
-    },
-    "P1_amenorrea_contexto": {
-      "lactancia": {
+    ],
+    "P1_amenorrea_contexto": [
+      {
+        "value": "lactancia",
         "scores": {
           "sequedad": 1
         }
       },
-      "cambios_peso": {
+      {
+        "value": "cambios_peso",
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      "estres_alto": {
+      {
+        "value": "estres_alto",
         "scores": {
           "tension": 3,
           "sequedad": 2
         }
       },
-      "ejercicio_intenso": {
+      {
+        "value": "ejercicio_intenso",
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      "antecedentes_tiroideos": {
+      {
+        "value": "antecedentes_tiroideos",
         "scores": {
           "sequedad": 2,
           "frio": 2
         }
       },
-      "Ninguna de las anteriores": {
-        "scores": {}
-      },
-      "menopausia_posible": {
+      {
+        "value": "menopausia_posible",
         "scores": {
           "sequedad": 3,
           "frio": 2
-        },
-        "context_note": "Menopause/perimenopause pattern - requires medical confirmation"
+        }
+      },
+      {
+        "value": "Ninguna de las anteriores",
+        "scores": {}
       }
-    },
-    "P2_sintomas": {
-      "Dolor o cólicos": {
+    ],
+    "P2_sintomas": [
+      {
+        "value": "Dolor o cólicos",
         "scores": {
           "tension": 3,
           "calor": 1
         }
       },
-      "Ligera": {
+      {
+        "value": "Ligera",
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      "Abundante": {
+      {
+        "value": "Abundante",
         "scores": {
           "calor": 3,
           "humedad": 2
         }
       },
-      "Hinchazón o retención de líquidos": {
+      {
+        "value": "Hinchazón o retención de líquidos",
         "scores": {
           "humedad": 3
         }
       },
-      "Manchado entre reglas": {
+      {
+        "value": "Manchado entre reglas",
         "scores": {
           "calor": 2,
           "humedad": 1
         }
       },
-      "Cambios de ánimo / ansiedad": {
+      {
+        "value": "Cambios de ánimo / ansiedad",
         "scores": {
           "tension": 2,
           "calor": 1
         }
       },
-      "Brotes o acné": {
+      {
+        "value": "Brotes o acné",
         "scores": {
           "calor": 2,
           "humedad": 1
         }
       },
-      "Fatiga o cansancio extremo": {
+      {
+        "value": "Fatiga o cansancio extremo",
         "scores": {
           "sequedad": 2,
           "frio": 2
         }
       },
-      "Sensibilidad en los senos": {
+      {
+        "value": "Sensibilidad en los senos",
         "scores": {
           "humedad": 2,
           "tension": 1
         }
       },
-      "Ninguna de las anteriores": {
+      {
+        "value": "Ninguna de las anteriores",
         "scores": {}
       }
-    },
-    "P2_spotting_frecuencia": {
-      "spot_ocasional": {
+    ],
+    "P2_spotting_frecuencia": [
+      {
+        "value": "spot_ocasional",
         "scores": {
           "calor": 1
         }
       },
-      "spot_a_veces": {
+      {
+        "value": "spot_a_veces",
         "scores": {
           "calor": 2
         }
       },
-      "spot_frecuente": {
+      {
+        "value": "spot_frecuente",
         "scores": {
           "calor": 3,
           "humedad": 1
         }
       }
-    },
-    "P2_hinchazon_severidad": {
-      "scoring_rule": "slider",
-      "variable": "humedad",
-      "min": 0,
-      "max": 10,
-      "scale_factor": 0.3
-    },
-    "P2_fatiga_severidad": {
-      "scoring_rule": "slider",
-      "variable_map": {
-        "sequedad": 0.2,
-        "frio": 0.2
-      },
-      "min": 0,
-      "max": 10
-    },
-    "P2_animo_severidad": {
-      "scoring_rule": "slider",
-      "variable_map": {
-        "tension": 0.25,
-        "calor": 0.1
-      },
-      "min": 0,
-      "max": 10
-    },
-    "P2_acne": {
-      "acne_caliente_rojo": {
+    ],
+    "P2_acne": [
+      {
+        "value": "acne_caliente_rojo",
         "scores": {
           "calor": 3,
           "humedad": 1
         }
       },
-      "acne_humedo_lento": {
+      {
+        "value": "acne_humedo_lento",
         "scores": {
           "humedad": 3,
           "frio": 1
         }
       },
-      "no": {
+      {
+        "value": "no",
         "scores": {}
       }
-    },
-    "P3_cuerpo": {
-      "Calor, enrojecimiento": {
+    ],
+    "P3_cuerpo": [
+      {
+        "value": "Calor, enrojecimiento",
         "scores": {
           "calor": 3
         }
       },
-      "Frío en manos/pies": {
+      {
+        "value": "Frío en manos/pies",
         "scores": {
           "frio": 3
         }
       },
-      "Hinchazón, pesadez, retención": {
+      {
+        "value": "Hinchazón, pesadez, retención",
         "scores": {
           "humedad": 3
         }
       },
-      "Sequedad (piel, mucosas)": {
+      {
+        "value": "Sequedad (piel, mucosas)",
         "scores": {
           "sequedad": 3
         }
       },
-      "Lengua hinchada": {
+      {
+        "value": "Lengua hinchada",
         "scores": {
           "humedad": 2
         }
       },
-      "Lengua pálida": {
+      {
+        "value": "Lengua pálida",
         "scores": {
           "frio": 2,
           "sequedad": 1
         }
       },
-      "Punta de la lengua roja": {
+      {
+        "value": "Punta de la lengua roja",
         "scores": {
           "calor": 2,
           "tension": 1
         }
       },
-      "Ninguna de las anteriores": {
+      {
+        "value": "Ninguna de las anteriores",
         "scores": {}
       }
-    },
-    "P4_emocional": {
-      "Ansiedad": {
+    ],
+    "P4_emocional": [
+      {
+        "value": "Ansiedad",
         "scores": {
           "tension": 3,
           "calor": 1
         }
       },
-      "Irritabilidad": {
+      {
+        "value": "Irritabilidad",
         "scores": {
           "tension": 2,
           "calor": 2
         }
       },
-      "Tristeza": {
+      {
+        "value": "Tristeza",
         "scores": {
           "frio": 2,
           "humedad": 1
         }
       },
-      "Apatía": {
+      {
+        "value": "Apatía",
         "scores": {
           "frio": 3,
           "sequedad": 1
         }
       },
-      "Agotamiento, burnout": {
+      {
+        "value": "Agotamiento, burnout",
         "scores": {
           "sequedad": 3,
           "frio": 2
         }
       },
-      "Ninguna de las anteriores": {
+      {
+        "value": "Ninguna de las anteriores",
         "scores": {}
       }
-    },
-    "P4_timing_emocional": {
-      "antes": {
+    ],
+    "P4_timing_emocional": [
+      {
+        "value": "antes",
         "scores": {
           "tension": 2
         }
       },
-      "durante": {
+      {
+        "value": "durante",
         "scores": {
           "calor": 1
         }
       },
-      "entre": {
-        "scores": {
-          "tension": 1
-        }
-      },
-      "después": {
+      {
+        "value": "después",
         "scores": {
           "sequedad": 1
         }
+      },
+      {
+        "value": "entre",
+        "scores": {
+          "tension": 1
+        }
       }
-    },
-    "P5_sed": {
-      "bebidas_frias": {
+    ],
+    "P5_sed": [
+      {
+        "value": "bebidas_frias",
         "scores": {
           "calor": 2
         }
       },
-      "bebidas_calientes": {
+      {
+        "value": "bebidas_calientes",
         "scores": {
           "frio": 2
         }
       },
-      "neutro": {
+      {
+        "value": "neutro",
         "scores": {}
       }
-    },
-    "P6_energia": {
-      "Con subidas y bajadas marcadas": {
+    ],
+    "P6_energia": [
+      {
+        "value": "Con subidas y bajadas marcadas",
         "scores": {
           "tension": 2
         }
       },
-      "Ráfagas de energía": {
+      {
+        "value": "Ráfagas de energía",
         "scores": {
           "calor": 2,
           "tension": 1
         }
       },
-      "Lenta, pesada, con poca motivación": {
+      {
+        "value": "Lenta, pesada, con poca motivación",
         "scores": {
           "humedad": 3,
           "frio": 2
         }
       },
-      "Agotada, drenada": {
+      {
+        "value": "Agotada, drenada",
         "scores": {
           "sequedad": 3,
           "frio": 2
         }
       },
-      "Ninguna de las anteriores": {
+      {
+        "value": "Ninguna de las anteriores",
         "scores": {}
       }
-    },
-    "P7_signos_corporales": {
-      "Sed intensa": {
+    ],
+    "P7_signos_corporales": [
+      {
+        "value": "Sed intensa",
         "scores": {
           "sequedad": 3,
           "calor": 2
         }
       },
-      "Piel muy seca": {
+      {
+        "value": "Piel muy seca",
         "scores": {
           "sequedad": 3
         }
       },
-      "Sudor pegajoso": {
+      {
+        "value": "Sudor pegajoso",
         "scores": {
           "humedad": 2,
           "calor": 1
         }
       },
-      "Poco sudor con calor": {
+      {
+        "value": "Poco sudor con calor",
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      "Ninguna de las anteriores": {
+      {
+        "value": "Ninguna de las anteriores",
         "scores": {}
       }
-    },
-    "P7b_sequedad_detalle": {
-      "boca_seca": {
+    ],
+    "P7b_sequedad_detalle": [
+      {
+        "value": "boca_seca",
         "scores": {
           "sequedad": 2
         }
       },
-      "ojos_secos": {
+      {
+        "value": "ojos_secos",
         "scores": {
           "sequedad": 2
         }
       },
-      "lubricacion_baja": {
+      {
+        "value": "lubricacion_baja",
         "scores": {
           "sequedad": 3
         }
       },
-      "sed_nocturna": {
+      {
+        "value": "sed_nocturna",
         "scores": {
           "sequedad": 2,
           "calor": 1
         }
       },
-      "piel_muy_seca": {
+      {
+        "value": "piel_muy_seca",
         "scores": {
           "sequedad": 3
         }
       },
-      "Ninguna de las anteriores": {
+      {
+        "value": "Ninguna de las anteriores",
         "scores": {}
       }
-    },
-    "P7c_sensibilidad_clima": {
-      "calor_me_agobia": {
+    ],
+    "P7c_sensibilidad_clima": [
+      {
+        "value": "calor_me_agobia",
         "scores": {
           "calor": 2
         }
       },
-      "siempre_con_frio": {
+      {
+        "value": "siempre_con_frio",
         "scores": {
           "frio": 3
         }
       },
-      "depende": {
+      {
+        "value": "depende",
         "scores": {}
       }
-    },
-    "P8_sueno_calidad": {
-      "scoring_rule": "slider_inverse",
-      "variable_map": {
-        "tension": 0.15,
-        "calor": 0.1
-      },
-      "min": 0,
-      "max": 10,
-      "note": "Lower sleep quality scores higher for tension/calor"
-    },
-    "P8a_estres": {
-      "scoring_rule": "slider",
-      "variable": "tension",
-      "min": 0,
-      "max": 10,
-      "scale_factor": 0.25
-    },
-    "P8b_ejercicio": {
-      "ninguno": {
+    ],
+    "P8b_ejercicio": [
+      {
+        "value": "ninguno",
         "scores": {
           "humedad": 2,
           "frio": 1
         }
       },
-      "1–2_dias_sem": {
+      {
+        "value": "1–2_dias_sem",
         "scores": {}
       },
-      "3–5_dias_sem": {
+      {
+        "value": "3–5_dias_sem",
         "scores": {}
       },
-      "6–7_dias_sem": {
+      {
+        "value": "6–7_dias_sem",
         "scores": {
           "sequedad": 2,
           "tension": 1
         }
       }
-    },
-    "P8c_cafeina": {
-      "0": {
+    ],
+    "P8c_cafeina": [
+      {
+        "value": "0",
         "scores": {}
       },
-      "1": {
+      {
+        "value": "1",
         "scores": {}
       },
-      "2": {
+      {
+        "value": "2",
         "scores": {
           "tension": 1
         }
       },
-      "3+": {
+      {
+        "value": "3+",
         "scores": {
           "tension": 2,
           "calor": 1,
           "sequedad": 1
         }
       }
-    }
-  }
+    ]
+             }
+}
 }
