@@ -155,7 +155,7 @@
         },
         {
             "id": "P1_amenorrea_contexto",
-            "type": "single",
+            "type": "multiselect",
             "title": "Factores que aplican 🧩",
             "help_text": "Selecciona los que apliquen.",
             "visible_if": {
@@ -203,8 +203,7 @@
         },
         {
             "id": "P2_sintomas",
-            "type": "single",
-            "required": false,
+            "type": "multiselect",
             "title": "En los últimos 3 ciclos, ¿qué síntomas aplican?",
             "help_text": "Selecciona los que apliquen.",
             "options": [
@@ -284,7 +283,7 @@
         },
         {
             "id": "P2_hinchazon_severidad",
-            "type": "text",
+            "type": "slider",
             "title": "Hinchazón/retención: ¿qué tanto? 💧",
             "help_text": "1 = nada; 10 = muy intensa.",
             "visible_if": {
@@ -311,7 +310,7 @@
         },
         {
             "id": "P2_fatiga_severidad",
-            "type": "text",
+            "type": "slider",
             "title": "¿Qué tan fuerte fue la fatiga? 🥱",
             "help_text": "1 = nada; 10 = extrema.",
             "visible_if": {
@@ -338,7 +337,7 @@
         },
         {
             "id": "P2_animo_severidad",
-            "type": "text",
+            "type": "slider",
             "title": "Cambios de ánimo / ansiedad: ¿qué tanto? 💛",
             "help_text": "1 = nada; 10 = muy intenso.",
             "visible_if": {
@@ -521,7 +520,11 @@
                             "label": "Grandes (>2.4 cm)",
                             "value": ">2.4cm"
                         }
-                    ]
+                    ],
+                    "validation": {
+                        "minselected": 0,
+                        "maxselected": 1
+                    }
                 },
                 {
                     "id": "P2_patron_flujo",
@@ -615,7 +618,7 @@
         },
         {
             "id": "P3_cuerpo",
-            "type": "single",
+            "type": "multiselect",
             "title": "Señales del cuerpo que notas (últimos 3 ciclos) 🧭",
             "help_text": "Selecciona hasta 3.",
             "options": [
@@ -660,7 +663,7 @@
         },
         {
             "id": "P4_emocional",
-            "type": "single",
+            "type": "multiselect",
             "title": "Estados emocionales (últimos 3 ciclos) 💬",
             "help_text": "Selecciona hasta 2.",
             "options": [
@@ -690,7 +693,7 @@
                 }
             ],
             "validation": {
-                "minselected": 0,
+                "minselected": 1,
                 "maxselected": 2
             },
             "prompt": "Question P4_emocional"
@@ -769,14 +772,14 @@
                 }
             ],
             "validation": {
-                "minselected": 0,
+                "minselected": 1,
                 "maxselected": 2
             },
             "prompt": "Question P6_energia"
         },
         {
             "id": "P7_signos_corporales",
-            "type": "single",
+            "type": "multiselect",
             "title": "Señales del cuerpo (opcional) 🧩",
             "help_text": "Si no viste tus señales arriba, selecciona hasta 3.",
             "visible_if": {
@@ -825,7 +828,7 @@
         },
         {
             "id": "P7b_sequedad_detalle",
-            "type": "single",
+            "type": "multiselect",
             "title": "Si notas sequedad, ¿dónde lo sientes más? 🌵",
             "help_text": "Esta pregunta aparece si reportaste sequedad o sangrado escaso.",
             "visible_if": {
@@ -872,7 +875,7 @@
                 }
             ],
             "validation": {
-                "minselected": 0,
+                "minselected": 1,
                 "maxselected": 5,
                 "soft_required_when": {
                     "all": [
@@ -915,7 +918,7 @@
         },
         {
             "id": "P8_sueno_calidad",
-            "type": "text",
+            "type": "slider",
             "title": "Calidad de sueño (últimos 7 días) 😴",
             "help_text": "0 = pésima; 10 = excelente.",
             "min": 0,
@@ -936,7 +939,7 @@
         },
         {
             "id": "P8a_estres",
-            "type": "text",
+            "type": "slider",
             "title": "Estrés percibido (últimos 7 días) 😵‍💫",
             "help_text": "0 = nada; 10 = muy alto.",
             "min": 0,
