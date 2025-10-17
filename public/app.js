@@ -529,7 +529,7 @@ function calculateResults() {
 
   let maxScore = 0;
   let dominantPattern = 'sequedad';
-  ['tension', 'calor', 'humedad', 'sequedad'].forEach(pattern => {
+  ['tension', 'calor', 'frio', 'humedad', 'sequedad'].forEach(pattern => {
     if (scores[pattern] > maxScore) {
       maxScore = scores[pattern];
       dominantPattern = pattern;
