@@ -607,7 +607,7 @@ function showResults(patternKey) {
   } else {
     console.log("❌ CRITICAL: resultsTemplate is NULL - JSON didn't load!");
   }
-  
+
 // SAFE FALLBACK VERSION
   const label = resultsTemplate?.labels?.[patternKey] || patternKey;
   const summary = resultsTemplate?.summary?.single
@@ -615,7 +615,6 @@ function showResults(patternKey) {
     : label;
 
   let html = `
-    ${proModeText}
     <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || label}</h2>
     <h3>${summary}</h3>
     ${renderPatternCard(patternKey)}
