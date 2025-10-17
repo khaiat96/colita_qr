@@ -3401,24 +3401,21 @@ html {
   font-size: 2rem;
 }
 
-/* Make waitlist section match results-card container width */
-.results-container {
-  max-width: 700px; /* Already set for results-card */
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-#results-waitlist-section {
-  margin-top: 40px;
-  margin-bottom: 0;
-}
-
-#results-waitlist-section .waitlist-content {
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
-  border-radius: 20px; /* Same as results-card */
-  padding: 40px;
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(107, 115, 255, 0.05) 100%);
-  max-width: 100%; /* Inherit parent width */
+/* Igualar borde del waitlist al ancho del resultados */
+#waitlist-section {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
   box-sizing: border-box;
+}
+
+#waitlist-section > .waitlist-content {
+  width: 100%;
+  max-width: 900px;                           /* mismo ancho que results */
+  border: 2px solid;
+  border-image: linear-gradient(135deg, 
+    #00D4AA 0%, #6B73FF 100%) 1;             /* mismo estilo de borde */
+  border-radius: 24px;
+  padding: 40px 20px;                        /* ajustar espacio interior */
+  margin: 0;                                 /* quitar margen adicional */
 }
