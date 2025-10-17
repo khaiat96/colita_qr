@@ -24,15 +24,7 @@
         "max_words_per_section": 220,
         "fail_on_blocked_token": true
       }
-    },
-    "simulation_validated": true,
-    "simulation_date": "2025-10-17",
-    "simulation_n": 2000,
-    "validation_timestamp": "2025-10-17T12:59:00-06:00",
-    "validation_status": "PASSED",
-    "auto_fixes_applied": 58,
-    "deployment_ready": true,
-    "validated_by": "QA Integration Engineer"
+    }
   },
   "variables": [
     "tension",

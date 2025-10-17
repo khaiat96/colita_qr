@@ -1,7 +1,7 @@
 
 {
   "meta": {
-    "version": "decision_mapping_final",
+    "version": "decision_mapping_final_json",
     "description": "Final decision mapping with menopause screening - validated n=2000",
     "scoring_variables": [
       "tension",
@@ -14,9 +14,9 @@
       "P0_nombre",
       "consent_data_usage",
       "consent_data_safety"
-    ],
+    ]
   },
-{
+
   "scoring": {
     "P0_contraception": [
       {
@@ -542,5 +542,4 @@
       }
     ]
   }
-}
 }
