@@ -585,16 +585,24 @@ function renderPatternCard(patternKey) {
   `;
 }
 
+
 // Main function to show results with full template
 function showResults(patternKey) {
-  // Show pro mode indicator if needed
-  const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
+  // 🧭 DEBUG LOGGING
+  console.log("🧭 Final patternKey:", patternKey);
+  console.log("🧩 Available labels:", Object.keys(resultsTemplate.labels || {}));
+  console.log("🧠 Available element patterns:", Object.keys(resultsTemplate?.element?.by_pattern || {}));
 
-  // Compose detailed results from the template
+// SAFE FALLBACK VERSION
+  const label = resultsTemplate?.labels?.[patternKey] || patternKey;
+  const summary = resultsTemplate?.summary?.single
+    ? resultsTemplate.summary.single.replace('{{label_top}}', label)
+    : label;
+
   let html = `
     ${proModeText}
-    <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || ''}</h2>
-    <h3>${resultsTemplate?.summary?.single?.replace('{{label_top}}', resultsTemplate?.labels?.[patternKey] || patternKey)}</h3>
+    <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || label}</h2>
+    <h3>${summary}</h3>
     ${renderPatternCard(patternKey)}
     <div class="element-explainer">${getTemplateSection('element_explainer', patternKey)?.[0] || ''}</div>
     ${renderCareTips(patternKey)}
