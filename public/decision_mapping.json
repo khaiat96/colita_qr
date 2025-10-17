@@ -16,7 +16,8 @@
       "consent_data_safety"
     ],
   },
-{ "scoring": {
+{
+  "scoring": {
     "P0_contraception": [
       {
         "value": "hormonal_sistemica",
@@ -540,6 +541,6 @@
         }
       }
     ]
-             }
+  }
 }
 }
