@@ -15,11 +15,6 @@ window.surveyLoaded = false;
 
 console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
-window.handleTextInput = function(qId, value) {
-    answers[qId] = value;
-    window.updateNavigation();
-};
-
 // ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
@@ -60,6 +55,10 @@ window.startSurvey = function() {
   renderQuestion();
 };
 
+window.handleTextInput = function(qId, value) {
+    answers[qId] = value;
+    window.updateNavigation();
+};
 
 // ==================== MAIN INITIALIZATION ====================
 
@@ -95,11 +94,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
 // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
-surveyQuestions.forEach(q => {
-  if (q.type === 'singlechoice' || q.type === 'single') {
-    q.type = 'single_choice';
-  }
-});
+    surveyQuestions.forEach(q => {
       // 1. Top-level options
       if (Array.isArray(q.options)) {
         const mappingList = decisionMapping.scoring[q.id]; // ← FIXED: Added .scoring
