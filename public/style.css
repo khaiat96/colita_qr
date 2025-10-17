@@ -3287,4 +3287,409 @@ html {
     .email-title {
         font-size: 1.5rem;
     }
+    
+}
+
+/* =============================================================================
+   PHASE CARE TIPS - PREMIUM CARD DESIGN
+   ============================================================================= */
+
+/* Main container for all phase tips */
+.tips-phase-section {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin: 60px auto 0 auto;
+    max-width: 900px;
+    box-shadow: none;
+    border: none;
+    text-align: left;
+}
+
+/* Main title for the entire tips section */
+.tips-main-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 50px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.tips-main-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+    border-radius: 2px;
+}
+
+/* Container for all phase blocks - GRID LAYOUT */
+.phases-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+/* Individual phase block - PREMIUM CARD DESIGN */
+.phase-block {
+    background: linear-gradient(135deg, 
+        rgba(40, 36, 44, 0.8) 0%, 
+        rgba(30, 35, 45, 0.7) 100%);
+    border-radius: 24px;
+    padding: 0;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.08);
+}
+
+/* Gradient border effect */
+.phase-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
+    padding: 2px;
+    background: linear-gradient(135deg, 
+        rgba(0, 212, 170, 0.3) 0%, 
+        rgba(107, 115, 255, 0.2) 50%,
+        rgba(255, 107, 157, 0.2) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, 
+                  linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.phase-block:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0, 212, 170, 0.2);
+}
+
+.phase-block:hover::before {
+    background: linear-gradient(135deg, 
+        rgba(0, 212, 170, 0.5) 0%, 
+        rgba(107, 115, 255, 0.4) 50%,
+        rgba(255, 107, 157, 0.3) 100%);
+}
+
+/* Phase header section */
+.phase-header {
+    background: linear-gradient(135deg, 
+        rgba(0, 212, 170, 0.12) 0%, 
+        rgba(107, 115, 255, 0.08) 50%,
+        rgba(255, 107, 157, 0.06) 100%);
+    padding: 32px 36px 28px 36px;
+    border-bottom: 1px solid rgba(0, 212, 170, 0.15);
+    position: relative;
+}
+
+/* Phase emoji/icon */
+.phase-header::before {
+    content: '🌙';
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 2rem;
+    opacity: 0.6;
+}
+
+.phase-block:nth-child(1) .phase-header::before { content: '🩸'; } /* Menstruación */
+.phase-block:nth-child(2) .phase-header::before { content: '🌱'; } /* Folicular */
+.phase-block:nth-child(3) .phase-header::before { content: '✨'; } /* Ovulación */
+.phase-block:nth-child(4) .phase-header::before { content: '🌙'; } /* Lútea */
+
+/* Phase title - BOLD and prominent */
+.phase-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    text-align: left;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+    padding-right: 60px;
+}
+
+.phase-block:nth-child(1) .phase-title { 
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8A80 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.phase-block:nth-child(2) .phase-title { 
+    background: linear-gradient(135deg, #00D4AA 0%, #4CAF50 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.phase-block:nth-child(3) .phase-title { 
+    background: linear-gradient(135deg, #FFD700 0%, #FFA726 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.phase-block:nth-child(4) .phase-title { 
+    background: linear-gradient(135deg, #9C44DC 0%, #BA68C8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Phase description - elegant subtitle */
+.phase-description {
+    color: #e8e8e8;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0;
+    font-style: italic;
+    text-align: left;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* Phase content area - contains all subsections */
+.phase-content {
+    padding: 36px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+}
+
+/* Individual subsection (Alimentos, Haz, Evita) */
+.phase-subsection {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 24px 28px;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.phase-subsection:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateX(4px);
+}
+
+/* Subsection colors and icons */
+.phase-subsection:nth-child(1) {
+    border-left-color: #4CAF50;
+}
+
+.phase-subsection:nth-child(1)::before {
+    content: '🍎';
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+.phase-subsection:nth-child(2) {
+    border-left-color: #00D4AA;
+}
+
+.phase-subsection:nth-child(2)::before {
+    content: '✅';
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+.phase-subsection:nth-child(3) {
+    border-left-color: #FF6B9D;
+}
+
+.phase-subsection:nth-child(3)::before {
+    content: '⚠️';
+    position: absolute;
+    top: 24px;
+    right: 28px;
+    font-size: 1.5rem;
+    opacity: 0.7;
+}
+
+/* Subsection label (Alimentos:, Haz:, Evita:) */
+.subsection-label {
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 16px;
+    display: block;
+    padding-right: 50px;
+}
+
+.phase-subsection:nth-child(1) .subsection-label {
+    color: #4CAF50;
+}
+
+.phase-subsection:nth-child(2) .subsection-label {
+    color: #00D4AA;
+}
+
+.phase-subsection:nth-child(3) .subsection-label {
+    color: #FF6B9D;
+}
+
+/* List styling for items */
+.subsection-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.subsection-list li {
+    color: #e8e8e8;
+    font-size: 1rem;
+    line-height: 1.7;
+    padding: 12px 16px 12px 40px;
+    position: relative;
+    font-weight: 400;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.subsection-list li:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(2px);
+}
+
+/* Custom bullet points with matching colors */
+.subsection-list li::before {
+    position: absolute;
+    left: 16px;
+    top: 12px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    font-weight: 600;
+}
+
+.phase-subsection:nth-child(1) .subsection-list li::before {
+    content: '●';
+    color: #4CAF50;
+}
+
+.phase-subsection:nth-child(2) .subsection-list li::before {
+    content: '▶';
+    color: #00D4AA;
+}
+
+.phase-subsection:nth-child(3) .subsection-list li::before {
+    content: '✗';
+    color: #FF6B9D;
+}
+
+/* RESPONSIVE DESIGN */
+@media (min-width: 1200px) {
+    .phases-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+    }
+
+    .phase-content {
+        padding: 32px;
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tips-phase-section {
+        margin: 40px auto 0 auto;
+        padding: 0 16px;
+    }
+
+    .tips-main-title {
+        font-size: 1.7rem;
+        margin-bottom: 36px;
+    }
+
+    .phases-container {
+        gap: 28px;
+    }
+
+    .phase-header {
+        padding: 24px 28px 20px 28px;
+    }
+
+    .phase-title {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+        padding-right: 50px;
+    }
+
+    .phase-description {
+        font-size: 1rem;
+    }
+
+    .phase-content {
+        padding: 28px 24px;
+        gap: 20px;
+    }
+
+    .subsection-label {
+        font-size: 1.1rem;
+    }
+
+    .subsection-list li {
+        font-size: 0.95rem;
+        padding: 10px 14px 10px 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .phase-header {
+        padding: 20px 24px 18px 24px;
+    }
+
+    .phase-title {
+        font-size: 1.3rem;
+        padding-right: 45px;
+    }
+
+    .phase-description {
+        font-size: 0.95rem;
+    }
+
+    .phase-content {
+        padding: 24px 20px;
+        gap: 18px;
+    }
+
+    .phase-subsection {
+        padding: 20px 24px;
+    }
+
+    .subsection-label {
+        font-size: 1rem;
+        padding-right: 45px;
+    }
+
+    .subsection-list li {
+        font-size: 0.9rem;
+        padding: 8px 12px 8px 32px;
+    }
 }

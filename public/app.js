@@ -570,17 +570,58 @@ function renderCareTips(patternKey) {
   `;
 }
 
+// ENHANCED renderPhaseAdvice function for beautiful phase cards
 function renderPhaseAdvice(patternKey) {
   const phaseSections = resultsTemplate?.phase?.generic || {};
-  let html = `<div class="recommendations"><h4>Tips de cuidado por fase del ciclo</h4>`;
+  if (!Object.keys(phaseSections).length) return '';
+  
+  let html = `<div class="tips-phase-section">
+    <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
+    <div class="phases-container">`;
+  
   Object.keys(phaseSections).forEach(phaseKey => {
     const phase = phaseSections[phaseKey];
-    html += `<div class="phase-block"><h5>${phase.label}</h5>`;
-    html += `<div>${phase.about}</div>`;
-    if (phase.foods) html += `<ul>${phase.foods.map(f => `<li>${f}</li>`).join('')}</ul>`;
-    html += `</div>`;
+    html += `<div class="phase-block">
+      <div class="phase-header">
+        <h5 class="phase-title">${phase.label}</h5>
+        <div class="phase-description">${phase.about}</div>
+      </div>
+      <div class="phase-content">`;
+    
+    // Foods section
+    if (phase.foods && phase.foods.length > 0) {
+      html += `<div class="phase-subsection">
+        <div class="subsection-label">Alimentos</div>
+        <ul class="subsection-list">
+          ${phase.foods.map(food => `<li>${food}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+    
+    // Do section  
+    if (phase.do && phase.do.length > 0) {
+      html += `<div class="phase-subsection">
+        <div class="subsection-label">Haz</div>
+        <ul class="subsection-list">
+          ${phase.do.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+    
+    // Avoid section
+    if (phase.avoid && phase.avoid.length > 0) {
+      html += `<div class="phase-subsection">
+        <div class="subsection-label">Evita</div>
+        <ul class="subsection-list">
+          ${phase.avoid.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+    
+    html += `</div></div>`; // Close phase-content and phase-block
   });
-  html += `</div>`;
+  
+  html += `</div></div>`; // Close phases-container and tips-phase-section
   return html;
 }
 
