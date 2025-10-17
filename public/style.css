@@ -3401,21 +3401,23 @@ html {
   font-size: 2rem;
 }
 
-/* Igualar borde del waitlist al ancho del resultados */
+/* Make waitlist border match results width */
 #waitlist-section {
   display: flex;
   justify-content: center;
   padding: 60px 0;
-  box-sizing: border-box;
 }
 
-#waitlist-section > .waitlist-content {
+#waitlist-section .waitlist-content {
   width: 100%;
-  max-width: 900px;                           /* mismo ancho que results */
-  border: 2px solid;
-  border-image: linear-gradient(135deg, 
-    #00D4AA 0%, #6B73FF 100%) 1;             /* mismo estilo de borde */
+  max-width: 900px;      /* same as results-container */
+  border: none;          /* remove inner border */
+  padding: 0;
+}
+
+#waitlist-section {
+  border: 2px solid;     /* outer frame */
+  border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
   border-radius: 24px;
-  padding: 40px 20px;                        /* ajustar espacio interior */
-  margin: 0;                                 /* quitar margen adicional */
+  box-sizing: border-box;
 }
