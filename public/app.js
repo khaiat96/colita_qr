@@ -27,13 +27,47 @@ window.scrollToWaitlist = function() {
   }
 };
 
-// At top of file, or at least before DOMContentLoaded
 window.startSurvey = function() {
   currentQuestionIndex = 0;
   answers = {};
   showPage('survey-page');
   renderQuestion();
 };
+
+document.addEventListener('DOMContentLoaded', async function() {
+  showPage('landing-page');
+  isProMode = false;
+
+  const quizBtn = document.getElementById('take-quiz-btn');
+  if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
+
+  try {
+    // Load survey questions
+    const surveyResp = await fetch('survey_questions-combined.json');
+    if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
+    const surveyData = await surveyResp.json();
+    surveyQuestions = surveyData.questions;
+    questionOrder = surveyData.question_order;
+
+    // Load decision mapping
+    const mappingResp = await fetch('decision_mapping-combined.json');
+    if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
+    const decisionMapping = await mappingResp.json();
+
+    // (merge mapping logic here...)
+
+    // Load results template
+    const templateResp = await fetch('results_template.json');
+    if (!templateResp.ok) throw new Error(`HTTP ${templateResp.status}: ${templateResp.statusText}`);
+    resultsTemplate = await templateResp.json();
+
+    window.surveyLoaded = true;
+    if (quizBtn) quizBtn.disabled = false; // Enable the button
+  } catch (err) {
+    if (quizBtn) quizBtn.disabled = true;
+    alert('Error loading survey: ' + err.message);
+  }
+});
 
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
