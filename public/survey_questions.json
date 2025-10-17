@@ -391,7 +391,6 @@
         },
         {
             "id": "P2_periodo_calidad",
-            "type": "text",
             "title": "Calidad del sangrado menstrual 🌹",
             "help_text": "Responde según tus días más intensos.",
             "items": [
@@ -556,7 +555,6 @@
         },
         {
             "id": "P2c_dolor_bloque",
-            "type": "text",
             "title": "Cuando tuviste dolor o cólicos:",
             "visible_if": {
                 "question_id": "P2_sintomas",
