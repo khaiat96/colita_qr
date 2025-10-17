@@ -3363,3 +3363,14 @@ html {
     0 0 4px rgba(0, 212, 170, 0.2);
   font-weight: 700;
 }
+
+/* Increase space between “Mini-hábitos por patrón” box and characteristic list */
+.recommendations {
+  margin-bottom: 60px; /* more space after mini-hábitos */
+}
+
+/* Bold the summary line under the title */
+.pattern-description {
+  font-weight: 600;
+  color: #e0e0e0;
+}
