@@ -1006,4 +1006,1040 @@
             "prompt": "Question P8c_cafeina"
         }
     ],
+    {
+    "meta": {
+        "version": "survey_questions-final.json",
+        "language": "es-MX",
+        "description": "Final validated survey - all QA issues resolved + menopause screening added",
+        "est_duration_minutes": 3,
+        "content_safety": {
+            "blocklist": [
+                "1:3",
+                "1:5",
+                "gotas",
+                "cápsulas",
+                "dosis",
+                "mg",
+                "mG",
+                "ML",
+                "mL",
+                "miligramos",
+                "mililitros"
+            ]
+        },
+        "qa": {
+            "template_lints": {
+                "max_words_per_section": 220,
+                "fail_on_blocked_token": true
+            }
+        }
+    },
+    "variables": [
+        "tension",
+        "calor",
+        "frio",
+        "humedad",
+        "sequedad"
+    ],
+    "ui_rules": {
+        "use_priority_for_label_order": true,
+        "result_personalization": {
+            "use_P1_copy_hint_in_header": true
+        },
+        "progress_indicator": {
+            "steps_hint": "3 min",
+            "phaseslider_enabled": true
+        },
+        "range_days": {
+            "from": -7,
+            "to": 7
+        },
+        "link_to_question": "P7_durante",
+        "style": "thinbar",
+        "softrequiredstyle": "toast",
+        "prestartnotice": "Tu información es confidencial, se usa solo para darte orientación educativa y tips suaves para tu ciclo.",
+        "dataoptin": {
+            "enabled": true
+        }
+    },
+    "prestartnotice": "Tu información es confidencial, se usa solo para darte orientación educativa y tips suaves para tu ciclo.",
+    "dataoptin": {
+        "enabled": true
+    },
+    "consent_checkboxes": [
+        {
+            "id": "consent_data_usage",
+            "type": "checkbox",
+            "label": "Acepto que mis respuestas se usen anónimamente para mejorar el sistema.",
+            "required": true
+        },
+        {
+            "id": "consent_data_safety",
+            "type": "checkbox",
+            "label": "Confirmo que mi información es almacenada de forma segura y sólo se utiliza para fines educativos.",
+            "required": true
+        }
+    ],
+    "questions": [
+        {
+            "id": "P0_nombre",
+            "type": "text",
+            "title": "¿Cuál es tu nombre?",
+            "help_text": "Lo usaremos para personalizar tus recomendaciones.",
+            "required": true,
+            "prompt": "Question P0_nombre"
+        },
+        {
+            "id": "P0_contraception",
+            "type": "single",
+            "title": "¿Usas anticoncepción actualmente? 🛡️",
+            "help_text": "Nos ayuda a interpretar mejor tus señales.",
+            "options": [
+                {
+                    "label": "Píldora/anillo/parche",
+                    "value": "hormonal_sistemica"
+                },
+                {
+                    "label": "Implante/inyección/DIU",
+                    "value": "hormonal_larga"
+                },
+                {
+                    "label": "Ninguna",
+                    "value": "ninguna"
+                }
+            ],
+            "prompt": "Question P0_contraception"
+        },
+        {
+            "id": "P1_regularity",
+            "type": "single",
+            "title": "¿Cómo ha sido tu ciclo en los últimos 3 meses? ⏱️",
+            "help_text": "Elige la opción que mejor te describa.",
+            "options": [
+                {
+                    "label": "Regular (24–35 días)",
+                    "value": "Regular (24–35 días)"
+                },
+                {
+                    "label": "Irregular (varía >7 días entre ciclos)",
+                    "value": "Irregular (varía >7 días entre ciclos)"
+                },
+                {
+                    "label": "No tengo sangrado actualmente",
+                    "value": "No tengo sangrado actualmente"
+                }
+            ],
+            "notes_map": {
+                "Regular (24–35 días)": "P1_regular_copy_hint",
+                "Irregular (varía >7 días entre ciclos)": "P1_irregular_copy_hint",
+                "No tengo sangrado actualmente": "P1_no_cycle_copy_hint"
+            },
+            "prompt": "Question P1_regularity"
+        },
+        {
+            "id": "P1_no_cycle_desde_cuando",
+            "type": "single",
+            "title": "¿Desde cuándo no hay sangrado? 📆",
+            "help_text": "Aporta contexto sobre tu caso.",
+            "visible_if": {
+                "question_id": "P1_regularity",
+                "equals": "No tengo sangrado actualmente"
+            },
+            "options": [
+                {
+                    "label": "Menos de 3 meses",
+                    "value": "<3m"
+                },
+                {
+                    "label": "3–6 meses",
+                    "value": "3–6m"
+                },
+                {
+                    "label": "Más de 6 meses",
+                    "value": ">6m"
+                }
+            ],
+            "prompt": "Question P1_no_cycle_desde_cuando"
+        },
+        {
+            "id": "P1_amenorrea_contexto",
+            "type": "single",
+            "title": "Factores que aplican 🧩",
+            "help_text": "Selecciona los que apliquen.",
+            "visible_if": {
+                "question_id": "P1_regularity",
+                "equals": "No tengo sangrado actualmente"
+            },
+            "options": [
+                {
+                    "label": "Lactancia",
+                    "value": "lactancia",
+                    "medical_disclaimer": "⚠️ Recomendamos consultar con tu médico o especialista en lactancia para orientación personalizada."
+                },
+                {
+                    "label": "Cambios de peso recientes",
+                    "value": "cambios_peso"
+                },
+                {
+                    "label": "Estrés alto",
+                    "value": "estres_alto"
+                },
+                {
+                    "label": "Ejercicio intenso",
+                    "value": "ejercicio_intenso"
+                },
+                {
+                    "label": "Antecedentes tiroideos",
+                    "value": "antecedentes_tiroideos",
+                    "medical_disclaimer": "⚠️ Por favor consulta con tu endocrinólogo o médico de cabecera para evaluación y seguimiento profesional."
+                },
+                {
+                    "label": "Posible menopausia/perimenopausia (45+ años)",
+                    "value": "menopausia_posible",
+                    "medical_disclaimer": "⚠️ Si tienes más de 45 años y no has tenido periodo por más de 12 meses, recomendamos consultar con tu ginecólogo para confirmar transición menopáusica y descartar otras causas."
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 1,
+                "maxselected": 6
+            },
+            "prompt": "Question P1_amenorrea_contexto"
+        },
+        {
+            "id": "P2_sintomas",
+            "type": "single",
+            "required": false,
+            "title": "En los últimos 3 ciclos, ¿qué síntomas aplican?",
+            "help_text": "Selecciona los que apliquen.",
+            "options": [
+                {
+                    "label": "Dolor o cólicos",
+                    "value": "Dolor o cólicos"
+                },
+                {
+                    "label": "Menstruación ligera (flujo escaso)",
+                    "value": "Ligera"
+                },
+                {
+                    "label": "Menstruación abundante (flujo intenso)",
+                    "value": "Abundante"
+                },
+                {
+                    "label": "Hinchazón o retención de líquidos",
+                    "value": "Hinchazón o retención de líquidos"
+                },
+                {
+                    "label": "Manchado entre reglas",
+                    "value": "Manchado entre reglas"
+                },
+                {
+                    "label": "Cambios de ánimo / ansiedad",
+                    "value": "Cambios de ánimo / ansiedad"
+                },
+                {
+                    "label": "Brotes o acné",
+                    "value": "Brotes o acné"
+                },
+                {
+                    "label": "Fatiga o cansancio extremo",
+                    "value": "Fatiga o cansancio extremo"
+                },
+                {
+                    "label": "Sensibilidad en los senos",
+                    "value": "Sensibilidad en los senos"
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 1,
+                "maxselected": 7
+            },
+            "prompt": "Question P2_sintomas"
+        },
+        {
+            "id": "P2_spotting_frecuencia",
+            "type": "single",
+            "title": "¿Con qué frecuencia tuviste manchado entre reglas? (si aplica)",
+            "help_text": "Ayuda a precisar el patrón de manchado.",
+            "visible_if": {
+                "question_id": "P2_sintomas",
+                "includes": [
+                    "Manchado entre reglas"
+                ]
+            },
+            "options": [
+                {
+                    "label": "Ocasionalmente",
+                    "value": "spot_ocasional"
+                },
+                {
+                    "label": "A veces",
+                    "value": "spot_a_veces"
+                },
+                {
+                    "label": "Frecuentemente",
+                    "value": "spot_frecuente"
+                }
+            ],
+            "prompt": "Question P2_spotting_frecuencia"
+        },
+        {
+            "id": "P2_hinchazon_severidad",
+            "type": "text",
+            "title": "Hinchazón/retención: ¿qué tanto? 💧",
+            "help_text": "1 = nada; 10 = muy intensa.",
+            "visible_if": {
+                "question_id": "P2_sintomas",
+                "includes": [
+                    "Hinchazón o retención de líquidos"
+                ]
+            },
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "tick_marks": [
+                1,
+                5,
+                10
+            ],
+            "tick_labels": {
+                "1": "1",
+                "5": "5",
+                "10": "10"
+            },
+            "aria_label": "Severidad de hinchazón de 1 a 10",
+            "prompt": "Question P2_hinchazon_severidad"
+        },
+        {
+            "id": "P2_fatiga_severidad",
+            "type": "text",
+            "title": "¿Qué tan fuerte fue la fatiga? 🥱",
+            "help_text": "1 = nada; 10 = extrema.",
+            "visible_if": {
+                "question_id": "P2_sintomas",
+                "includes": [
+                    "Fatiga o cansancio extremo"
+                ]
+            },
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "tick_marks": [
+                1,
+                5,
+                10
+            ],
+            "tick_labels": {
+                "1": "1",
+                "5": "5",
+                "10": "10"
+            },
+            "aria_label": "Severidad de fatiga de 1 a 10",
+            "prompt": "Question P2_fatiga_severidad"
+        },
+        {
+            "id": "P2_animo_severidad",
+            "type": "text",
+            "title": "Cambios de ánimo / ansiedad: ¿qué tanto? 💛",
+            "help_text": "1 = nada; 10 = muy intenso.",
+            "visible_if": {
+                "question_id": "P2_sintomas",
+                "includes": [
+                    "Cambios de ánimo / ansiedad"
+                ]
+            },
+            "min": 1,
+            "max": 10,
+            "step": 1,
+            "tick_marks": [
+                1,
+                5,
+                10
+            ],
+            "tick_labels": {
+                "1": "1",
+                "5": "5",
+                "10": "10"
+            },
+            "aria_label": "Severidad de cambios de ánimo de 1 a 10",
+            "prompt": "Question P2_animo_severidad"
+        },
+        {
+            "id": "P2_acne",
+            "type": "single",
+            "title": "¿Brotes/acné relacionados con el ciclo? (opcional) 🔴",
+            "help_text": "Elige la opción que más se acerque.",
+            "visible_if": {
+                "question_id": "P2_sintomas",
+                "includes": [
+                    "Brotes o acné"
+                ]
+            },
+            "options": [
+                {
+                    "label": "Rojo/inflamado (caliente)",
+                    "value": "acne_caliente_rojo"
+                },
+                {
+                    "label": "Subcutáneo/lento/poros obstruidos",
+                    "value": "acne_humedo_lento"
+                },
+                {
+                    "label": "No noté cambios",
+                    "value": "no"
+                }
+            ],
+            "prompt": "Question P2_acne"
+        },
+        {
+            "id": "P2_periodo_calidad",
+            "type": "text",
+            "title": "Calidad del sangrado menstrual 🌹",
+            "help_text": "Responde según tus días más intensos.",
+            "items": [
+                {
+                    "id": "P2_duracion_dias",
+                    "type": "slider",
+                    "title": "¿Cuántos días dura tu sangrado? 📅",
+                    "required": true,
+                    "min": 0,
+                    "max": 8,
+                    "step": 1,
+                    "tick_marks": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8
+                    ],
+                    "tick_labels": {
+                        "0": "0",
+                        "1": "1",
+                        "2": "2",
+                        "3": "3",
+                        "4": "4",
+                        "5": "5",
+                        "6": "6",
+                        "7": "7",
+                        "8": "8"
+                    },
+                    "aria_label": "Duración del sangrado en días de 0 a 8"
+                },
+                {
+                    "id": "P2_cantidad",
+                    "type": "slider",
+                    "title": "¿Qué tanta cantidad de sangrado hay en tus días más intensos? 📊",
+                    "help_text": "0 = casi nada; 10 = empapa con facilidad.",
+                    "required": true,
+                    "min": 0,
+                    "max": 10,
+                    "step": 1,
+                    "tick_marks": [
+                        0,
+                        3,
+                        6,
+                        8,
+                        10
+                    ],
+                    "tick_labels": {
+                        "0": "0",
+                        "3": "3",
+                        "6": "6",
+                        "8": "8",
+                        "10": "10"
+                    },
+                    "aria_label": "Cantidad de sangrado de 0 a 10"
+                },
+                {
+                    "id": "P2_color",
+                    "type": "single_choice",
+                    "title": "Color predominante en días intensos 🎨",
+                    "help_text": "Elige el que más se acerque.",
+                    "required": true,
+                    "options": [
+                        {
+                            "label": "Rojo brillante",
+                            "value": "rojo_brillante"
+                        },
+                        {
+                            "label": "Rojo oscuro",
+                            "value": "rojo_oscuro"
+                        },
+                        {
+                            "label": "Marrón",
+                            "value": "marron"
+                        },
+                        {
+                            "label": "Rosa / acuoso",
+                            "value": "rosa_aguado"
+                        }
+                    ]
+                },
+                {
+                    "id": "P2_textura",
+                    "type": "multiselect",
+                    "title": "Textura del flujo en días intensos 🧪",
+                    "help_text": "Puedes elegir más de una.",
+                    "required": true,
+                    "options": [
+                        {
+                            "label": "Con coágulos",
+                            "value": "coagulos"
+                        },
+                        {
+                            "label": "Fluido aguado",
+                            "value": "aguado"
+                        }
+                    ],
+                    "validation": {
+                        "minselected": 1,
+                        "maxselected": 2
+                    }
+                },
+                {
+                    "id": "P2_coagulo_tamano",
+                    "type": "single_choice",
+                    "title": "Si hay coágulos, ¿qué tamaño? 🧈",
+                    "help_text": "Aproximado.",
+                    "options": [
+                        {
+                            "label": "No hay coágulos",
+                            "value": "<0cm"
+                        },
+                        {
+                            "label": "Pequeños (<1 cm)",
+                            "value": "<1cm"
+                        },
+                        {
+                            "label": "Medianos (1–2.4 cm)",
+                            "value": "1–2.4cm"
+                        },
+                        {
+                            "label": "Grandes (>2.4 cm)",
+                            "value": ">2.4cm"
+                        }
+                    ]
+                },
+                {
+                    "id": "P2_patron_flujo",
+                    "type": "single_choice",
+                    "title": "Patrón del flujo en días intensos 🔎",
+                    "help_text": "¿Cómo describirías el patrón general?",
+                    "required": true,
+                    "options": [
+                        {
+                            "label": "Empieza/termina con café",
+                            "value": "empieza_termina_marron"
+                        },
+                        {
+                            "label": "En oleadas / tipo 'inundación'",
+                            "value": "oleadas_inundaciones"
+                        },
+                        {
+                            "label": "Goteo lento y prolongado",
+                            "value": "goteo_lento_prolongado"
+                        },
+                        {
+                            "label": "Intermitente (se detiene y regresa)",
+                            "value": "intermitente"
+                        }
+                    ]
+                }
+            ],
+            "prompt": "Question P2_periodo_calidad"
+        },
+        {
+            "id": "P2c_dolor_bloque",
+            "type": "text",
+            "title": "Cuando tuviste dolor o cólicos:",
+            "visible_if": {
+                "question_id": "P2_sintomas",
+                "includes": [
+                    "Dolor o cólicos"
+                ]
+            },
+            "questions": [
+                {
+                    "id": "P2q_dolor_severidad",
+                    "type": "slider",
+                    "title": "¿Qué tan intensos fueron tus cólicos? 🌪️",
+                    "help_text": "0 = nada; 10 = muy intensos.",
+                    "min": 0,
+                    "max": 10,
+                    "step": 1,
+                    "tick_marks": [
+                        0,
+                        3,
+                        6,
+                        8,
+                        10
+                    ],
+                    "tick_labels": {
+                        "0": "0",
+                        "3": "3",
+                        "6": "6",
+                        "8": "8",
+                        "10": "10"
+                    },
+                    "aria_label": "Intensidad de cólicos de 0 a 10"
+                },
+                {
+                    "id": "P2q_dolor_caracter",
+                    "type": "single_choice",
+                    "title": "¿Cómo describirías el dolor? 🎯",
+                    "help_text": "Elige la que más se acerque.",
+                    "options": [
+                        {
+                            "label": "Punzante, bien localizado",
+                            "value": "punzante_localizado"
+                        },
+                        {
+                            "label": "Sordo, pesado",
+                            "value": "sordo_pesado"
+                        },
+                        {
+                            "label": "Ardor/caliente",
+                            "value": "ardor_caliente"
+                        },
+                        {
+                            "label": "Espasmódico (va y viene)",
+                            "value": "espasmodico"
+                        }
+                    ]
+                }
+            ],
+            "prompt": "Question P2c_dolor_bloque"
+        },
+        {
+            "id": "P3_cuerpo",
+            "type": "single",
+            "title": "Señales del cuerpo que notas (últimos 3 ciclos) 🧭",
+            "help_text": "Selecciona hasta 3.",
+            "options": [
+                {
+                    "label": "Calor/enrojecimiento",
+                    "value": "Calor, enrojecimiento"
+                },
+                {
+                    "label": "Frío en manos/pies",
+                    "value": "Frío en manos/pies"
+                },
+                {
+                    "label": "Hinchazón, pesadez, retención",
+                    "value": "Hinchazón, pesadez, retención"
+                },
+                {
+                    "label": "Sequedad (piel, mucosas)",
+                    "value": "Sequedad (piel, mucosas)"
+                },
+                {
+                    "label": "Lengua hinchada (bordes marcados)",
+                    "value": "Lengua hinchada"
+                },
+                {
+                    "label": "Lengua pálida",
+                    "value": "Lengua pálida"
+                },
+                {
+                    "label": "Punta de la lengua roja",
+                    "value": "Punta de la lengua roja"
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 0,
+                "maxselected": 3
+            },
+            "prompt": "Question P3_cuerpo"
+        },
+        {
+            "id": "P4_emocional",
+            "type": "single",
+            "title": "Estados emocionales (últimos 3 ciclos) 💬",
+            "help_text": "Selecciona hasta 2.",
+            "options": [
+                {
+                    "label": "Ansiedad",
+                    "value": "Ansiedad"
+                },
+                {
+                    "label": "Irritabilidad",
+                    "value": "Irritabilidad"
+                },
+                {
+                    "label": "Tristeza",
+                    "value": "Tristeza"
+                },
+                {
+                    "label": "Apatía",
+                    "value": "Apatía"
+                },
+                {
+                    "label": "Agotamiento, burnout",
+                    "value": "Agotamiento, burnout"
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 0,
+                "maxselected": 2
+            },
+            "prompt": "Question P4_emocional"
+        },
+        {
+            "id": "P4_timing_emocional",
+            "type": "single",
+            "title": "¿Cuándo se intensifican más tus síntomas anímicos? 🗓️",
+            "help_text": "Elige la fase.",
+            "options": [
+                {
+                    "label": "Antes del periodo (PMS)",
+                    "value": "antes"
+                },
+                {
+                    "label": "Durante el periodo",
+                    "value": "durante"
+                },
+                {
+                    "label": "Después del periodo",
+                    "value": "después"
+                },
+                {
+                    "label": "Entre periodos",
+                    "value": "entre"
+                }
+            ],
+            "prompt": "Question P4_timing_emocional"
+        },
+        {
+            "id": "P5_sed",
+            "type": "single",
+            "title": "Cuando tienes sed, ¿qué prefieres? 🧊🔥",
+            "help_text": "Señal útil de tu terreno.",
+            "options": [
+                {
+                    "label": "Bebidas frías / con hielo",
+                    "value": "bebidas_frias"
+                },
+                {
+                    "label": "Bebidas tibias o calientes",
+                    "value": "bebidas_calientes"
+                },
+                {
+                    "label": "Depende / no tengo preferencia",
+                    "value": "neutro"
+                }
+            ],
+            "prompt": "Question P5_sed"
+        },
+        {
+            "id": "P6_energia",
+            "type": "single",
+            "title": "Tu patrón de energía general ⚡",
+            "help_text": "Selecciona hasta 2.",
+            "options": [
+                {
+                    "label": "Con subidas y bajadas marcadas",
+                    "value": "Con subidas y bajadas marcadas"
+                },
+                {
+                    "label": "Ráfagas de energía",
+                    "value": "Ráfagas de energía"
+                },
+                {
+                    "label": "Lenta, pesada, con poca motivación",
+                    "value": "Lenta, pesada, con poca motivación"
+                },
+                {
+                    "label": "Agotada, drenada",
+                    "value": "Agotada, drenada"
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 0,
+                "maxselected": 2
+            },
+            "prompt": "Question P6_energia"
+        },
+        {
+            "id": "P7_signos_corporales",
+            "type": "single",
+            "title": "Señales del cuerpo (opcional) 🧩",
+            "help_text": "Si no viste tus señales arriba, selecciona hasta 3.",
+            "visible_if": {
+                "any": [
+                    {
+                        "question_id": "P2_sintomas",
+                        "includes": [
+                            "Ninguna de las anteriores"
+                        ]
+                    },
+                    {
+                        "question_id": "P3_cuerpo",
+                        "includes": [
+                            "Ninguna de las anteriores"
+                        ]
+                    }
+                ]
+            },
+            "options": [
+                {
+                    "label": "Sed intensa la mayor parte del día",
+                    "value": "Sed intensa"
+                },
+                {
+                    "label": "Piel muy seca",
+                    "value": "Piel muy seca"
+                },
+                {
+                    "label": "Sudor pegajoso",
+                    "value": "Sudor pegajoso"
+                },
+                {
+                    "label": "Poco o nada de sudor incluso con calor",
+                    "value": "Poco sudor con calor"
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 0,
+                "maxselected": 3
+            },
+            "prompt": "Question P7_signos_corporales"
+        },
+        {
+            "id": "P7b_sequedad_detalle",
+            "type": "single",
+            "title": "Si notas sequedad, ¿dónde lo sientes más? 🌵",
+            "help_text": "Esta pregunta aparece si reportaste sequedad o sangrado escaso.",
+            "visible_if": {
+                "any": [
+                    {
+                        "question_id": "P3_cuerpo",
+                        "includes": [
+                            "Sequedad (piel, mucosas)"
+                        ]
+                    },
+                    {
+                        "question_id": "P2_sintomas",
+                        "includes": [
+                            "Sangrado escaso o ausente",
+                            "Fatiga o cansancio extremo"
+                        ]
+                    }
+                ]
+            },
+            "options": [
+                {
+                    "label": "Boca seca",
+                    "value": "boca_seca"
+                },
+                {
+                    "label": "Ojos secos",
+                    "value": "ojos_secos"
+                },
+                {
+                    "label": "Lubricación vaginal baja",
+                    "value": "lubricacion_baja"
+                },
+                {
+                    "label": "Sed nocturna",
+                    "value": "sed_nocturna"
+                },
+                {
+                    "label": "Piel muy seca",
+                    "value": "piel_muy_seca"
+                },
+                {
+                    "label": "Ninguna de las anteriores",
+                    "value": "Ninguna de las anteriores"
+                }
+            ],
+            "validation": {
+                "minselected": 0,
+                "maxselected": 5,
+                "soft_required_when": {
+                    "all": [
+                        {
+                            "question_id": "P2_sintomas",
+                            "includes": [
+                                "Sangrado escaso o ausente"
+                            ]
+                        },
+                        {
+                            "question_id": "P5_sed",
+                            "equals": "bebidas_calientes"
+                        }
+                    ],
+                    "message": "Ayúdanos a precisar señales de sequedad"
+                }
+            },
+            "prompt": "Question P7b_sequedad_detalle"
+        },
+        {
+            "id": "P7c_sensibilidad_clima",
+            "type": "single",
+            "title": "Sensibilidad al clima 🌡️",
+            "help_text": "¿Qué te molesta más en general?",
+            "options": [
+                {
+                    "label": "Me sofoco con el calor",
+                    "value": "calor_me_agobia"
+                },
+                {
+                    "label": "Siempre tengo frío",
+                    "value": "siempre_con_frio"
+                },
+                {
+                    "label": "Depende",
+                    "value": "depende"
+                }
+            ],
+            "prompt": "Question P7c_sensibilidad_clima"
+        },
+        {
+            "id": "P8_sueno_calidad",
+            "type": "text",
+            "title": "Calidad de sueño (últimos 7 días) 😴",
+            "help_text": "0 = pésima; 10 = excelente.",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "tick_marks": [
+                0,
+                5,
+                10
+            ],
+            "tick_labels": {
+                "0": "0",
+                "5": "5",
+                "10": "10"
+            },
+            "aria_label": "Calidad de sueño de 0 a 10",
+            "prompt": "Question P8_sueno_calidad"
+        },
+        {
+            "id": "P8a_estres",
+            "type": "text",
+            "title": "Estrés percibido (últimos 7 días) 😵‍💫",
+            "help_text": "0 = nada; 10 = muy alto.",
+            "min": 0,
+            "max": 10,
+            "step": 1,
+            "tick_marks": [
+                0,
+                5,
+                10
+            ],
+            "tick_labels": {
+                "0": "0",
+                "5": "5",
+                "10": "10"
+            },
+            "aria_label": "Nivel de estrés de 0 a 10",
+            "prompt": "Question P8a_estres"
+        },
+        {
+            "id": "P8b_ejercicio",
+            "type": "single",
+            "title": "Ejercicio/actividad física semanal 🏃‍♀️",
+            "help_text": "Selecciona la opción que más se acerque.",
+            "options": [
+                {
+                    "label": "Ninguno",
+                    "value": "ninguno"
+                },
+                {
+                    "label": "1–2 días/semana",
+                    "value": "1–2_dias_sem"
+                },
+                {
+                    "label": "3–5 días/semana",
+                    "value": "3–5_dias_sem"
+                },
+                {
+                    "label": "6–7 días/semana",
+                    "value": "6–7_dias_sem"
+                }
+            ],
+            "prompt": "Question P8b_ejercicio"
+        },
+        {
+            "id": "P8c_cafeina",
+            "type": "single",
+            "title": "¿Cuánta cafeína tomas al día? ☕",
+            "help_text": "Cafés/energéticas/tés fuertes.",
+            "options": [
+                {
+                    "label": "0",
+                    "value": "0"
+                },
+                {
+                    "label": "1",
+                    "value": "1"
+                },
+                {
+                    "label": "2",
+                    "value": "2"
+                },
+                {
+                    "label": "3 o más",
+                    "value": "3+"
+                }
+            ],
+            "prompt": "Question P8c_cafeina"
+        }
+    ],
+    "question_order": [
+      "P0_nombre",
+      "P0_contraception",
+      "P1_regularity",
+      "P1_no_cycle_desde_cuando",
+      "P1_amenorrea_contexto",
+      "P2_sintomas",
+      "P2_spotting_frecuencia",
+      "P2_hinchazon_severidad",
+      "P2_fatiga_severidad",
+      "P2_animo_severidad",
+      "P2_acne",
+      "P2_periodo_calidad",
+      "P2c_dolor_bloque",
+      "P3_cuerpo",
+      "P4_emocional",
+      "P4_timing_emocional",
+      "P5_sed",
+      "P6_energia",
+      "P7_signos_corporales",
+      "P7b_sequedad_detalle",
+      "P7c_sensibilidad_clima",
+      "P8_sueno_calidad",
+      "P8a_estres",
+      "P8b_ejercicio",
+      "P8c_cafeina"
+    ] 
+}
 }
