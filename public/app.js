@@ -55,6 +55,11 @@ window.startSurvey = function() {
   renderQuestion();
 };
 
+window.handleTextInput = function(qId, value) {
+    answers[qId] = value;
+    window.updateNavigation();
+};
+
 // ==================== MAIN INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -418,9 +423,19 @@ function renderQuestion() {
                 }).join('')}
             </div>
         </div>`;
-    } else {
-        optionsHtml = `<div>No options for this question type.</div>`;
-    }
+    } else if (question.type === 'text') {
+    optionsHtml = `
+        <input type="text"
+            id="input-${qId}"
+            class="input-text"
+            value="${answers[qId] || ''}"
+            placeholder="${question.help_text || ''}"
+            oninput="window.handleTextInput('${qId}', this.value)">
+    `;
+}
+else {
+    optionsHtml = `<div>No options for this question type.</div>`;
+}
 
     surveyContent.innerHTML = `
         <div class="question">
