@@ -3401,14 +3401,23 @@ html {
   font-size: 2rem;
 }
 
-/* Match waitlist width to results block */
-#waitlist-section .waitlist-content {
-  max-width: 900px;    /* same as results-container */
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 20px;     /* side padding to match results */
-}
+/* Make waitlist border match results width */
 #waitlist-section {
-  padding-top: 60px;   /* optional vertical spacing */
-  padding-bottom: 60px;
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+#waitlist-section .waitlist-content {
+  width: 100%;
+  max-width: 900px;      /* same as results-container */
+  border: none;          /* remove inner border */
+  padding: 0;
+}
+
+#waitlist-section {
+  border: 2px solid;     /* outer frame */
+  border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
+  border-radius: 24px;
+  box-sizing: border-box;
 }
