@@ -10,7 +10,6 @@ let surveyQuestions = [];
 let answers = {};
 let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-let isProMode = false;
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
@@ -50,10 +49,6 @@ function showPage(pageId) {
 }
 
 window.startSurvey = function() {
-  if (!window.surveyLoaded || !Array.isArray(questionOrder) || questionOrder.length === 0) {
-    alert('Survey is still loading or failed to load. Please try again in a moment.');
-    return;
-  }
   currentQuestionIndex = 0;
   answers = {};
   showPage('survey-page');
@@ -64,7 +59,6 @@ window.startSurvey = function() {
 
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
-  isProMode = false;
 
   const quizBtn = document.getElementById('take-quiz-btn');
   if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
@@ -82,7 +76,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
-    // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
+  // Load results_template.json (add this after the other fetches)
+  try {
+  const resultsResp = await fetch('results_template.json');
+  if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
+  resultsTemplate = await resultsResp.json();
+  console.log('✅ Loaded results_template.json');
+  } catch (err) {
+  resultsTemplate = null;
+  console.error('❌ Failed to load results_template.json:', err);
+  }
+
+
+// --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
     surveyQuestions.forEach(q => {
       // 1. Top-level options
       if (Array.isArray(q.options)) {
@@ -101,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (q.type === "compound" && Array.isArray(q.items)) {
         q.items.forEach(item => {
           if (Array.isArray(item.options)) {
-            const mappingList = decisionMapping.scoring[item.id];
+            const mappingList = decisionMapping.scoring[item.id]; // ← FIXED: Added .scoring
             if (mappingList) {
               item.options.forEach(opt => {
                 const mapping = mappingList.find(m => m.value === opt.value);
@@ -113,133 +119,325 @@ document.addEventListener('DOMContentLoaded', async function() {
           }
         });
       }
+
+      // 3. Grouped questions (questions)
+      if (q.type === "grouped" && Array.isArray(q.questions)) {
+        q.questions.forEach(group => {
+          if (Array.isArray(group.options)) {
+            const mappingList = decisionMapping.scoring[group.id]; // ← FIXED: Added .scoring
+            if (mappingList) {
+              group.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping && mapping.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
+            }
+          }
+        });
+      }
     });
 
-    window.surveyLoaded = Array.isArray(surveyQuestions) && surveyQuestions.length > 0 && Array.isArray(questionOrder) && questionOrder.length > 0;
-    if (quizBtn && window.surveyLoaded) quizBtn.disabled = false;
+    // Normalize type values for singlechoice
+    surveyQuestions.forEach(q => {
+      if (q.type === 'singlechoice') {
+        q.type = 'single_choice';
+      }
+    });
 
+    window.surveyLoaded = true;
+    console.log('✅ Loaded', surveyQuestions.length, 'questions');
+
+    if (quizBtn) quizBtn.disabled = false;
   } catch (err) {
-    console.error('✗ Failed to load survey or mapping:', err);
+    console.error('❌ Error:', err);
+    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     if (quizBtn) quizBtn.disabled = true;
-    window.surveyLoaded = false;
   }
 });
 
-// ==================== SURVEY FUNCTIONS ====================
+// ==================== WAITLIST FORM HANDLER ====================
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Landing page waitlist
+  const mainWaitlistForm = document.getElementById('main-waitlist-form');
+  if (mainWaitlistForm) {
+    mainWaitlistForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('main-waitlist-name').value;
+      const email = document.getElementById('main-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'landing_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        mainWaitlistForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
+  // Results page waitlist
+  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+  if (resultsWaitlistForm) {
+    resultsWaitlistForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('results-waitlist-name').value;
+      const email = document.getElementById('results-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'results_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        resultsWaitlistForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
+});
+
+// ==================== UTILITY FUNCTIONS ====================
 
 function getQuestionById(qId) {
   return surveyQuestions.find(q => q.id === qId);
 }
 
-function renderQuestion() {
-  if (!Array.isArray(questionOrder) || questionOrder.length === 0) {
-    alert('Survey questions are not loaded yet. Please wait and try again.');
-    return;
-  }
-  let qId = questionOrder[currentQuestionIndex];
-  let question = getQuestionById(qId);
+function isQuestionVisible(question, answers) {
+  if (!question) return false;
+  const qId = typeof question.id === 'string' ? question.id : '';
 
-  // Guard for undefined question
-  if (!question) {
-    finishSurvey();
-    return;
+  // always show P0 and P1
+  if (qId === 'P0_contraception' || qId === 'P1') return true;
+
+  // P1_ follow-ups
+  if (qId.startsWith('P1_')) {
+    return answers.P1 === 'No tengo sangrado actualmente';
   }
 
-  // Skip invisible questions
-  while (question && !isQuestionVisible(question, answers)) {
-    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-    if (nextIdx > -1) {
-      currentQuestionIndex = nextIdx;
-      qId = questionOrder[currentQuestionIndex];
-      question = getQuestionById(qId);
-    } else {
-      finishSurvey();
-      return;
+  if (!question.visible_if) return true;
+  const cond = question.visible_if;
+
+  // equals
+  if (cond.question_id && typeof cond.equals !== 'undefined') {
+    return answers[cond.question_id] === cond.equals;
+  }
+  // includes
+  if (cond.question_id && cond.includes) {
+    const ans = answers[cond.question_id];
+    const inclArr = Array.isArray(cond.includes) ? cond.includes : [cond.includes];
+    const ansArr = Array.isArray(ans) ? ans : [ans];
+    return inclArr.some(v => ansArr.includes(v));
+  }
+  // not_includes, includes_any, not_in, not_includes_any, at_least...
+  // (keep your existing blocks here, none of which use question.id)
+
+  // all / any
+  if (cond.all) {
+    return cond.all.every(subCond =>
+      isQuestionVisible({ visible_if: subCond, id: '' }, answers)
+    );
+  }
+  if (cond.any) {
+    return cond.any.some(subCond =>
+      isQuestionVisible({ visible_if: subCond, id: '' }, answers)
+    );
+  }
+
+  return true;
+}
+
+function getNextVisibleQuestionIndex(currentIndex) {
+  for (let i = currentIndex + 1; i < questionOrder.length; i++) {
+    const qId = questionOrder[i];
+    const question = getQuestionById(qId);
+    if (isQuestionVisible(question, answers)) {
+      return i;
     }
   }
+  return -1;
+}
 
-  if (!question) {
-    finishSurvey();
-    return;
+function getPrevVisibleQuestionIndex(currentIndex) {
+  for (let i = currentQuestionIndex - 1; i >= 0; i--) {
+    const qId = questionOrder[i];
+    const question = getQuestionById(qId);
+    if (isQuestionVisible(question, answers)) {
+      return i;
+    }
   }
+  return -1;
+}
 
-  // Initialize answers for multiselect
-  if (question.type === "multiselect" && !answers[qId]) {
-    answers[qId] = [];
-    console.log(`✅ Initialized ${qId} as empty array`);
-  }
+window.finishSurvey = function() {
+  // Calculate the results and show them
+  const patternKey = calculateResults();
+  showResults(patternKey);
+};
 
-  const surveyContent = document.getElementById('survey-content');
-  if (!surveyContent) return;
+// ==================== SURVEY RENDERING ====================
 
-  let optionsHtml = '';
+function renderQuestion() {
+    let qId = questionOrder[currentQuestionIndex];
+    let question = getQuestionById(qId);
 
-  // Handle standard option types
-  if ((question.type === 'multiselect' || question.type === 'single_choice') && Array.isArray(question.options)) {
-    question.options.forEach((option, index) => {
-      const isMultiSelect = question.type === 'multiselect';
-      const optionClass = isMultiSelect ? 'option multi-select' : 'option';
-      const selected = isMultiSelect 
-        ? (answers[qId] && answers[qId].includes(option.value)) 
-        : answers[qId] === option.value;
-      optionsHtml += `
-        <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" data-qid="${qId}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
-          ${option.label}
-        </div>
-      `;
-    });
-  } else if (question.type === 'slider') {
-    optionsHtml = `
-      <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
-        value="${answers[question.id] || question.min}" id="slider-input"
-        oninput="selectSlider('${question.id}', this.value)">
-      <span id="slider-value">${answers[question.id] || question.min}</span>
-    `;
-  } else if (question.type === 'compound' && Array.isArray(question.items)) {
-    optionsHtml = `<div class="compound-question">
-      <div class="sub-questions">
-        ${question.items.map(item => {
-          if ((item.type === 'multiselect' || item.type === 'single_choice') && Array.isArray(item.options)) {
-            return `<div class="sub-question">
-              <h4>${item.title}</h4>
-              <div class="sub-options">
-                ${item.options.map(opt => {
-                  const isMultiSelect = item.type === 'multiselect';
-                  const selected = isMultiSelect
-                    ? (answers[item.id] && answers[item.id].includes(opt.value))
-                    : answers[item.id] === opt.value;
-                  return `
-                    <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${item.id}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
-                      ${opt.label}
-                    </div>
-                  `;
+    // Guard for undefined question
+    if (!question) {
+        finishSurvey();
+        return;
+    }
+    console.log('Rendering question:', question.id, 'type:', question.type, 'options:', question.options);
+  
+    // Skip invisible questions
+    while (question && !isQuestionVisible(question, answers)) {
+        const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+        if (nextIdx > -1) {
+            currentQuestionIndex = nextIdx;
+            qId = questionOrder[currentQuestionIndex];
+            question = getQuestionById(qId);
+        } else {
+            finishSurvey();
+            return;
+        }
+    }
+
+    if (!question) {
+        finishSurvey();
+        return;
+    }
+
+    // Initialize answers for multiselect
+    if (question.type === "multiselect" && !answers[qId]) {
+        answers[qId] = [];
+        console.log(`✅ Initialized ${qId} as empty array`);
+    }
+
+    const surveyContent = document.getElementById('survey-content');
+    if (!surveyContent) return;
+
+    let optionsHtml = '';
+
+    // Handle standard option types
+    if ((question.type === 'multiselect' || question.type === 'single_choice') && Array.isArray(question.options)) {
+        question.options.forEach((option, index) => {
+            const isMultiSelect = question.type === 'multiselect';
+            const optionClass = isMultiSelect ? 'option multi-select' : 'option';
+            const selected = isMultiSelect 
+                ? (answers[qId] && answers[qId].includes(option.value)) 
+                : answers[qId] === option.value;
+            optionsHtml += `
+                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" data-qid="${qId}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
+                    ${option.label}
+                </div>
+            `;
+        });
+    } else if (question.type === 'slider') {
+        optionsHtml = `
+            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
+                value="${answers[question.id] || question.min}" id="slider-input"
+                oninput="selectSlider('${question.id}', this.value)">
+            <span id="slider-value">${answers[question.id] || question.min}</span>
+        `;
+    } else if (question.type === 'compound' && Array.isArray(question.items)) {
+        optionsHtml = `<div class="compound-question">
+            <div class="sub-questions">
+                ${question.items.map(item => {
+                    if ((item.type === 'multiselect' || item.type === 'single_choice') && Array.isArray(item.options)) {
+                        return `<div class="sub-question">
+                            <h4>${item.title}</h4>
+                            <div class="sub-options">
+                                ${item.options.map(opt => {
+                                    const isMultiSelect = item.type === 'multiselect';
+                                    const selected = isMultiSelect
+                                        ? (answers[item.id] && answers[item.id].includes(opt.value))
+                                        : answers[item.id] === opt.value;
+                                    return `
+                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${item.id}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
+                                            ${opt.label}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    } else if (item.type === 'slider') {
+                        return `<div class="sub-question">
+                            <h4>${item.title}</h4>
+                            <div class="slider-container">
+                                <input type="range" min="${item.min}" max="${item.max}" step="${item.step}" 
+                                    value="${answers[item.id] || item.min}" id="slider-input-${item.id}"
+                                    oninput="selectSlider('${item.id}', this.value)">
+                                <span id="slider-value-${item.id}">${answers[item.id] || item.min}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        return `<div class="sub-question">${item.title} (Tipo no soportado)</div>`;
+                    }
                 }).join('')}
-              </div>
-            </div>`;
-          } else if (item.type === 'slider') {
-            return `<div class="sub-question">
-              <h4>${item.title}</h4>
-              <div class="slider-container">
-                <input type="range" min="${item.min}" max="${item.max}" step="${item.step}"
-                  value="${answers[item.id] || item.min}" id="slider-input-${item.id}"
-                  oninput="selectSlider('${item.id}', this.value)">
-                <span id="slider-value-${item.id}">${answers[item.id] || item.min}</span>
-              </div>
-            </div>`;
-          }
-          return '';
-        }).join('')}
-      </div>
-    </div>`;
-  }
+            </div>
+        </div>`;
+    } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
+        optionsHtml = `<div class="grouped-question">
+            <div class="question-groups">
+                ${question.questions.map(group => {
+                    if ((group.type === 'multiselect' || group.type === 'single_choice') && Array.isArray(group.options)) {
+                        return `<div class="question-group">
+                            <h4>${group.title}</h4>
+                            <div class="group-options">
+                                ${group.options.map(opt => {
+                                    const isMultiSelect = group.type === 'multiselect';
+                                    const selected = isMultiSelect
+                                        ? (answers[group.id] && answers[group.id].includes(opt.value))
+                                        : answers[group.id] === opt.value;
+                                    return `
+                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${group.id}" onclick="selectOption('${group.id}', '${opt.value}', ${isMultiSelect})">
+                                            ${opt.label}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    } else if (group.type === 'slider') {
+                        return `<div class="question-group">
+                            <h4>${group.title}</h4>
+                            <div class="slider-container">
+                                <input type="range" min="${group.min}" max="${group.max}" step="${group.step}" 
+                                    value="${answers[group.id] || group.min}" id="slider-input-${group.id}"
+                                    oninput="selectSlider('${group.id}', this.value)">
+                                <span id="slider-value-${group.id}">${answers[group.id] || group.min}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        return `<div class="question-group">${group.title} (Tipo no soportado)</div>`;
+                    }
+                }).join('')}
+            </div>
+        </div>`;
+    } else {
+        optionsHtml = `<div>No options for this question type.</div>`;
+    }
 
-  surveyContent.innerHTML = `
-    <div class="question-container">
-      <h3>${question.title}</h3>
-      <div class="options-container">${optionsHtml}</div>
-    </div>
-    <button class="btn-primary" onclick="nextQuestion()">Siguiente</button>
-  `;
+    surveyContent.innerHTML = `
+        <div class="question">
+            <h3>${question.title}</h3>
+            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
+            <div class="options">
+                ${optionsHtml}
+            </div>
+        </div>
+        <div class="survey-navigation">
+            <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display:none;">← Anterior</button>
+            <button class="btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+        </div>
+    `;
+
+    updateProgress();
+    updateNavigation();
 }
 
 // Updated selectOption function with scoped selection for compound/grouped sub-questions
