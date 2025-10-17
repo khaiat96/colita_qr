@@ -1005,5 +1005,32 @@
             ],
             "prompt": "Question P8c_cafeina"
         }
-    ]
+    ],
+    "question_order": [
+      "P0_nombre",
+      "P0_contraception",
+      "P1_regularity",
+      "P1_no_cycle_desde_cuando",
+      "P1_amenorrea_contexto",
+      "P2_sintomas",
+      "P2_spotting_frecuencia",
+      "P2_hinchazon_severidad",
+      "P2_fatiga_severidad",
+      "P2_animo_severidad",
+      "P2_acne",
+      "P2_periodo_calidad",
+      "P2c_dolor_bloque",
+      "P3_cuerpo",
+      "P4_emocional",
+      "P4_timing_emocional",
+      "P5_sed",
+      "P6_energia",
+      "P7_signos_corporales",
+      "P7b_sequedad_detalle",
+      "P7c_sensibilidad_clima",
+      "P8_sueno_calidad",
+      "P8a_estres",
+      "P8b_ejercicio",
+      "P8c_cafeina"
+    ] 
 }
