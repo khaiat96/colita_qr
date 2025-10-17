@@ -78,6 +78,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
+  // Load results_template.json (add this after the other fetches)
+  try {
+  const resultsResp = await fetch('results_template.json');
+  if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
+  resultsTemplate = await resultsResp.json();
+  console.log('✅ Loaded results_template.json');
+  } catch (err) {
+  resultsTemplate = null;
+  console.error('❌ Failed to load results_template.json:', err);
+  }
+
+
 // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
     surveyQuestions.forEach(q => {
       // 1. Top-level options
