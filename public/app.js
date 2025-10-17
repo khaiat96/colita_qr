@@ -79,28 +79,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     const decisionMapping = await mappingResp.json();
 
 // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
-surveyQuestions.forEach(q => {
-  // 1. Top-level options
-  if (Array.isArray(q.options)) {
-    // Standard mapping for normal questions (no special P5 logic)
-    const mappingList = decisionMapping[q.id];
-    if (mappingList) {
-      q.options.forEach(opt => {
-        const mapping = mappingList.find(m => m.value === opt.value);
-        if (mapping && mapping.scores) {
-          opt.scores = mapping.scores;
-        }
-      });
-    }
-  }
-
-  // 2. Compound questions (items)
-  if (q.type === "compound" && Array.isArray(q.items)) {
-    q.items.forEach(item => {
-      if (Array.isArray(item.options)) {
-        const mappingList = decisionMapping[item.id];
+    surveyQuestions.forEach(q => {
+      // 1. Top-level options
+      if (Array.isArray(q.options)) {
+        const mappingList = decisionMapping.scoring[q.id]; // ← FIXED: Added .scoring
         if (mappingList) {
-          item.options.forEach(opt => {
+          q.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
             if (mapping && mapping.scores) {
               opt.scores = mapping.scores;
@@ -108,31 +92,41 @@ surveyQuestions.forEach(q => {
           });
         }
       }
-    });
-  }
 
-  // 3. Grouped questions (questions)
-  if (q.type === "grouped" && Array.isArray(q.questions)) {
-    q.questions.forEach(group => {
-      if (Array.isArray(group.options)) {
-        const mappingList = decisionMapping[group.id];
-        if (mappingList) {
-          group.options.forEach(opt => {
-            const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
-              opt.scores = mapping.scores;
+      // 2. Compound questions (items)
+      if (q.type === "compound" && Array.isArray(q.items)) {
+        q.items.forEach(item => {
+          if (Array.isArray(item.options)) {
+            const mappingList = decisionMapping.scoring[item.id]; // ← FIXED: Added .scoring
+            if (mappingList) {
+              item.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping && mapping.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
             }
-          });
-        }
+          }
+        });
+      }
+
+      // 3. Grouped questions (questions)
+      if (q.type === "grouped" && Array.isArray(q.questions)) {
+        q.questions.forEach(group => {
+          if (Array.isArray(group.options)) {
+            const mappingList = decisionMapping.scoring[group.id]; // ← FIXED: Added .scoring
+            if (mappingList) {
+              group.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping && mapping.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
+            }
+          }
+        });
       }
     });
-  }
-});
-
-    // Load results template
-    const templateResp = await fetch('results_template.json');
-    if (!templateResp.ok) throw new Error(`HTTP ${templateResp.status}: ${templateResp.statusText}`);
-    resultsTemplate = await templateResp.json();
 
     // Normalize type values for singlechoice
     surveyQuestions.forEach(q => {
