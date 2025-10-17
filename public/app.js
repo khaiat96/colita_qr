@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.surveyLoaded = true;
     console.log('✅ Loaded', surveyQuestions.length, 'questions');
 
-    if (quizBtn) quizBtn.disabled = false;
+    if (quizBtn) quizBtn.disabled = true;
   } catch (err) {
     console.error('❌ Error:', err);
     alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
