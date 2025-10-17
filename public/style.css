@@ -3401,24 +3401,47 @@ html {
   font-size: 2rem;
 }
 
-/* Make waitlist section match results-card container width */
-.results-container {
-  max-width: 700px; /* Already set for results-card */
-  margin: 0 auto;
-  padding: 40px 20px;
-}
+/* ============================
+   RESULTS PAGE — WAITLIST WIDTH ALIGNMENT (scoped)
+   ============================ */
 
-#results-waitlist-section {
-  margin-top: 40px;
-  margin-bottom: 0;
-}
+/* Match results waitlist wrapper to the results-card geometry */
+.results-container .waitlist-section,
+.results-container .waitlist-card,
+.results-container .results-footer-form {
+  /* Align to the results page content width */
+  max-width: 700px;           /* same as .results-container/.results-card */
+  margin-left: auto;
+  margin-right: auto;
 
-#results-waitlist-section .waitlist-content {
-  border: 2px solid;
-  border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
-  border-radius: 20px; /* Same as results-card */
-  padding: 40px;
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.08) 0%, rgba(107, 115, 255, 0.05) 100%);
-  max-width: 100%; /* Inherit parent width */
+  /* Mirror results-card feel */
+  border-width: 2px;          /* keep border width consistent */
+  border-style: solid;
+  border-image: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%) 1;
+  border-radius: 20px;        /* same radius as .results-card */
+  padding: 40px;              /* same internal rhythm as .results-card */
   box-sizing: border-box;
+}
+
+/* Only loosen inner caps on results page so layout/landing stays unchanged */
+.results-container .waitlist-content {
+  max-width: 100%;   /* allow content to fill the results width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Make the input/form follow the same span on results page only */
+.results-container .main-waitlist-form,
+.results-container .waitlist-form {
+  max-width: 100%;
+}
+
+/* Mobile polish: keep padding tidy while preserving alignment */
+@media (max-width: 768px) {
+  .results-container .waitlist-section,
+  .results-container .waitlist-card,
+  .results-container .results-footer-form {
+    padding: 20px;
+    max-width: 700px; /* still cap at the results width */
+  }
 }
