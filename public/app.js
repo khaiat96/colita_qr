@@ -651,9 +651,6 @@ function showResults(patternKey) {
     <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || label}</h2>
     <h3>${summary}</h3>
     ${renderPatternCard(patternKey)}
-    <div class="element-explainer">
-      ${getTemplateSection('element_explainer', patternKey)?.[0] || ''}
-    </div>
     ${renderCareTips(patternKey)}
     ${renderPhaseAdvice(patternKey)}
     <div class="disclaimer">
