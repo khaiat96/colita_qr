@@ -3366,7 +3366,8 @@ html {
 
 /* Increase space between “Mini-hábitos por patrón” box and characteristic list */
 .recommendations {
-  margin-bottom: 60px; /* more space after mini-hábitos */
+  margin-top:40px; /* more space before mini-hábitos */
+  margin-bottom: 40px; /* more space after mini-hábitos */
 }
 
 /* Bold the summary line under the title */
