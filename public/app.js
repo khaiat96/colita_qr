@@ -16,8 +16,6 @@ window.surveyLoaded = false;
 
 console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
-
-
 // ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
@@ -26,6 +24,7 @@ window.scrollToWaitlist = function() {
     waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 };
+
 
 // ==================== PAGE NAVIGATION ====================
 function showPage(pageId) {
@@ -51,7 +50,8 @@ function showPage(pageId) {
   }
 }
 
-// ==================== MAIN INITIALIZATION ====================
+
+
 
 window.startSurvey = function() {
   currentQuestionIndex = 0;
@@ -59,6 +59,8 @@ window.startSurvey = function() {
   showPage('survey-page');
   renderQuestion();
 };
+
+// ==================== MAIN INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
