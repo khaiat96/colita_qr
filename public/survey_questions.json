@@ -371,7 +371,7 @@
       "visible_if": {
         "question_id": "P2_sintomas",
         "includes": [
-          "Brotes o acné"
+          "Brotes o acné",
         ]
       },
       "options": [
