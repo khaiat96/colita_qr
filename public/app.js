@@ -2,7 +2,7 @@
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
-const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/er23s3ieomte4jue36f4v4o0g3mrtsdl'; //
+const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/er23s3ieomte4jue36f4v4o0g3mrtsdl';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let questionOrder = [];
@@ -12,8 +12,6 @@ let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let isProMode = false;
 let resultsTemplate = null;
-
-// === ADDED: flag for survey loaded ===
 window.surveyLoaded = false;
 
 console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
@@ -27,16 +25,14 @@ window.scrollToWaitlist = function() {
   }
 };
 
-
-// ==================== INITIALIZE + LOAD TEMPLATE + DECISION MAPPING ====================
-
-
 window.startSurvey = function() {
   currentQuestionIndex = 0;
   answers = {};
   showPage('survey-page');
   renderQuestion();
 };
+
+// ==================== MAIN INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
@@ -58,45 +54,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
-    // (merge mapping logic here...)
-
-    // Load results template
-    const templateResp = await fetch('results_template.json');
-    if (!templateResp.ok) throw new Error(`HTTP ${templateResp.status}: ${templateResp.statusText}`);
-    resultsTemplate = await templateResp.json();
-
-    window.surveyLoaded = true;
-    if (quizBtn) quizBtn.disabled = false; // Enable the button
-  } catch (err) {
-    if (quizBtn) quizBtn.disabled = true;
-    alert('Error loading survey: ' + err.message);
-  }
-});
-
-
-  const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = false;
-
-  try {
-    console.log('🔍 Loading survey questions...');
-    const surveyResp = await fetch('survey_questions-combined.json');
-    if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
-    const surveyData = await surveyResp.json();
-    surveyQuestions = surveyData.questions;
-    questionOrder = surveyData.question_order;
-
-    // Load decision mapping
-    const mappingResp = await fetch('decision_mapping-combined.json');
-    if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
-    const decisionMapping = await mappingResp.json();
-
     // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
     surveyQuestions.forEach(q => {
       // 1. Top-level options
       if (Array.isArray(q.options)) {
         // For P5 special mapping
         if (q.id === "P5" && Array.isArray(q.value_map)) {
-          // Get P5_score_keys mapping from decisionMapping
           const p5Scores = decisionMapping["P5_score_keys"];
           q.options.forEach(opt => {
             const mapEntry = q.value_map.find(vm => vm.value === opt.value);
@@ -108,7 +71,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
           });
         } else {
-          // Standard mapping for normal questions
           const mappingList = decisionMapping[q.id];
           if (mappingList) {
             q.options.forEach(opt => {
@@ -203,10 +165,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-
-  // REMOVE resultsWaitlistForm handler
-  // (replaced with email-report form below)
 });
+
 
 // ==================== UTILITY FUNCTIONS ====================
 
