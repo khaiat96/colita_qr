@@ -20,6 +20,31 @@ window.handleTextInput = function(qId, value) {
     window.updateNavigation();
 };
 
+async function sendResponsesToGoogleSheet() {
+  try {
+    const payload = {
+      session_id: sessionId,
+      timestamp: new Date().toISOString(),
+      answers: answers
+    };
+
+    const resp = await fetch(WAITLIST_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+    }
+
+    console.log('✅ Survey responses sent to Google Sheets via Make webhook.');
+  } catch (err) {
+    console.error('❌ Failed to send survey data to Google Sheets:', err);
+  }
+}
+
+
 // ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
@@ -281,11 +306,12 @@ function getPrevVisibleQuestionIndex(currentIndex) {
   return -1;
 }
 
-window.finishSurvey = function() {
-  // Calculate the results and show them
+window.finishSurvey = function () {
   const patternKey = calculateResults();
   showResults(patternKey);
+  sendResponsesToGoogleSheet(); 
 };
+
 
 // ==================== SURVEY RENDERING ====================
 
