@@ -491,7 +491,7 @@
                         {
                             "label": "Líquido y fluido",
                             "value": "fluido"
-                        }
+                        },
                         {
                              "label": "Espeso o pegajoso",
                              "value": "espeso",
