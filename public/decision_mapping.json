@@ -1,8 +1,8 @@
-
 {
   "meta": {
-    "version": "decision_mapping_final_json",
-    "description": "Final decision mapping with menopause screening - validated n=2000",
+    "version": "decision_mapping_v3.0_period_focused",
+    "description": "Period-focused scoring prioritizing menstrual tissue states over constitutional patterns",
+    "last_updated": "2025-10-17",
     "scoring_variables": [
       "tension",
       "calor",
@@ -14,532 +14,599 @@
       "P0_nombre",
       "consent_data_usage",
       "consent_data_safety"
-    ]
-  },
-
-  "scoring": {
-    "P0_contraception": [
-      {
-        "value": "hormonal_sistemica",
-        "scores": {
-          "context_note": "Hormonal contraception may suppress natural patterns"
-        }
-      },
-      {
-        "value": "hormonal_larga",
-        "scores": {
-          "context_note": "Long-acting hormonal may suppress natural patterns more strongly"
-        }
-      },
-      {
-        "value": "ninguna",
-        "scores": {
-          "context_note": "Natural cycle patterns observable"
-        }
-      }
     ],
-    "P1_regularity": [
-      {
-        "value": "Regular (24–35 días)",
+    "tissue_state_mapping": {
+      "heat_excitation": "Fire - calor + tension",
+      "cold_depression": "Earth - frio + sequedad", 
+      "damp_stagnation": "Water - humedad + frio",
+      "dry_atrophy": "Air - sequedad + tension",
+      "wind_tension": "Air - tension + sequedad",
+      "damp_relaxation": "Water - humedad (low tension)"
+    }
+  },
+  "decision_map": {
+    "P0_contraception": {
+      "hormonal_sistemica": {
+        "scores": {},
+        "context_note": "Hormonal contraception may suppress natural patterns"
+      },
+      "hormonal_larga": {
+        "scores": {},
+        "context_note": "Long-acting hormonal may suppress natural patterns more strongly"
+      },
+      "ninguna": {
+        "scores": {},
+        "context_note": "Natural cycle patterns observable"
+      }
+    },
+    "P1_regularity": {
+      "Regular (24–35 días)": {
         "scores": {}
       },
-      {
-        "value": "Irregular (varía >7 días entre ciclos)",
+      "Irregular (varía >7 días entre ciclos)": {
         "scores": {
-          "tension": 2,
+          "tension": 3,
           "sequedad": 1
-        }
+        },
+        "note": "Irregularity = wind/tension pattern"
       },
-      {
-        "value": "No tengo sangrado actualmente",
+      "No tengo sangrado actualmente": {
         "scores": {
           "sequedad": 3,
           "frio": 2
         }
       }
-    ],
-    "P1_no_cycle_desde_cuando": [
-      {
-        "value": "<3m",
+    },
+    "P1_no_cycle_desde_cuando": {
+      "<3m": {
         "scores": {
           "sequedad": 1,
           "frio": 1
         }
       },
-      {
-        "value": "3–6m",
+      "3–6m": {
         "scores": {
           "sequedad": 2,
           "frio": 2
         }
       },
-      {
-        "value": ">6m",
+      ">6m": {
         "scores": {
           "sequedad": 3,
           "frio": 3
         }
       }
-    ],
-    "P1_amenorrea_contexto": [
-      {
-        "value": "lactancia",
+    },
+    "P1_amenorrea_contexto": {
+      "lactancia": {
         "scores": {
           "sequedad": 1
         }
       },
-      {
-        "value": "cambios_peso",
+      "cambios_peso": {
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      {
-        "value": "estres_alto",
+      "estres_alto": {
         "scores": {
           "tension": 3,
           "sequedad": 2
         }
       },
-      {
-        "value": "ejercicio_intenso",
+      "ejercicio_intenso": {
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      {
-        "value": "antecedentes_tiroideos",
+      "antecedentes_tiroideos": {
         "scores": {
           "sequedad": 2,
           "frio": 2
         }
       },
-      {
-        "value": "menopausia_posible",
+      "menopausia_posible": {
         "scores": {
           "sequedad": 3,
           "frio": 2
         }
       },
-      {
-        "value": "Ninguna de las anteriores",
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P2_sintomas": [
-      {
-        "value": "Dolor o cólicos",
+    },
+    "P2_sintomas": {
+      "Dolor o cólicos": {
         "scores": {
-          "tension": 3,
+          "tension": 4,
           "calor": 1
-        }
+        },
+        "note": "Pain = wind/tension. Increased to prioritize menstrual symptom."
       },
-      {
-        "value": "Ligera",
+      "Ligera": {
         "scores": {
-          "sequedad": 2,
+          "sequedad": 3,
           "frio": 1
-        }
+        },
+        "note": "Scanty flow = dryness/cold. Increased sequedad from 2→3."
       },
-      {
-        "value": "Abundante",
+      "Abundante": {
         "scores": {
-          "calor": 3,
-          "humedad": 2
-        }
+          "humedad": 5,
+          "calor": 2
+        },
+        "note": "Heavy flow = damp > heat. MAJOR increase: humedad 2→5."
       },
-      {
-        "value": "Hinchazón o retención de líquidos",
+      "Hinchazón o retención de líquidos": {
         "scores": {
-          "humedad": 3
-        }
+          "humedad": 5
+        },
+        "note": "Bloating = major damp sign. Increased from 3→5."
       },
-      {
-        "value": "Manchado entre reglas",
-        "scores": {
-          "calor": 2,
-          "humedad": 1
-        }
-      },
-      {
-        "value": "Cambios de ánimo / ansiedad",
-        "scores": {
-          "tension": 2,
-          "calor": 1
-        }
-      },
-      {
-        "value": "Brotes o acné",
+      "Manchado entre reglas": {
         "scores": {
           "calor": 2,
           "humedad": 1
         }
       },
-      {
-        "value": "Fatiga o cansancio extremo",
+      "Cambios de ánimo / ansiedad": {
         "scores": {
-          "sequedad": 2,
-          "frio": 2
+          "tension": 4,
+          "frio": 1
+        },
+        "note": "Anxiety = wind/tension + cold. Increased tension 2→4."
+      },
+      "Brotes o acné": {
+        "scores": {
+          "calor": 2,
+          "humedad": 1
         }
       },
-      {
-        "value": "Sensibilidad en los senos",
+      "Fatiga o cansancio extremo": {
+        "scores": {
+          "frio": 4,
+          "sequedad": 2
+        },
+        "note": "Fatigue = cold/depression. Increased frio 2→4."
+      },
+      "Sensibilidad en los senos": {
         "scores": {
           "humedad": 2,
           "tension": 1
         }
       },
-      {
-        "value": "Ninguna de las anteriores",
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P2_spotting_frecuencia": [
-      {
-        "value": "spot_ocasional",
+    },
+    "P2_spotting_frecuencia": {
+      "spot_ocasional": {
         "scores": {
           "calor": 1
         }
       },
-      {
-        "value": "spot_a_veces",
+      "spot_a_veces": {
         "scores": {
           "calor": 2
         }
       },
-      {
-        "value": "spot_frecuente",
+      "spot_frecuente": {
         "scores": {
           "calor": 3,
           "humedad": 1
         }
       }
-    ],
-    "P2_acne": [
-      {
-        "value": "acne_caliente_rojo",
+    },
+    "P2_hinchazon_severidad": {
+      "scale_factor": 0.5,
+      "variable": "humedad",
+      "note": "MAJOR bloating indicator. Increased from 0.3→0.5."
+    },
+    "P2_fatiga_severidad": {
+      "variable_map": {
+        "frio": 0.4,
+        "sequedad": 0.2
+      },
+      "note": "Fatigue = cold dominant. Increased frio 0.3→0.4."
+    },
+    "P2_animo_severidad": {
+      "variable_map": {
+        "tension": 0.4,
+        "calor": 0.1
+      },
+      "note": "Mood = tension dominant. Increased tension 0.3→0.4, reduced calor 0.2→0.1."
+    },
+    "P2_acne": {
+      "acne_caliente_rojo": {
         "scores": {
           "calor": 3,
           "humedad": 1
         }
       },
-      {
-        "value": "acne_humedo_lento",
+      "acne_humedo_lento": {
         "scores": {
           "humedad": 3,
           "frio": 1
         }
       },
-      {
-        "value": "no",
+      "no": {
         "scores": {}
       }
-    ],
-    "P3_cuerpo": [
-      {
-        "value": "Calor, enrojecimiento",
+    },
+    "P2_duracion_dias": {
+      "scale_factor": 0.1,
+      "variable": "humedad",
+      "note": "Duration >5 days suggests damp/stagnation"
+    },
+    "P2_cantidad": {
+      "scale_factor": 0.4,
+      "variable": "humedad",
+      "note": "Heavy quantity = damp. Scale 0.4 for strong effect."
+    },
+    "P2_color": {
+      "rojo_brillante": {
         "scores": {
-          "calor": 3
-        }
+          "calor": 4
+        },
+        "note": "Bright red = heat/excitation. From Female Repro PDF."
       },
-      {
-        "value": "Frío en manos/pies",
+      "rojo_oscuro": {
         "scores": {
-          "frio": 3
-        }
-      },
-      {
-        "value": "Hinchazón, pesadez, retención",
-        "scores": {
-          "humedad": 3
-        }
-      },
-      {
-        "value": "Sequedad (piel, mucosas)",
-        "scores": {
-          "sequedad": 3
-        }
-      },
-      {
-        "value": "Lengua hinchada",
-        "scores": {
+          "frio": 2,
           "humedad": 2
-        }
+        },
+        "note": "Dark red = cold + damp stagnation."
       },
-      {
-        "value": "Lengua pálida",
+      "marron": {
         "scores": {
-          "frio": 2,
+          "frio": 4,
           "sequedad": 1
-        }
+        },
+        "note": "Brown = cold stagnation. Increased frio 3→4."
       },
-      {
-        "value": "Punta de la lengua roja",
+      "rosa_aguado": {
         "scores": {
-          "calor": 2,
-          "tension": 1
-        }
-      },
-      {
-        "value": "Ninguna de las anteriores",
-        "scores": {}
+          "sequedad": 3,
+          "frio": 1
+        },
+        "note": "Watery/pink = deficiency/atrophy."
       }
-    ],
-    "P4_emocional": [
-      {
-        "value": "Ansiedad",
+    },
+    "P2_textura": {
+      "coagulos": {
         "scores": {
-          "tension": 3,
-          "calor": 1
-        }
+          "humedad": 6,
+          "frio": 4
+        },
+        "note": "CLOTS = MAJOR damp/stagnation indicator. Increased: humedad 3→6, frio 2→4."
       },
-      {
-        "value": "Irritabilidad",
+      "fluido": {
         "scores": {
-          "tension": 2,
           "calor": 2
-        }
+        },
+        "note": "Fluid = heat/flowing pattern."
       },
-      {
-        "value": "Tristeza",
+      "espeso": {
         "scores": {
-          "frio": 2,
-          "humedad": 1
+          "humedad": 4,
+          "frio": 3
+        },
+        "note": "NEW: Thick/sticky = damp/cold stagnation from PDF."
+      }
+    },
+    "P2_coagulo_tamano": {
+      "<0cm": {
+        "scores": {}
+      },
+      "<1cm": {
+        "scores": {
+          "humedad": 2,
+          "frio": 1
         }
       },
-      {
-        "value": "Apatía",
+      "1–2.4cm": {
+        "scores": {
+          "humedad": 5,
+          "frio": 3
+        },
+        "note": "Medium clots = stagnation. Increased humedad 3→5."
+      },
+      ">2.4cm": {
+        "scores": {
+          "humedad": 7,
+          "frio": 5
+        },
+        "note": "LARGE CLOTS = severe stagnation. MAJOR increase: humedad 4→7, frio 3→5."
+      }
+    },
+    "P2_patron_flujo": {
+      "empieza_termina_marron": {
         "scores": {
           "frio": 3,
-          "sequedad": 1
-        }
+          "humedad": 1
+        },
+        "note": "Brown start/end = cold stagnation. Increased frio 2→3."
       },
-      {
-        "value": "Agotamiento, burnout",
+      "oleadas_inundaciones": {
         "scores": {
-          "sequedad": 3,
+          "calor": 2,
+          "humedad": 3
+        },
+        "note": "Flooding = heat + damp excess. Swapped priority."
+      },
+      "goteo_lento_prolongado": {
+        "scores": {
+          "sequedad": 2,
           "frio": 2
         }
       },
-      {
-        "value": "Ninguna de las anteriores",
-        "scores": {}
+      "intermitente": {
+        "scores": {
+          "tension": 4
+        },
+        "note": "Intermittent = wind/tension. Increased from 3→4."
       }
-    ],
-    "P4_timing_emocional": [
-      {
-        "value": "antes",
+    },
+    "P2q_dolor_severidad": {
+      "scale_factor": 0.5,
+      "variable": "tension",
+      "note": "MAJOR pain = wind. Increased from 0.3→0.5."
+    },
+    "P2q_dolor_caracter": {
+      "punzante_localizado": {
         "scores": {
+          "calor": 3,
           "tension": 2
-        }
+        },
+        "note": "Sharp/stabbing = heat + tension."
       },
-      {
-        "value": "durante",
+      "sordo_pesado": {
         "scores": {
-          "calor": 1
-        }
+          "humedad": 5,
+          "frio": 4
+        },
+        "note": "DULL/HEAVY pain = damp/cold stagnation. MAJOR increase: humedad 3→5, frio 2→4. From PDF."
       },
-      {
-        "value": "después",
+      "ardor_caliente": {
         "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "entre",
-        "scores": {
+          "calor": 4,
           "tension": 1
         }
+      },
+      "espasmodico": {
+        "scores": {
+          "tension": 5,
+          "humedad": 1
+        },
+        "note": "Cramping spasms = wind. Increased tension 4→5."
       }
-    ],
-    "P5_sed": [
-      {
-        "value": "bebidas_frias",
+    },
+    "P3_cuerpo": {
+      "Calor, enrojecimiento": {
         "scores": {
-          "calor": 2
-        }
+          "calor": 3
+        },
+        "note": "PERIOD-SPECIFIC heat. Kept at 3 since it's during period."
       },
-      {
-        "value": "bebidas_calientes",
+      "Frío en manos/pies": {
         "scores": {
-          "frio": 2
-        }
+          "frio": 3
+        },
+        "note": "PERIOD-SPECIFIC cold. Kept at 3 since it's during period."
       },
-      {
-        "value": "neutro",
+      "Hinchazón, pesadez, retención": {
+        "scores": {
+          "humedad": 4
+        },
+        "note": "Period bloating = damp. Increased from 3→4."
+      },
+      "Sequedad (piel, mucosas)": {
+        "scores": {
+          "sequedad": 3
+        },
+        "note": "PERIOD-SPECIFIC dryness. Kept at 3."
+      },
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P6_energia": [
-      {
-        "value": "Con subidas y bajadas marcadas",
+    },
+    "P2b_sintomas_premenstruales": {
+      "irritabilidad": {
+        "scores": {
+          "calor": 3,
+          "tension": 2
+        },
+        "note": "NEW Q: PMS irritability = heat + tension. From PDF PMS patterns."
+      },
+      "tristeza": {
+        "scores": {
+          "frio": 3
+        },
+        "note": "NEW Q: PMS sadness = cold/depression pattern."
+      },
+      "antojos": {
+        "scores": {
+          "humedad": 2
+        },
+        "note": "NEW Q: Food cravings = damp pattern."
+      },
+      "insomnio": {
+        "scores": {
+          "tension": 3,
+          "calor": 2
+        },
+        "note": "NEW Q: PMS insomnia = wind/tension + heat."
+      },
+      "ninguno": {
+        "scores": {}
+      }
+    },
+    "P6_energia": {
+      "Con subidas y bajadas marcadas": {
         "scores": {
           "tension": 2
         }
       },
-      {
-        "value": "Ráfagas de energía",
+      "Ráfagas de energía": {
         "scores": {
           "calor": 2,
           "tension": 1
         }
       },
-      {
-        "value": "Lenta, pesada, con poca motivación",
+      "Lenta, pesada, con poca motivación": {
         "scores": {
           "humedad": 3,
           "frio": 2
         }
       },
-      {
-        "value": "Agotada, drenada",
+      "Agotada, drenada": {
         "scores": {
-          "sequedad": 3,
-          "frio": 2
-        }
+          "frio": 4,
+          "sequedad": 2
+        },
+        "note": "Exhaustion = cold/depletion. Increased frio 2→4."
       },
-      {
-        "value": "Ninguna de las anteriores",
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P7_signos_corporales": [
-      {
-        "value": "Sed intensa",
+    },
+    "P7_signos_corporales": {
+      "Sed intensa": {
         "scores": {
           "sequedad": 3,
           "calor": 2
         }
       },
-      {
-        "value": "Piel muy seca",
+      "Piel muy seca": {
         "scores": {
           "sequedad": 3
         }
       },
-      {
-        "value": "Sudor pegajoso",
+      "Sudor pegajoso": {
         "scores": {
           "humedad": 2,
           "calor": 1
         }
       },
-      {
-        "value": "Poco sudor con calor",
+      "Poco sudor con calor": {
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
       },
-      {
-        "value": "Ninguna de las anteriores",
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P7b_sequedad_detalle": [
-      {
-        "value": "boca_seca",
+    },
+    "P7b_sequedad_detalle": {
+      "boca_seca": {
         "scores": {
           "sequedad": 2
         }
       },
-      {
-        "value": "ojos_secos",
+      "ojos_secos": {
         "scores": {
           "sequedad": 2
         }
       },
-      {
-        "value": "lubricacion_baja",
+      "lubricacion_baja": {
         "scores": {
           "sequedad": 3
         }
       },
-      {
-        "value": "sed_nocturna",
+      "sed_nocturna": {
         "scores": {
           "sequedad": 2,
           "calor": 1
         }
       },
-      {
-        "value": "piel_muy_seca",
+      "piel_muy_seca": {
         "scores": {
           "sequedad": 3
         }
       },
-      {
-        "value": "Ninguna de las anteriores",
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P7c_sensibilidad_clima": [
-      {
-        "value": "calor_me_agobia",
-        "scores": {
-          "calor": 2
-        }
-      },
-      {
-        "value": "siempre_con_frio",
-        "scores": {
-          "frio": 3
-        }
-      },
-      {
-        "value": "depende",
-        "scores": {}
-      }
-    ],
-    "P8b_ejercicio": [
-      {
-        "value": "ninguno",
+    },
+    "P8a_estres": {
+      "scale_factor": 0.3,
+      "variable": "tension"
+    },
+    "P8_sueno_calidad": {
+      "inverse_scale": true,
+      "scale_factor": 0.2,
+      "variable": "tension",
+      "note": "Poor sleep = tension"
+    },
+    "P8b_ejercicio": {
+      "ninguno": {
         "scores": {
           "humedad": 2,
           "frio": 1
         }
       },
-      {
-        "value": "1–2_dias_sem",
+      "1–2_dias_sem": {
         "scores": {}
       },
-      {
-        "value": "3–5_dias_sem",
+      "3–5_dias_sem": {
         "scores": {}
       },
-      {
-        "value": "6–7_dias_sem",
+      "6–7_dias_sem": {
         "scores": {
           "sequedad": 2,
           "tension": 1
         }
       }
-    ],
-    "P8c_cafeina": [
-      {
-        "value": "0",
+    },
+    "P8c_cafeina": {
+      "0": {
         "scores": {}
       },
-      {
-        "value": "1",
+      "1": {
         "scores": {}
       },
-      {
-        "value": "2",
+      "2": {
         "scores": {
           "tension": 1
         }
       },
-      {
-        "value": "3+",
+      "3+": {
         "scores": {
           "tension": 2,
           "calor": 1,
           "sequedad": 1
         }
       }
-    ]
+    }
+  },
+  "scoring_notes": {
+    "tension": "Wind/Tension - spasms, cramping, anxiety, irregularity, intermittent symptoms",
+    "calor": "Heat/Excitation - inflammation, bright red blood, acute symptoms, irritability",
+    "frio": "Cold/Depression - dark/brown blood, fatigue, low metabolism, sadness, stagnation",
+    "humedad": "Damp/Stagnation - heavy flow, clots, bloating, thick blood, retention, slow digestion",
+    "sequedad": "Dry/Atrophy - scanty flow, dryness, depletion, deficiency, pale watery blood"
+  },
+  "clinical_notes": {
+    "your_case_example": {
+      "symptoms": "Hot constitution + heavy bleeding + clots + bloating + pain/anxiety",
+      "old_classification": "Fire (constitutional heat dominated)",
+      "new_classification": "Water/Earth (period damp/stagnation dominant)",
+      "scoring_breakdown": {
+        "humedad": "~20 (heavy 5 + large clots 7 + bloating 5 + dull pain 5 + texture 4)",
+        "frio": "~12 (large clots 5 + dull pain 4 + color 2)",
+        "tension": "~10 (pain 4 + anxiety 4 + spasm 2)",
+        "calor": "~5 (heavy 2 + constitutional heat 3)",
+        "result": "Water (humedad + frio = 32) dominant"
+      }
+    },
+    "archetype_formulas": {
+      "Fire": "calor + tension (heat/excitation)",
+      "Air": "tension + sequedad (wind/dryness)",
+      "Water": "humedad + frio (damp/cold stagnation)",
+      "Earth": "frio + sequedad (cold/dry depletion)"
+    }
   }
 }

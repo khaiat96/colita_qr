@@ -485,20 +485,26 @@
                     "required": true,
                     "options": [
                         {
-                            "label": "Con coágulos",
+                            "label": "Con algunos coágulos",
                             "value": "coagulos"
                         },
                         {
-                            "label": "Fluido aguado",
-                            "value": "aguado"
+                            "label": "Líquido y fluido",
+                            "value": "fluido"
+                        }
+                        {
+                             "label": "Espeso o pegajoso",
+                             "value": "espeso",
                         }
                     ],
                     "validation": {
                         "minselected": 1,
                         "maxselected": 2
                     }
-                },
-                {
+                }
+  ]
+        },
+        {
                     "id": "P2_coagulo_tamano",
                     "type": "single_choice",
                     "title": "Si hay coágulos, ¿qué tamaño? 🧈",
@@ -525,8 +531,8 @@
                         "minselected": 0,
                         "maxselected": 1
                     }
-                },
-                {
+        },
+        {
                     "id": "P2_patron_flujo",
                     "type": "single_choice",
                     "title": "Patrón del flujo en días intensos 🔎",
@@ -550,9 +556,6 @@
                             "value": "intermitente"
                         }
                     ]
-                }
-            ],
-            "prompt": "Question P2_periodo_calidad"
         },
         {
             "id": "P2c_dolor_bloque",
@@ -619,11 +622,11 @@
         {
             "id": "P3_cuerpo",
             "type": "multiselect",
-            "title": "Señales del cuerpo que notas (últimos 3 ciclos) 🧭",
-            "help_text": "Selecciona hasta 3.",
+            "title": "¿Cómo sientes tu cuerpo durante tu periodo? 🌡️",
+            "help_text": "Esto es específico para tu menstruación, no tu temperatura general, seleciona las que apliquen",
             "options": [
                 {
-                    "label": "Calor/enrojecimiento",
+                    "label": "Con calor/enrojecimiento",
                     "value": "Calor, enrojecimiento"
                 },
                 {
@@ -635,20 +638,8 @@
                     "value": "Hinchazón, pesadez, retención"
                 },
                 {
-                    "label": "Sequedad (piel, mucosas)",
+                    "label": "Sequedad (piel, mucosas) y sed",
                     "value": "Sequedad (piel, mucosas)"
-                },
-                {
-                    "label": "Lengua hinchada (bordes marcados)",
-                    "value": "Lengua hinchada"
-                },
-                {
-                    "label": "Lengua pálida",
-                    "value": "Lengua pálida"
-                },
-                {
-                    "label": "Punta de la lengua roja",
-                    "value": "Punta de la lengua roja"
                 },
                 {
                     "label": "Ninguna de las anteriores",
@@ -662,87 +653,37 @@
             "prompt": "Question P3_cuerpo"
         },
         {
-            "id": "P4_emocional",
-            "type": "multiselect",
-            "title": "Estados emocionales (últimos 3 ciclos) 💬",
-            "help_text": "Selecciona hasta 2.",
-            "options": [
-                {
-                    "label": "Ansiedad",
-                    "value": "Ansiedad"
-                },
-                {
-                    "label": "Irritabilidad",
-                    "value": "Irritabilidad"
-                },
-                {
-                    "label": "Tristeza",
-                    "value": "Tristeza"
-                },
-                {
-                    "label": "Apatía",
-                    "value": "Apatía"
-                },
-                {
-                    "label": "Agotamiento, burnout",
-                    "value": "Agotamiento, burnout"
-                },
-                {
-                    "label": "Ninguna de las anteriores",
-                    "value": "Ninguna de las anteriores"
-                }
-            ],
-            "validation": {
-                "minselected": 1,
-                "maxselected": 2
-            },
-            "prompt": "Question P4_emocional"
-        },
-        {
-            "id": "P4_timing_emocional",
-            "type": "single",
-            "title": "¿Cuándo se intensifican más tus síntomas anímicos? 🗓️",
-            "help_text": "Elige la fase.",
-            "options": [
-                {
-                    "label": "Antes del periodo (PMS)",
-                    "value": "antes"
-                },
-                {
-                    "label": "Durante el periodo",
-                    "value": "durante"
-                },
-                {
-                    "label": "Después del periodo",
-                    "value": "después"
-                },
-                {
-                    "label": "Entre periodos",
-                    "value": "entre"
-                }
-            ],
-            "prompt": "Question P4_timing_emocional"
-        },
-        {
-            "id": "P5_sed",
-            "type": "single",
-            "title": "Cuando tienes sed, ¿qué prefieres? 🧊🔥",
-            "help_text": "Señal útil de tu terreno.",
-            "options": [
-                {
-                    "label": "Bebidas frías / con hielo",
-                    "value": "bebidas_frias"
-                },
-                {
-                    "label": "Bebidas tibias o calientes",
-                    "value": "bebidas_calientes"
-                },
-                {
-                    "label": "Depende / no tengo preferencia",
-                    "value": "neutro"
-                }
-            ],
-            "prompt": "Question P5_sed"
+  "id": "P2b_sintomas_premenstruales",
+  "type": "multiselect",
+  "title": "¿Qué síntomas tienes ANTES de tu periodo (días previos)? 📅",
+  "options": [
+    {
+      "label": "Irritabilidad o enojo",
+      "value": "irritabilidad",
+      "scores": { "calor": 3, "tension": 2 }  // Heat + tension
+    },
+    {
+      "label": "Tristeza o llanto fácil",
+      "value": "tristeza",
+      "scores": { "frio": 3 }  // Cold/depression
+    },
+    {
+      "label": "Antojos intensos de comida",
+      "value": "antojos",
+      "scores": { "humedad": 2 }  // Damp pattern
+    },
+    {
+      "label": "Insomnio o sueño inquieto",
+      "value": "insomnio",
+      "scores": { "tension": 3, "calor": 2 }  // Wind/tension + heat
+    },
+    {
+      "label": "Ninguno en particular",
+      "value": "ninguno",
+      "scores": {}
+    }
+  ],
+  "maxselected": 3
         },
         {
             "id": "P6_energia",
@@ -896,27 +837,6 @@
             "prompt": "Question P7b_sequedad_detalle"
         },
         {
-            "id": "P7c_sensibilidad_clima",
-            "type": "single",
-            "title": "Sensibilidad al clima 🌡️",
-            "help_text": "¿Qué te molesta más en general?",
-            "options": [
-                {
-                    "label": "Me sofoco con el calor",
-                    "value": "calor_me_agobia"
-                },
-                {
-                    "label": "Siempre tengo frío",
-                    "value": "siempre_con_frio"
-                },
-                {
-                    "label": "Depende",
-                    "value": "depende"
-                }
-            ],
-            "prompt": "Question P7c_sensibilidad_clima"
-        },
-        {
             "id": "P8_sueno_calidad",
             "type": "slider",
             "title": "Calidad de sueño (últimos 7 días) 😴",
@@ -1008,33 +928,33 @@
             ],
             "prompt": "Question P8c_cafeina"
         }
-    ],
-        "question_order": [
-      "P0_nombre",
-      "P0_contraception",
-      "P1_regularity",
-      "P1_no_cycle_desde_cuando",
-      "P1_amenorrea_contexto",
-      "P2_sintomas",
-      "P2_spotting_frecuencia",
-      "P2_hinchazon_severidad",
-      "P2_fatiga_severidad",
-      "P2_animo_severidad",
-      "P2_acne",
-      "P2_periodo_calidad",
-      "P2c_dolor_bloque",
-      "P3_cuerpo",
-      "P4_emocional",
-      "P4_timing_emocional",
-      "P5_sed",
-      "P6_energia",
-      "P7_signos_corporales",
-      "P7b_sequedad_detalle",
-      "P7c_sensibilidad_clima",
-      "P8_sueno_calidad",
-      "P8a_estres",
-      "P8b_ejercicio",
-      "P8c_cafeina"
-    ] 
-
+      ],
+"question_order": [
+    "P0_nombre",
+    "P0_contraception",
+    "P1_regularity",
+    "P1_no_cycle_desde_cuando",
+    "P1_amenorrea_contexto",
+    "P2_sintomas",
+    "P2_spotting_frecuencia",
+    "P2_hinchazon_severidad",
+    "P2_fatiga_severidad",
+    "P2_animo_severidad",
+    "P2_acne",
+    "P2_periodo_calidad",
+    "P2c_dolor_bloque",
+    "P3_cuerpo",
+    "P2b_sintomas_premenstruales",
+    "P6_energia",
+    "P4_emocional",
+    "P4_timing_emocional",
+    "P5_sed",
+    "P7_signos_corporales",
+    "P7b_sequedad_detalle",
+    "P7c_sensibilidad_clima",
+    "P8_sueno_calidad",
+    "P8a_estres",
+    "P8b_ejercicio",
+    "P8c_cafeina"
+]
 }
