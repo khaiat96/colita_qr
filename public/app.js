@@ -13,191 +13,6 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let isProMode = false;
 let resultsTemplate = null;
 
-// Load survey questions
-const surveyResp = await fetch('survey_questions-combined.json');
-const surveyData = await surveyResp.json();
-surveyQuestions = surveyData.questions;
-questionOrder = surveyData.question_order;
-
-// Load decision mapping
-const mappingResp = await fetch('decision_mapping-combined.json');
-const decisionMapping = await mappingResp.json();
-
-// --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
-surveyQuestions.forEach(q => {
-  // 1. Top-level options
-  if (Array.isArray(q.options)) {
-    // For P5 special mapping
-    if (q.id === "P5" && Array.isArray(q.value_map)) {
-      // Get P5_score_keys mapping from decisionMapping
-      const p5Scores = decisionMapping["P5_score_keys"];
-      q.options.forEach(opt => {
-        const mapEntry = q.value_map.find(vm => vm.value === opt.value);
-        if (mapEntry) {
-          const scoreEntry = p5Scores.find(ps => ps.value === mapEntry.score_key);
-          if (scoreEntry && scoreEntry.scores) {
-            opt.scores = scoreEntry.scores;
-          }
-        }
-      });
-    } else {
-      // Standard mapping for normal questions
-      const mappingList = decisionMapping[q.id];
-      if (mappingList) {
-        q.options.forEach(opt => {
-          const mapping = mappingList.find(m => m.value === opt.value);
-          if (mapping && mapping.scores) {
-            opt.scores = mapping.scores;
-          }
-        });
-      }
-    }
-  }
-
-  // 2. Compound questions (items)
-  if (q.type === "compound" && Array.isArray(q.items)) {
-    q.items.forEach(item => {
-      if (Array.isArray(item.options)) {
-        const mappingList = decisionMapping[item.id];
-        if (mappingList) {
-          item.options.forEach(opt => {
-            const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
-              opt.scores = mapping.scores;
-            }
-          });
-        }
-      }
-    });
-  }
-
-  // 3. Grouped questions (questions)
-  if (q.type === "grouped" && Array.isArray(q.questions)) {
-    q.questions.forEach(group => {
-      if (Array.isArray(group.options)) {
-        const mappingList = decisionMapping[group.id];
-        if (mappingList) {
-          group.options.forEach(opt => {
-            const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
-              opt.scores = mapping.scores;
-            }
-          });
-        }
-      }
-    });
-  }
-});
-
-
-window.startSurvey = function() {
-  // Set initial values, show survey page, render first question
-  currentQuestionIndex = 0;
-  answers = {};
-  showPage('survey-page');
-  renderQuestion();
-};
-
-function finishSurvey() {
-  // Calculate the dominant pattern
-  const patternKey = calculateResults();
-  // Render results using your template
-  showResults(patternKey);
-}
-
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(page => {
-    page.classList.remove('active');
-  });
-  document.getElementById(pageId).classList.add('active');
-}
-
-function renderPhaseAdvice(patternKey) {
-  const phaseSections = resultsTemplate?.phase?.generic || {};
-  
-  // Start with the main container and title
-  let html = `
-    <div class="tips-phase-section">
-      <h3 class="tips-main-title">Tips de cuidado por fase del ciclo</h3>
-      <div class="phases-container">
-  `;
-
-  // Render each phase as its own distinct block
-  Object.keys(phaseSections).forEach(phaseKey => {
-    const phase = phaseSections[phaseKey];
-    
-    html += `
-      <div class="phase-block">
-        <div class="phase-header">
-          <h4 class="phase-title">${phase.label || ''}</h4>
-          <p class="phase-description">${phase.about || ''}</p>
-        </div>
-        <div class="phase-content">
-    `;
-    
-    // Add Foods section if exists with bullet points
-    if (phase.foods && phase.foods.length > 0) {
-      html += `
-        <div class="phase-subsection">
-          <div class="subsection-label">Alimentos:</div>
-          <ul class="subsection-list">
-      `;
-      phase.foods.forEach(item => {
-        html += `<li>${item}</li>`;
-      });
-      html += `
-          </ul>
-        </div>
-      `;
-    }
-    
-    // Add Do section if exists with bullet points
-    if (phase.do && phase.do.length > 0) {
-      html += `
-        <div class="phase-subsection">
-          <div class="subsection-label">Haz:</div>
-          <ul class="subsection-list">
-      `;
-      phase.do.forEach(item => {
-        html += `<li>${item}</li>`;
-      });
-      html += `
-          </ul>
-        </div>
-      `;
-    }
-    
-    // Add Avoid section if exists with bullet points
-    if (phase.avoid && phase.avoid.length > 0) {
-      html += `
-        <div class="phase-subsection">
-          <div class="subsection-label">Evita:</div>
-          <ul class="subsection-list">
-      `;
-      phase.avoid.forEach(item => {
-        html += `<li>${item}</li>`;
-      });
-      html += `
-          </ul>
-        </div>
-      `;
-    }
-    
-    html += `
-        </div>
-      </div>
-    `;
-  });
-
-  html += `
-      </div>
-    </div>
-  `;
-  
-  return html;
-}
-
-
 // === ADDED: flag for survey loaded ===
 window.surveyLoaded = false;
 
@@ -211,6 +26,128 @@ window.scrollToWaitlist = function() {
     waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 };
+
+window.startSurvey = function() {
+  // Set initial values, show survey page, render first question
+  currentQuestionIndex = 0;
+  answers = {};
+  showPage('survey-page');
+  renderQuestion();
+};
+
+// ==================== INITIALIZE + LOAD TEMPLATE + DECISION MAPPING ====================
+
+document.addEventListener('DOMContentLoaded', async function() {
+  showPage('landing-page');
+  isProMode = false;
+
+  // Disable the quiz button until loaded
+  const quizBtn = document.getElementById('take-quiz-btn');
+  if (quizBtn) quizBtn.disabled = true;
+
+  try {
+    console.log('🔍 Loading survey questions...');
+    const surveyResp = await fetch('survey_questions-combined.json');
+    if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
+    const surveyData = await surveyResp.json();
+    surveyQuestions = surveyData.questions;
+    questionOrder = surveyData.question_order;
+
+    // Load decision mapping
+    const mappingResp = await fetch('decision_mapping-combined.json');
+    if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
+    const decisionMapping = await mappingResp.json();
+
+    // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
+    surveyQuestions.forEach(q => {
+      // 1. Top-level options
+      if (Array.isArray(q.options)) {
+        // For P5 special mapping
+        if (q.id === "P5" && Array.isArray(q.value_map)) {
+          // Get P5_score_keys mapping from decisionMapping
+          const p5Scores = decisionMapping["P5_score_keys"];
+          q.options.forEach(opt => {
+            const mapEntry = q.value_map.find(vm => vm.value === opt.value);
+            if (mapEntry) {
+              const scoreEntry = p5Scores.find(ps => ps.value === mapEntry.score_key);
+              if (scoreEntry && scoreEntry.scores) {
+                opt.scores = scoreEntry.scores;
+              }
+            }
+          });
+        } else {
+          // Standard mapping for normal questions
+          const mappingList = decisionMapping[q.id];
+          if (mappingList) {
+            q.options.forEach(opt => {
+              const mapping = mappingList.find(m => m.value === opt.value);
+              if (mapping && mapping.scores) {
+                opt.scores = mapping.scores;
+              }
+            });
+          }
+        }
+      }
+
+      // 2. Compound questions (items)
+      if (q.type === "compound" && Array.isArray(q.items)) {
+        q.items.forEach(item => {
+          if (Array.isArray(item.options)) {
+            const mappingList = decisionMapping[item.id];
+            if (mappingList) {
+              item.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping && mapping.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
+            }
+          }
+        });
+      }
+
+      // 3. Grouped questions (questions)
+      if (q.type === "grouped" && Array.isArray(q.questions)) {
+        q.questions.forEach(group => {
+          if (Array.isArray(group.options)) {
+            const mappingList = decisionMapping[group.id];
+            if (mappingList) {
+              group.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping && mapping.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+
+    // Load results template
+    const templateResp = await fetch('results_template.json');
+    if (!templateResp.ok) throw new Error(`HTTP ${templateResp.status}: ${templateResp.statusText}`);
+    resultsTemplate = await templateResp.json();
+
+    // Normalize type values for singlechoice
+    surveyQuestions.forEach(q => {
+      if (q.type === 'singlechoice') {
+        q.type = 'single_choice';
+      }
+    });
+
+    window.surveyLoaded = true;
+    console.log('✅ Loaded', surveyQuestions.length, 'questions');
+
+    if (quizBtn) quizBtn.disabled = false;
+  } catch (err) {
+    console.error('❌ Error:', err);
+    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
+    if (quizBtn) quizBtn.disabled = true;
+  }
+});
+
+// ==================== WAITLIST FORM HANDLER ====================
 
 document.addEventListener('DOMContentLoaded', function() {
   const mainWaitlistForm = document.getElementById('main-waitlist-form');
@@ -716,48 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ==================== INITIALIZE + LOAD TEMPLATE ====================
-
-document.addEventListener('DOMContentLoaded', async function() {
-  showPage('landing-page');
-  isProMode = false;
-
-  // Disable the quiz button until loaded
-  const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = false;
-
-  try {
-    console.log('🔍 Loading survey questions...');
-    const resp = await fetch('survey_questions-combined.json');
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-    }
-    const surveyData = await resp.json();
-    surveyQuestions = surveyData.questions;
-    questionOrder = surveyData.question_order;
-
-    // Load results template
-    const templateResp = await fetch('results_template.json');
-    resultsTemplate = await templateResp.json();
-
-    // Normalize type values for singlechoice
-    surveyQuestions.forEach(q => {
-      if (q.type === 'singlechoice') {
-        q.type = 'single_choice';
-      }
-    });
-
-    window.surveyLoaded = true;
-    console.log('✅ Loaded', surveyQuestions.length, 'questions');
-
-    if (quizBtn) quizBtn.disabled = false;
-  } catch (err) {
-    console.error('❌ Error:', err);
-    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
-    if (quizBtn) quizBtn.disabled = true;
-  }
-});
-
 // ==================== PROGRESS BAR ====================
 
 function updateProgress() {
@@ -768,8 +663,10 @@ function updateProgress() {
   }
   const totalVisible = questionOrder.filter(qId => isQuestionVisible(getQuestionById(qId), answers)).length;
   const progress = ((visibleCount) / totalVisible) * 100;
-  document.getElementById('progress-bar').style.width = `${progress}%`;
-  document.getElementById('progress-text').textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  if (progressBar) progressBar.style.width = `${progress}%`;
+  if (progressText) progressText.textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
 }
 
 // ==================== NAVIGATION LOGIC (CRITICAL) ====================
