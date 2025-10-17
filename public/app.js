@@ -588,11 +588,26 @@ function renderPatternCard(patternKey) {
 
 // Main function to show results with full template
 function showResults(patternKey) {
-  // 🧭 DEBUG LOGGING
+  // 🧭 SAFE DEBUG LOGGING
   console.log("🧭 Final patternKey:", patternKey);
-  console.log("🧩 Available labels:", Object.keys(resultsTemplate.labels || {}));
-  console.log("🧠 Available element patterns:", Object.keys(resultsTemplate?.element?.by_pattern || {}));
-
+  console.log("🧩 resultsTemplate status:", resultsTemplate ? "LOADED" : "NULL");
+  
+  if (resultsTemplate) {
+    if (resultsTemplate.labels) {
+      console.log("🧩 Available labels:", Object.keys(resultsTemplate.labels));
+    } else {
+      console.log("❌ resultsTemplate.labels is missing!");
+    }
+    
+    if (resultsTemplate.element && resultsTemplate.element.by_pattern) {
+      console.log("🧠 Available element patterns:", Object.keys(resultsTemplate.element.by_pattern));
+    } else {
+      console.log("❌ resultsTemplate.element.by_pattern is missing!");
+    }
+  } else {
+    console.log("❌ CRITICAL: resultsTemplate is NULL - JSON didn't load!");
+  }
+  
 // SAFE FALLBACK VERSION
   const label = resultsTemplate?.labels?.[patternKey] || patternKey;
   const summary = resultsTemplate?.summary?.single
