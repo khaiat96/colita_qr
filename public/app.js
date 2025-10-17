@@ -167,7 +167,6 @@ document.addEventListener('DOMContentLoaded', function() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, source: 'landing_page' })
         });
-        await supabase.from('waitlist').insert([{ name, email, source: 'landing_page' }]);
         alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
         mainWaitlistForm.reset();
       } catch (error) {
@@ -250,6 +249,12 @@ function getPrevVisibleQuestionIndex(currentIndex) {
   }
   return -1;
 }
+
+window.finishSurvey = function() {
+  // Calculate the results and show them
+  const patternKey = calculateResults();
+  showResults(patternKey);
+};
 
 // ==================== SURVEY RENDERING ====================
 
