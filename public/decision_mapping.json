@@ -1,2949 +1,672 @@
 {
   "meta": {
-    "version": "decision_mapping-combined-v5.4.0.json",
-    "language": "es-MX",
-    "description": "Combined Regular + Pro v5.4.0: añade nuevas preguntas Pro (patrón/olor/duración del flujo, dolor por calidad, capa de lengua, digestión, sensibilidad al clima, mastalgia y acné cíclico) para >95% precisión estimada en diferenciación de ejes; mantiene selector de modo y recalcula con respuestas existentes al subir a Pro.",
-    "content_safety": {
-      "blocklist": [
-        "1:3",
-        "1:5",
-        "gotas",
-        "cápsulas",
-        "dosis",
-        "mg",
-        "mG",
-        "ML",
-        "mL",
-        "miligramos",
-        "mililitros"
-      ]
+    "version": "decision_mapping_v2.4",
+    "description": "Final decision mapping with menopause screening - validated n=2000",
+    "scoring_variables": [
+      "tension",
+      "calor",
+      "frio",
+      "humedad",
+      "sequedad"
+    ],
+    "non_scored_questions": [
+      "P0_nombre",
+      "consent_data_usage",
+      "consent_data_safety"
+    ],
+    "last_updated": "2025-10-17"
+  },
+  "decision_map": {
+    "P0_nombre": {
+      "context_note": "Name field for personalization - no scoring impact"
     },
-    "performance_hints": {
-      "cache_static_sections": true,
-      "memoize_rule_eval_by_mode": true,
-      "preload_templates_on_worker_init": true,
-      "stream_phase_first": true,
-      "lazy_compose_mixed_synergy": true
-    }
-  },
-  "variables": [
-    "tension",
-    "calor",
-    "frio",
-    "humedad",
-    "sequedad"
-  ],
-  "evidence": {
-    "core_domains": [
-      "P2",
-      "P3",
-      "P2_periodo_calidad"
-    ],
-    "support_domains": [
-      "P4",
-      "P5",
-      "P6",
-      "P7",
-      "P3_hinchazon_modificador",
-      "P1_onset_timing",
-      "P1_no_cycle_desde_cuando",
-      "P3_quick_test_frio_sequedad",
-      "P2_margen_calor_humedad",
-      "P2b_margen_calor_humedad",
-      "P8_sequedad_detalle",
-      "P8_que_alivia_sequedad",
-      "P8_contexto_sequedad",
-      "P2_spotting_frecuencia",
-      "P2_spotting_context",
-      "P5b_preferencia_termica_bebidas",
-      "P9_sueno_calidad",
-      "P9_estres",
-      "P9_ejercicio",
-      "P9_cafeina",
-      "P9_alcohol",
-      "P0_contraception",
-      "P1_amenorrea_contexto",
-      "P1_motivo_no_ciclo",
-      "P2_duracion_dias",
-      "P2_patron_flujo",
-      "P2_olor",
-      "P2q_dolor_caracter",
-      "P3_capa_lingual",
-      "P9_digestion_transito",
-      "P9_sensibilidad_clima",
-      "P7_mastalgia_premenstrual",
-      "P2_spot_pre_post",
-      "P8_acne_ciclico"
-    ],
-    "min_core_plus_support": true,
-    "top_min_points": 3,
-    "top_min_for_single": 2,
-    "allow_core_alt_when_no_cycle": true
-  },
-  "scoring": {
-    "P1": [
-      {
-        "value": "Regular (24–35 días)",
+    "consent_data_usage": {
+      "context_note": "Data usage consent - no scoring impact"
+    },
+    "consent_data_safety": {
+      "context_note": "Data safety consent - no scoring impact"
+    },
+    "P0_contraception": {
+      "hormonal_sistemica": {
+        "context_note": "Hormonal contraception may suppress natural patterns"
+      },
+      "hormonal_larga": {
+        "context_note": "Long-acting hormonal may suppress natural patterns more strongly"
+      },
+      "ninguna": {
+        "context_note": "Natural cycle patterns observable"
+      }
+    },
+    "P1_regularity": {
+      "Regular (24–35 días)": {
         "scores": {}
       },
-      {
-        "value": "Irregular (varía >7 días entre ciclos)",
+      "Irregular (varía >7 días entre ciclos)": {
         "scores": {
-          "tension": 1
+          "tension": 2,
+          "sequedad": 1
         }
       },
-      {
-        "value": "No tengo sangrado actualmente",
+      "No tengo sangrado actualmente": {
+        "scores": {
+          "sequedad": 3,
+          "frio": 2
+        }
+      }
+    },
+    "P1_no_cycle_desde_cuando": {
+      "<3m": {
         "scores": {
           "sequedad": 1,
           "frio": 1
         }
-      }
-    ],
-    "P1_motivo_no_ciclo": [
-      {
-        "value": "Menopausia",
+      },
+      "3–6m": {
         "scores": {
-          "sequedad": 1,
-          "frio": 1,
-          "deficiencia": 1
+          "sequedad": 2,
+          "frio": 2
         }
       },
-      {
-        "value": "Post-píldora (<6 meses)",
+      ">6m": {
         "scores": {
-          "bloqueo": 1
-        }
-      },
-      {
-        "value": "Post-píldora (≥6 meses)",
-        "scores": {
-          "bloqueo": 1,
-          "deficiencia": 1
-        }
-      },
-      {
-        "value": "Amenorrea por otras causas",
-        "scores": {
-          "bloqueo": 1,
-          "tension": 1
+          "sequedad": 3,
+          "frio": 3
         }
       }
-    ],
-    "P1_onset_timing": [
-      {
-        "value": "súbito_post_pildora",
+    },
+    "P1_amenorrea_contexto": {
+      "lactancia": {
         "scores": {
-          "bloqueo": 1
+          "sequedad": 1
         }
       },
-      {
-        "value": "gradual",
+      "cambios_peso": {
         "scores": {
-          "deficiencia": 1
-        }
-      },
-      {
-        "value": "posparto",
-        "scores": {
-          "deficiencia": 1,
+          "sequedad": 2,
           "frio": 1
         }
       },
-      {
-        "value": "estres_ejercicio",
+      "estres_alto": {
         "scores": {
-          "tension": 1,
-          "deficiencia": 1
+          "tension": 3,
+          "sequedad": 2
         }
       },
-      {
-        "value": "cambio_peso",
+      "ejercicio_intenso": {
         "scores": {
-          "deficiencia": 1,
-          "bloqueo": 1
+          "sequedad": 2,
+          "frio": 1
         }
-      }
-    ],
-    "P1_no_cycle_desde_cuando": [
-      {
-        "value": "<3m",
+      },
+      "antecedentes_tiroideos": {
+        "scores": {
+          "sequedad": 2,
+          "frio": 2
+        }
+      },
+      "Ninguna de las anteriores": {
         "scores": {}
       },
-      {
-        "value": "3–6m",
+      "menopausia_posible": {
         "scores": {
-          "bloqueo": 1
+          "sequedad": 3,
+          "frio": 2
+        },
+        "context_note": "Menopause/perimenopause pattern - requires medical confirmation"
+      }
+    },
+    "P2_sintomas": {
+      "Dolor o cólicos": {
+        "scores": {
+          "tension": 3,
+          "calor": 1
         }
       },
-      {
-        "value": ">6m",
+      "Ligera": {
         "scores": {
-          "bloqueo": 1,
-          "deficiencia": 1
+          "sequedad": 2,
+          "frio": 1
+        }
+      },
+      "Abundante": {
+        "scores": {
+          "calor": 3,
+          "humedad": 2
+        }
+      },
+      "Hinchazón o retención de líquidos": {
+        "scores": {
+          "humedad": 3
+        }
+      },
+      "Manchado entre reglas": {
+        "scores": {
+          "calor": 2,
+          "humedad": 1
+        }
+      },
+      "Cambios de ánimo / ansiedad": {
+        "scores": {
+          "tension": 2,
+          "calor": 1
+        }
+      },
+      "Brotes o acné": {
+        "scores": {
+          "calor": 2,
+          "humedad": 1
+        }
+      },
+      "Fatiga o cansancio extremo": {
+        "scores": {
+          "sequedad": 2,
+          "frio": 2
+        }
+      },
+      "Sensibilidad en los senos": {
+        "scores": {
+          "humedad": 2,
+          "tension": 1
+        }
+      },
+      "Ninguna de las anteriores": {
+        "scores": {}
+      }
+    },
+    "P2_spotting_frecuencia": {
+      "spot_ocasional": {
+        "scores": {
+          "calor": 1
+        }
+      },
+      "spot_a_veces": {
+        "scores": {
+          "calor": 2
+        }
+      },
+      "spot_frecuente": {
+        "scores": {
+          "calor": 3,
+          "humedad": 1
         }
       }
-    ],
-    "P2": [
-      {
-        "value": "Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)",
+    },
+    "P2_hinchazon_severidad": {
+      "scoring_rule": "slider",
+      "variable": "humedad",
+      "min": 0,
+      "max": 10,
+      "scale_factor": 0.3
+    },
+    "P2_fatiga_severidad": {
+      "scoring_rule": "slider",
+      "variable_map": {
+        "sequedad": 0.2,
+        "frio": 0.2
+      },
+      "min": 0,
+      "max": 10
+    },
+    "P2_animo_severidad": {
+      "scoring_rule": "slider",
+      "variable_map": {
+        "tension": 0.25,
+        "calor": 0.1
+      },
+      "min": 0,
+      "max": 10
+    },
+    "P2_acne": {
+      "acne_caliente_rojo": {
         "scores": {
-          "calor": 3
+          "calor": 3,
+          "humedad": 1
         }
       },
-      {
-        "value": "Sangrado abundante (prolongado, con coágulos/espeso, sensación de pesadez)",
+      "acne_humedo_lento": {
         "scores": {
           "humedad": 3,
           "frio": 1
         }
       },
-      {
-        "value": "Manchado entre reglas",
-        "scores": {
+      "no": {
+        "scores": {}
+      }
+    },
+    "P2_duracion_dias": {
+      "scoring_rule": "slider_custom",
+      "ranges": {
+        "0-1": {
+          "sequedad": 3,
+          "frio": 2
+        },
+        "2": {
+          "sequedad": 2,
+          "frio": 1
+        },
+        "3-5": {},
+        "6-7": {
+          "humedad": 1,
           "calor": 1
         },
-        "modes": [
-          "regular"
-        ]
-      },
-      {
-        "value": "Manchado entre reglas",
-        "scores": {
-          "calor": 1
+        "8": {
+          "humedad": 2,
+          "calor": 2
+        }
+      }
+    },
+    "P2_cantidad": {
+      "scoring_rule": "slider_custom",
+      "ranges": {
+        "0-2": {
+          "sequedad": 3,
+          "frio": 2
         },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "Sangrado después de relaciones",
+        "3-5": {
+          "sequedad": 1
+        },
+        "6-7": {},
+        "8-9": {
+          "calor": 2,
+          "humedad": 1
+        },
+        "10": {
+          "calor": 3,
+          "humedad": 2
+        }
+      }
+    },
+    "P2_color": {
+      "rojo_brillante": {
         "scores": {
-          "calor": 1
+          "calor": 2
         }
       },
-      {
-        "value": "Sangrado escaso o ausente",
+      "rojo_oscuro": {
+        "scores": {
+          "frio": 1,
+          "humedad": 1
+        }
+      },
+      "marron": {
+        "scores": {
+          "frio": 2,
+          "sequedad": 1
+        }
+      },
+      "rosa_aguado": {
         "scores": {
           "sequedad": 2,
-          "frio": 2
+          "frio": 1
+        }
+      }
+    },
+    "P2_textura": {
+      "coagulos": {
+        "scores": {
+          "frio": 2,
+          "humedad": 2
         }
       },
-      {
-        "value": "Dolor o cólicos",
+      "aguado": {
+        "scores": {
+          "sequedad": 1,
+          "frio": 1
+        }
+      }
+    },
+    "P2_coagulo_tamano": {
+      "<0cm": {
+        "scores": {}
+      },
+      "<1cm": {
+        "scores": {
+          "frio": 1,
+          "humedad": 1
+        }
+      },
+      "1–2.4cm": {
+        "scores": {
+          "frio": 2,
+          "humedad": 2
+        }
+      },
+      ">2.4cm": {
+        "scores": {
+          "frio": 3,
+          "humedad": 3
+        }
+      }
+    },
+    "P2_patron_flujo": {
+      "empieza_termina_marron": {
+        "scores": {
+          "frio": 2,
+          "sequedad": 1
+        }
+      },
+      "oleadas_inundaciones": {
+        "scores": {
+          "calor": 2,
+          "humedad": 2
+        }
+      },
+      "goteo_lento_prolongado": {
+        "scores": {
+          "frio": 2,
+          "humedad": 1
+        }
+      },
+      "intermitente": {
+        "scores": {
+          "tension": 2,
+          "frio": 1
+        }
+      }
+    },
+    "P2q_dolor_severidad": {
+      "scoring_rule": "slider",
+      "variable": "tension",
+      "min": 0,
+      "max": 10,
+      "scale_factor": 0.3
+    },
+    "P2q_dolor_caracter": {
+      "punzante_localizado": {
+        "scores": {
+          "tension": 3,
+          "calor": 1
+        }
+      },
+      "sordo_pesado": {
+        "scores": {
+          "humedad": 3,
+          "frio": 1
+        }
+      },
+      "ardor_caliente": {
+        "scores": {
+          "calor": 3
+        }
+      },
+      "espasmodico": {
         "scores": {
           "tension": 3
         }
-      },
-      {
-        "value": "Cambios de humor / ansiedad",
+      }
+    },
+    "P3_cuerpo": {
+      "Calor, enrojecimiento": {
         "scores": {
-          "tension": 2
+          "calor": 3
         }
       },
-      {
-        "value": "Hinchazón o retención de líquidos",
+      "Frío en manos/pies": {
+        "scores": {
+          "frio": 3
+        }
+      },
+      "Hinchazón, pesadez, retención": {
+        "scores": {
+          "humedad": 3
+        }
+      },
+      "Sequedad (piel, mucosas)": {
+        "scores": {
+          "sequedad": 3
+        }
+      },
+      "Lengua hinchada": {
         "scores": {
           "humedad": 2
         }
       },
-      {
-        "value": "Fatiga o cansancio extremo",
+      "Lengua pálida": {
         "scores": {
-          "sequedad": 2
+          "frio": 2,
+          "sequedad": 1
         }
-      }
-    ],
-    "P2_abundancia": [
-      {
-        "value": ">3h",
-        "scores": {}
       },
-      {
-        "value": "2–3h",
+      "Punta de la lengua roja": {
+        "scores": {
+          "calor": 2,
+          "tension": 1
+        }
+      },
+      "Ninguna de las anteriores": {
+        "scores": {}
+      }
+    },
+    "P4_emocional": {
+      "Ansiedad": {
+        "scores": {
+          "tension": 3,
+          "calor": 1
+        }
+      },
+      "Irritabilidad": {
+        "scores": {
+          "tension": 2,
+          "calor": 2
+        }
+      },
+      "Tristeza": {
+        "scores": {
+          "frio": 2,
+          "humedad": 1
+        }
+      },
+      "Apatía": {
+        "scores": {
+          "frio": 3,
+          "sequedad": 1
+        }
+      },
+      "Agotamiento, burnout": {
+        "scores": {
+          "sequedad": 3,
+          "frio": 2
+        }
+      },
+      "Ninguna de las anteriores": {
+        "scores": {}
+      }
+    },
+    "P4_timing_emocional": {
+      "antes": {
+        "scores": {
+          "tension": 2
+        }
+      },
+      "durante": {
         "scores": {
           "calor": 1
         }
       },
-      {
-        "value": "<1h",
+      "entre": {
+        "scores": {
+          "tension": 1
+        }
+      },
+      "después": {
+        "scores": {
+          "sequedad": 1
+        }
+      }
+    },
+    "P5_sed": {
+      "bebidas_frias": {
         "scores": {
           "calor": 2
         }
-      }
-    ],
-    "P2_escaso_frecuencia": [
-      {
-        "value": "algunos_ciclos",
+      },
+      "bebidas_calientes": {
         "scores": {
-          "sequedad": 1,
-          "frio": 1
+          "frio": 2
         }
       },
-      {
-        "value": "casi_siempre",
+      "neutro": {
+        "scores": {}
+      }
+    },
+    "P6_energia": {
+      "Con subidas y bajadas marcadas": {
+        "scores": {
+          "tension": 2
+        }
+      },
+      "Ráfagas de energía": {
+        "scores": {
+          "calor": 2,
+          "tension": 1
+        }
+      },
+      "Lenta, pesada, con poca motivación": {
+        "scores": {
+          "humedad": 3,
+          "frio": 2
+        }
+      },
+      "Agotada, drenada": {
+        "scores": {
+          "sequedad": 3,
+          "frio": 2
+        }
+      },
+      "Ninguna de las anteriores": {
+        "scores": {}
+      }
+    },
+    "P7_signos_corporales": {
+      "Sed intensa": {
+        "scores": {
+          "sequedad": 3,
+          "calor": 2
+        }
+      },
+      "Piel muy seca": {
+        "scores": {
+          "sequedad": 3
+        }
+      },
+      "Sudor pegajoso": {
+        "scores": {
+          "humedad": 2,
+          "calor": 1
+        }
+      },
+      "Poco sudor con calor": {
         "scores": {
           "sequedad": 2,
           "frio": 1
         }
-      }
-    ],
-    "P2_spotting_frecuencia": [
-      {
-        "value": "spot_ocasional",
-        "scores": {}
       },
-      {
-        "value": "spot_a_veces",
-        "scores": {}
-      },
-      {
-        "value": "spot_frecuente",
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P2_spotting_context": [
-      {
-        "value": "si_calor_irritabilidad",
-        "scores": {}
+    },
+    "P7b_sequedad_detalle": {
+      "boca_seca": {
+        "scores": {
+          "sequedad": 2
+        }
       },
-      {
-        "value": "no",
-        "scores": {}
+      "ojos_secos": {
+        "scores": {
+          "sequedad": 2
+        }
       },
-      {
-        "value": "no_seguro",
+      "lubricacion_baja": {
+        "scores": {
+          "sequedad": 3
+        }
+      },
+      "sed_nocturna": {
+        "scores": {
+          "sequedad": 2,
+          "calor": 1
+        }
+      },
+      "piel_muy_seca": {
+        "scores": {
+          "sequedad": 3
+        }
+      },
+      "Ninguna de las anteriores": {
         "scores": {}
       }
-    ],
-    "P2_color": [
-      {
-        "value": "rojo_brillante",
+    },
+    "P7c_sensibilidad_clima": {
+      "calor_me_agobia": {
         "scores": {
           "calor": 2
         }
       },
-      {
-        "value": "rojo_oscuro",
+      "siempre_con_frio": {
         "scores": {
-          "humedad": 1
+          "frio": 3
         }
       },
-      {
-        "value": "marron",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "rosa_aguado",
-        "scores": {
-          "humedad": 1
-        }
+      "depende": {
+        "scores": {}
       }
-    ],
-    "P2_textura": [
-      {
-        "value": "coagulos",
+    },
+    "P8_sueno_calidad": {
+      "scoring_rule": "slider_inverse",
+      "variable_map": {
+        "tension": 0.15,
+        "calor": 0.1
+      },
+      "min": 0,
+      "max": 10,
+      "note": "Lower sleep quality scores higher for tension/calor"
+    },
+    "P8a_estres": {
+      "scoring_rule": "slider",
+      "variable": "tension",
+      "min": 0,
+      "max": 10,
+      "scale_factor": 0.25
+    },
+    "P8b_ejercicio": {
+      "ninguno": {
         "scores": {
           "humedad": 2,
           "frio": 1
         }
       },
-      {
-        "value": "aguado",
-        "scores": {
-          "humedad": 1
-        }
-      }
-    ],
-    "P2_margen_calor_humedad": [
-      {
-        "value": "calor_sed",
-        "scores": {
-          "calor": 1
-        }
-      },
-      {
-        "value": "pesadez_hinchazon",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "ambas",
-        "scores": {
-          "calor": 1,
-          "humedad": 1
-        }
-      },
-      {
-        "value": "ninguna",
-        "scores": {}
-      }
-    ],
-    "P2b_margen_calor_humedad": [
-      {
-        "value": "calor_sed",
-        "scores": {
-          "calor": 1
-        },
-        "modes": [
-          "regular",
-          "pro"
-        ]
-      },
-      {
-        "value": "pesadez_hinchazon",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "regular",
-          "pro"
-        ]
-      },
-      {
-        "value": "ambas",
-        "scores": {
-          "calor": 1,
-          "humedad": 1
-        },
-        "modes": [
-          "regular",
-          "pro"
-        ]
-      },
-      {
-        "value": "ninguna",
-        "scores": {},
-        "modes": [
-          "regular",
-          "pro"
-        ]
-      }
-    ],
-    "P2_coagulo_tamano": [
-      {
-        "value": "<1cm",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "1–2.4cm",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": ">2.4cm",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P2_productos_por_dia": [
-      {
-        "value": "1–3",
+      "1–2_dias_sem": {
         "scores": {}
       },
-      {
-        "value": "4–6",
+      "3–5_dias_sem": {
         "scores": {}
       },
-      {
-        "value": ">=7",
+      "6–7_dias_sem": {
+        "scores": {
+          "sequedad": 2,
+          "tension": 1
+        }
+      }
+    },
+    "P8c_cafeina": {
+      "0": {
         "scores": {}
-      }
-    ],
-    "P2q_dolor_alivio": [
-      {
-        "value": "Calor local",
-        "scores": {
-          "frio": 2
-        }
       },
-      {
-        "value": "Movimiento / estiramiento",
-        "scores": {
-          "tension": 2
-        }
+      "1": {
+        "scores": {}
       },
-      {
-        "value": "Descanso / presión",
-        "scores": {
-          "humedad": 1,
-          "frio": 1
-        }
-      },
-      {
-        "value": "Frío local",
-        "scores": {
-          "calor": 2
-        }
-      }
-    ],
-    "P2q_dolor_empeora": [
-      {
-        "value": "Calor ambiental",
-        "scores": {
-          "calor": 1
-        }
-      },
-      {
-        "value": "Frío ambiental",
-        "scores": {
-          "frio": 1
-        }
-      },
-      {
-        "value": "Inactividad / sedentarismo prolongado",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "Movimiento intenso / esfuerzo",
+      "2": {
         "scores": {
           "tension": 1
         }
       },
-      {
-        "value": "Estrés o tensión emocional",
+      "3+": {
         "scores": {
-          "tension": 1
-        }
-      },
-      {
-        "value": "Comidas pesadas/saladas que dan hinchazón",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "Día 1–2 del periodo",
-        "scores": {}
-      },
-      {
-        "value": "Nada en particular",
-        "scores": {}
-      }
-    ],
-    "P5b_preferencia_termica_bebidas": [
-      {
-        "value": "bebidas_calientes",
-        "scores": {
-          "frio": 1
-        }
-      },
-      {
-        "value": "bebidas_frias",
-        "scores": {
-          "calor": 1
-        }
-      },
-      {
-        "value": "neutro",
-        "scores": {}
-      }
-    ],
-    "P3": [
-      {
-        "value": "Calor, enrojecimiento",
-        "scores": {
-          "calor": 2
-        }
-      },
-      {
-        "value": "Frío en manos/pies",
-        "scores": {
-          "frio": 2
-        }
-      },
-      {
-        "value": "Lengua hinchada",
-        "scores": {
-          "humedad": 2
-        }
-      },
-      {
-        "value": "Lengua pálida",
-        "scores": {
-          "frio": 2
-        }
-      },
-      {
-        "value": "Punta de la lengua roja",
-        "scores": {
-          "calor": 2
-        }
-      },
-      {
-        "value": "Hinchazón, pesadez, retención",
-        "scores": {
-          "humedad": 2
-        }
-      },
-      {
-        "value": "Sequedad (piel, mucosas)",
-        "scores": {
-          "sequedad": 2
-        }
-      }
-    ],
-    "P3_hinchazon_modificador": [
-      {
-        "value": "mejora_con_movimiento",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "empeora_con_sedentarismo",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "sin_cambio",
-        "scores": {}
-      }
-    ],
-    "P3_quick_test_frio_sequedad": [
-      {
-        "value": "frio_signs",
-        "scores": {
-          "frio": 1
-        }
-      },
-      {
-        "value": "sequedad_signs",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "ninguna",
-        "scores": {}
-      }
-    ],
-    "P4": [
-      {
-        "value": "Ansiedad",
-        "scores": {
-          "tension": 2
-        }
-      },
-      {
-        "value": "Irritabilidad",
-        "scores": {
-          "tension": 1
-        }
-      },
-      {
-        "value": "Tristeza",
-        "scores": {
-          "frio": 1
-        }
-      },
-      {
-        "value": "Apatía",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "Agotamiento, burnout",
-        "scores": {
-          "sequedad": 1
-        }
-      }
-    ],
-    "P5_score_keys": [
-      {
-        "value": "Dulce simple",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "Carbohidratos complejos",
-        "scores": {}
-      },
-      {
-        "value": "Salado",
-        "scores": {}
-      },
-      {
-        "value": "Picante",
-        "scores": {}
-      },
-      {
-        "value": "Alimentos fríos / hielo",
-        "scores": {
-          "frio": 1
-        }
-      },
-      {
-        "value": "Caldos, sopas o tés calientes",
-        "scores": {
-          "frio": 1
-        }
-      },
-      {
-        "value": "Frutas jugosas o alimentos húmedos",
-        "scores": {
-          "sequedad": 1
-        }
-      }
-    ],
-    "P6": [
-      {
-        "value": "Ansiosa, con subidas y bajadas",
-        "scores": {
-          "tension": 2
-        }
-      },
-      {
-        "value": "Ráfagas de energía",
-        "scores": {
-          "calor": 1,
-          "tension": 1
-        }
-      },
-      {
-        "value": "Lenta, pesada, con poca motivación",
-        "scores": {
-          "humedad": 2,
-          "frio": 1
-        }
-      },
-      {
-        "value": "Agotada, drenada",
-        "scores": {
-          "sequedad": 2
-        }
-      }
-    ],
-    "P7": [
-      {
-        "value": "antes",
-        "scores": {
-          "tension": 1
-        }
-      },
-      {
-        "value": "durante",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "después",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "entre",
-        "scores": {
-          "calor": 1
-        }
-      }
-    ],
-    "P8_signos_corporales": [
-      {
-        "value": "Sed intensa",
-        "scores": {
+          "tension": 2,
           "calor": 1,
           "sequedad": 1
         }
-      },
-      {
-        "value": "Piel muy seca",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "Sudor pegajoso",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "Poco o nada de sudor incluso con calor",
-        "scores": {
-          "frio": 1
-        }
       }
-    ],
-    "P8_sequedad_detalle": [
-      {
-        "value": "boca_seca",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "ojos_secos",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "lubricacion_baja",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "sed_nocturna",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "piel_muy_seca",
-        "scores": {
-          "sequedad": 1
-        }
-      }
-    ],
-    "P8_que_alivia_sequedad": [
-      {
-        "value": "sopas_caldos",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "frutas_jugosas",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "grasas_saludables",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "agua_electrolitos",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P8_contexto_sequedad": [
-      {
-        "value": "clima_seco",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "aire_acondicionado",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "altitud",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "viajes_frecuentes",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P9_ejercicio": [
-      {
-        "value": "ninguno",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "1–2_dias_sem",
-        "scores": {}
-      },
-      {
-        "value": "3–5_dias_sem",
-        "scores": {}
-      },
-      {
-        "value": "6–7_dias_sem",
-        "scores": {}
-      }
-    ],
-    "P9_cafeina": [
-      {
-        "value": "0",
-        "scores": {}
-      },
-      {
-        "value": "1",
-        "scores": {}
-      },
-      {
-        "value": "2",
-        "scores": {}
-      },
-      {
-        "value": "3+",
-        "scores": {
-          "tension": 1
-        }
-      }
-    ],
-    "P9_sueno_calidad": [
-      {
-        "value": null,
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P9_alcohol": [
-      {
-        "value": "0_sem",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "1–3_sem",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": ">=4_sem",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P0_contraception": [
-      {
-        "value": "hormonal_sistemica",
-        "scores": {}
-      },
-      {
-        "value": "hormonal_larga",
-        "scores": {}
-      },
-      {
-        "value": "diu_hormonal",
-        "scores": {}
-      },
-      {
-        "value": "diu_cobre",
-        "scores": {}
-      },
-      {
-        "value": "ninguna",
-        "scores": {}
-      },
-      {
-        "value": "otro",
-        "scores": {}
-      }
-    ],
-    "P1_amenorrea_contexto": [
-      {
-        "value": "lactancia",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "cambios_peso",
-        "scores": {}
-      },
-      {
-        "value": "estres_alto",
-        "scores": {
-          "tension": 1
-        }
-      },
-      {
-        "value": "ejercicio_intenso",
-        "scores": {
-          "tension": 1
-        }
-      },
-      {
-        "value": "antecedentes_tiroideos",
-        "scores": {}
-      }
-    ],
-    "P2_duracion_dias": [
-      {
-        "value": "1-2",
-        "scores": {
-          "sequedad": 1,
-          "frio": 1
-        }
-      },
-      {
-        "value": "3-6",
-        "scores": {}
-      },
-      {
-        "value": "7+",
-        "scores": {
-          "humedad": 1
-        }
-      }
-    ],
-    "P2_patron_flujo": [
-      {
-        "value": "empieza_termina_marron",
-        "scores": {
-          "sequedad": 1
-        }
-      },
-      {
-        "value": "oleadas_inundaciones",
-        "scores": {
-          "calor": 1
-        }
-      },
-      {
-        "value": "goteo_lento_prolongado",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "intermitente",
-        "scores": {
-          "tension": 1
-        }
-      }
-    ],
-    "P2_olor": [
-      {
-        "value": "fuerte_acido",
-        "scores": {
-          "calor": 1
-        }
-      },
-      {
-        "value": "olor_humedo",
-        "scores": {
-          "humedad": 1
-        }
-      },
-      {
-        "value": "metalico_leve_sin_olor",
-        "scores": {}
-      }
-    ],
-    "P2q_dolor_caracter": [
-      {
-        "value": "punzante_localizado",
-        "scores": {
-          "tension": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "sordo_pesado",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "ardor_caliente",
-        "scores": {
-          "calor": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "espasmodico",
-        "scores": {
-          "tension": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P3_capa_lingual": [
-      {
-        "value": "capa_gruesa_pegajosa",
-        "scores": {
-          "humedad": 2
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "capa_amarilla",
-        "scores": {
-          "calor": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "capa_blanca",
-        "scores": {
-          "frio": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "sin_capa_seca",
-        "scores": {
-          "sequedad": 2
-        },
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P9_digestion_transito": [
-      {
-        "value": "estrenimiento",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "sueltas_pegajosas",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "regular",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P9_sensibilidad_clima": [
-      {
-        "value": "calor_me_agobia",
-        "scores": {
-          "calor": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "siempre_con_frio",
-        "scores": {
-          "frio": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "depende",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P7_mastalgia_premenstrual": [
-      {
-        "value": "si_con_hinchazon",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "si_sin_hinchazon",
-        "scores": {
-          "tension": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "no",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P2_spot_pre_post": [
-      {
-        "value": "antes",
-        "scores": {
-          "sequedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "despues",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "entre",
-        "scores": {
-          "tension": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "P8_acne_ciclico": [
-      {
-        "value": "acne_caliente_rojo",
-        "scores": {
-          "calor": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "acne_humedo_lento",
-        "scores": {
-          "humedad": 1
-        },
-        "modes": [
-          "pro"
-        ]
-      },
-      {
-        "value": "no",
-        "scores": {},
-        "modes": [
-          "pro"
-        ]
-      }
-    ]
-  },
-  "additive_scoring": [
-    {
-      "question_id": "P2q_dolor_severidad",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 3,
-          "scores": {}
-        },
-        {
-          "min": 4,
-          "max": 6,
-          "scores": {
-            "tension": 1
-          }
-        },
-        {
-          "min": 7,
-          "max": 8,
-          "scores": {
-            "tension": 2
-          }
-        },
-        {
-          "min": 9,
-          "max": 10,
-          "scores": {
-            "tension": 3
-          }
-        }
-      ]
-    },
-    {
-      "question_id": "P2_hinchazon_severidad",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 4,
-          "scores": {}
-        },
-        {
-          "min": 5,
-          "max": 6,
-          "scores": {
-            "humedad": 1
-          }
-        },
-        {
-          "min": 7,
-          "max": 8,
-          "scores": {
-            "humedad": 2
-          }
-        },
-        {
-          "min": 9,
-          "max": 10,
-          "scores": {
-            "humedad": 3
-          }
-        }
-      ]
-    },
-    {
-      "question_id": "P2_fatiga_severidad",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 4,
-          "scores": {}
-        },
-        {
-          "min": 5,
-          "max": 6,
-          "scores": {
-            "sequedad": 1
-          }
-        },
-        {
-          "min": 7,
-          "max": 8,
-          "scores": {
-            "sequedad": 2
-          }
-        },
-        {
-          "min": 9,
-          "max": 10,
-          "scores": {
-            "sequedad": 3
-          }
-        }
-      ]
-    },
-    {
-      "question_id": "P2_animo_severidad",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 5,
-          "scores": {}
-        },
-        {
-          "min": 6,
-          "max": 7,
-          "scores": {
-            "tension": 1
-          }
-        },
-        {
-          "min": 8,
-          "max": 8,
-          "scores": {
-            "tension": 2
-          }
-        },
-        {
-          "min": 9,
-          "max": 10,
-          "scores": {
-            "tension": 3
-          }
-        }
-      ]
-    },
-    {
-      "question_id": "P9_sueno_calidad",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 3,
-          "scores": {
-            "tension": 1
-          }
-        },
-        {
-          "min": 4,
-          "max": 7,
-          "scores": {}
-        },
-        {
-          "min": 8,
-          "max": 10,
-          "scores": {
-            "tension": -1
-          }
-        }
-      ],
-      "floor_at_zero": true,
-      "modes": [
-        "pro"
-      ]
-    },
-    {
-      "question_id": "P9_estres",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 6,
-          "scores": {}
-        },
-        {
-          "min": 7,
-          "max": 10,
-          "scores": {
-            "tension": 1
-          }
-        }
-      ]
-    },
-    {
-      "question_id": "P2_cantidad",
-      "range_map": [
-        {
-          "min": 0,
-          "max": 5,
-          "scores": {}
-        },
-        {
-          "min": 6,
-          "max": 10,
-          "scores": {
-            "humedad": 1
-          }
-        }
-      ]
-    }
-  ],
-  "normalizations": {
-    "P2_heavy_both_selected_mutual_attenuation": {
-      "enabled": true,
-      "when_both": [
-        "Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)",
-        "Sangrado abundante (prolongado, con coágulos/espeso, sensación de pesadez)"
-      ],
-      "set_each_to": 2
-    },
-    "severity_caps": {
-      "enabled": true,
-      "max_points_per_axis_from_severity": 3
-    },
-    "support_caps": {
-      "enabled": true,
-      "per_question": [
-        {
-          "question_id": "P5",
-          "max_points_per_axis": 1
-        },
-        {
-          "question_id": "P8_signos_corporales",
-          "max_points_per_axis": 1
-        },
-        {
-          "question_id": "P2q_dolor_empeora",
-          "max_points_per_axis": 1
-        },
-        {
-          "question_id": "P2_textura",
-          "max_points_per_axis": 2
-        },
-        {
-          "question_id": "P8_sequedad_detalle",
-          "max_points_per_axis": 2
-        },
-        {
-          "question_id": "P8_que_alivia_sequedad",
-          "max_points_per_axis": 1,
-          "modes": [
-            "pro"
-          ]
-        },
-        {
-          "question_id": "P8_contexto_sequedad",
-          "max_points_per_axis": 2,
-          "modes": [
-            "pro"
-          ]
-        }
-      ]
-    }
-  },
-  "modifiers": {
-    "contraception_handling": {
-      "enabled": true,
-      "question_id": "P0_contraception",
-      "hormonal_values": [
-        "hormonal_sistemica",
-        "hormonal_larga",
-        "diu_hormonal"
-      ],
-      "reduce_scores": {
-        "sources": [
-          "P2",
-          "P2_cantidad"
-        ],
-        "keys_containing": [
-          "Sangrado",
-          "Manchado"
-        ],
-        "factor": 0.5
-      }
-    }
-  },
-  "rules": {
-    "dominance_override": {
-      "enabled": true,
-      "threshold_points": 10,
-      "min_margin": 2,
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "mixed_rules": {
-      "enabled": true,
-      "mixed_if_margin_at_most": 1,
-      "require_min_core_points_each": 4,
-      "core_domains_for_mixed": [
-        "P2",
-        "P3",
-        "P2_color",
-        "P2_textura"
-      ],
-      "three_way_mix_only_if_shared_dimension": true,
-      "shared_dimensions": {
-        "hot_cold": [
-          "calor",
-          "frio"
-        ],
-        "moisture_axis": [
-          "humedad",
-          "sequedad"
-        ]
-      },
-      "extra_allowed_pairs": [
-        [
-          "calor",
-          "sequedad"
-        ]
-      ],
-      "tie_breaker_prefer_P3_signs": {
-        "enabled": true,
-        "if_margin_at_most": 2,
-        "map": {
-          "calor": [
-            "Calor, enrojecimiento",
-            "Punta de la lengua roja"
-          ],
-          "humedad": [
-            "Hinchazón, pesadez, retención",
-            "Lengua hinchada"
-          ],
-          "frio": [
-            "Frío en manos/pies",
-            "Lengua pálida"
-          ],
-          "sequedad": [
-            "Sequedad (piel, mucosas)"
-          ]
-        }
-      },
-      "pair_specific": {
-        "calor_humedad": {
-          "require": {
-            "all": [
-              {
-                "question_id": "P2_color",
-                "equals": "rojo_oscuro"
-              },
-              {
-                "question_id": "P2_textura",
-                "includes": [
-                  "coagulos"
-                ]
-              },
-              {
-                "either": [
-                  {
-                    "question_id": "P2_hinchazon_severidad",
-                    "at_least": 6
-                  },
-                  {
-                    "question_id": "P3",
-                    "includes": [
-                      "Hinchazón, pesadez, retención"
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "thresholds": {
-            "top2_margin_max": 0.07,
-            "min_core_points_each": 5
-          },
-          "fallback_if": {
-            "axis": "calor",
-            "core_points_below": 5,
-            "set_primary": "humedad"
-          }
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "tension_primary_rule": {
-      "requires_physical_evidence": true,
-      "physical_sources": [
-        "P2: Dolor o cólicos"
-      ],
-      "label_if_missing": "Tendencia a tensión",
-      "cannot_be_primary_without_physical_evidence": true,
-      "modes": [
-        "regular"
-      ]
-    },
-    "tension_primary_rule_pro": {
-      "requires_physical_evidence": true,
-      "physical_sources": [
-        "P2: Dolor o cólicos"
-      ],
-      "alternative_physical_evidence": [
-        {
-          "question_id": "P2q_dolor_alivio",
-          "equals_any": [
-            "Movimiento / estiramiento"
-          ]
-        }
-      ],
-      "label_if_missing": "Tendencia a tensión",
-      "cannot_be_primary_without_physical_evidence": true,
-      "modes": [
-        "pro"
-      ]
-    },
-    "dry_cold_disambiguation_boost": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "any_in": {
-              "question_id": "P2",
-              "values": [
-                "Sangrado escaso o ausente"
-              ]
-            }
-          },
-          {
-            "question_id": "P5b_preferencia_termica_bebidas",
-            "equals": "bebidas_calientes"
-          },
-          {
-            "question_id": "P8_sequedad_detalle",
-            "includes_any": [
-              "boca_seca",
-              "lubricacion_baja",
-              "sed_nocturna",
-              "piel_muy_seca"
-            ]
-          }
-        ],
-        "either_top_in": [
-          "frio",
-          "frio_sequedad"
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "sequedad": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "tension_downgrade_guard": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "not_in": {
-              "question_id": "P2",
-              "values": [
-                "Dolor o cólicos"
-              ]
-            }
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_animo_severidad",
-                "at_least": 8
-              },
-              {
-                "question_id": "P9_estres",
-                "at_least": 7
-              }
-            ]
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2q_dolor_alivio",
-                "not_equals": "Movimiento / estiramiento"
-              },
-              {
-                "missing": "P2q_dolor_alivio"
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "tension": -2
-        },
-        "floor_at_zero": true,
-        "set_label_if_top_axis_is": {
-          "axis": "tension",
-          "label": "tension_tendency"
-        }
-      },
-      "modes": [
-        "regular"
-      ]
-    },
-    "tension_downgrade_guard_pro": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "not_in": {
-              "question_id": "P2",
-              "values": [
-                "Dolor o cólicos"
-              ]
-            }
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_animo_severidad",
-                "at_least": 8
-              },
-              {
-                "question_id": "P9_estres",
-                "at_least": 7
-              },
-              {
-                "question_id": "P9_sueno_calidad",
-                "at_most": 3
-              }
-            ]
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2q_dolor_alivio",
-                "not_equals": "Movimiento / estiramiento"
-              },
-              {
-                "missing": "P2q_dolor_alivio"
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "tension": -2
-        },
-        "floor_at_zero": true,
-        "set_label_if_top_axis_is": {
-          "axis": "tension",
-          "label": "tension_tendency"
-        }
-      },
-      "modes": [
-        "pro"
-      ]
-    },
-    "heat_bonus_quantity9_if_bright": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 9
-          },
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_brillante"
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "heat_probe_calor_oscuro_small_bonus": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_oscuro"
-          },
-          {
-            "question_id": "P2_margen_calor_humedad",
-            "equals": "calor_sed"
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 0.5
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "heat_bonus_from_mood_with_core_heat": {
-      "enabled": true,
-      "apply_if": {
-        "any_core_heat": [
-          {
-            "question_id": "P3",
-            "includes_any": [
-              "Calor, enrojecimiento",
-              "Punta de la lengua roja"
-            ]
-          },
-          {
-            "question_id": "P2_color",
-            "in": [
-              "rojo_brillante"
-            ]
-          },
-          {
-            "question_id": "P2",
-            "includes": [
-              "Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)"
-            ]
-          },
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 9
-          }
-        ],
-        "and_in_P4_any": [
-          "Irritabilidad",
-          "Ansiedad"
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "heat_bonus_from_animo_severity_with_core_heat": {
-      "enabled": true,
-      "apply_if": {
-        "any_core_heat": [
-          {
-            "question_id": "P3",
-            "includes_any": [
-              "Calor, enrojecimiento",
-              "Punta de la lengua roja"
-            ]
-          },
-          {
-            "question_id": "P2_color",
-            "in": [
-              "rojo_brillante"
-            ]
-          },
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 9
-          }
-        ],
-        "and_at_least_in": {
-          "question_id": "P2_animo_severidad",
-          "min": 7
-        }
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "extra_heat_bonus_from_quantity9plus_core_heat": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 9
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_color",
-                "in": [
-                  "rojo_brillante"
-                ]
-              },
-              {
-                "question_id": "P3",
-                "includes_any": [
-                  "Calor, enrojecimiento",
-                  "Punta de la lengua roja"
-                ]
-              },
-              {
-                "question_id": "P2",
-                "includes": [
-                  "Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "pair_synergy_tension_calor_scores": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "any_in": {
-              "question_id": "P2",
-              "values": [
-                "Dolor o cólicos"
-              ]
-            }
-          },
-          {
-            "either_core_heat": [
-              {
-                "question_id": "P3",
-                "includes_any": [
-                  "Calor, enrojecimiento",
-                  "Punta de la lengua roja"
-                ]
-              },
-              {
-                "question_id": "P2_color",
-                "in": [
-                  "rojo_brillante"
-                ]
-              },
-              {
-                "question_id": "P2_cantidad",
-                "at_least": 9
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "spotting_calor_add_when_hot_context": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_spotting_context",
-            "equals": "si_calor_irritabilidad"
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_color",
-                "equals": "rojo_brillante"
-              },
-              {
-                "question_id": "P4",
-                "includes": "Irritabilidad"
-              }
-            ]
-          },
-          {
-            "none_in": {
-              "question_id": "P0_contraception",
-              "values": [
-                "hormonal_sistemica",
-                "hormonal_larga",
-                "diu_hormonal"
-              ]
-            }
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "pro"
-      ]
-    },
-    "anti_calor_in_damp": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_oscuro"
-          },
-          {
-            "question_id": "P2_textura",
-            "includes": [
-              "coagulos"
-            ]
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_hinchazon_severidad",
-                "at_least": 5
-              },
-              {
-                "question_id": "P3",
-                "includes": [
-                  "Hinchazón, pesadez, retención"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "ignore_scores_from": {
-          "questions": [
-            "P4",
-            "P2_cantidad",
-            "P2_spotting_frecuencia",
-            "P2_spotting_context",
-            "P6"
-          ],
-          "axis": "calor"
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "anti_humedad_in_heat": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_brillante"
-          },
-          {
-            "not_in": {
-              "question_id": "P2_textura",
-              "values": [
-                "coagulos",
-                "aguado"
-              ]
-            }
-          },
-          {
-            "either": [
-              {
-                "question_id": "P3",
-                "includes_any": [
-                  "Calor, enrojecimiento",
-                  "Punta de la lengua roja"
-                ]
-              },
-              {
-                "question_id": "P2_cantidad",
-                "at_least": 9
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "ignore_scores_from": {
-          "questions": [
-            "P2_cantidad",
-            "P2_textura"
-          ],
-          "axis": "humedad"
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "cold_from_clots_requires_cold_sign": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_textura",
-            "includes": [
-              "coagulos"
-            ]
-          },
-          {
-            "none_in": {
-              "question_id": "P3",
-              "values": [
-                "Frío en manos/pies",
-                "Lengua pálida"
-              ]
-            }
-          },
-          {
-            "none_in_2": {
-              "question_id": "P8_signos_corporales",
-              "values": [
-                "Poco o nada de sudor incluso con calor"
-              ]
-            }
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "frio": -1
-        },
-        "floor_at_zero": true
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "heat_humidity_margin_probe_bonus": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_oscuro"
-          },
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 7
-          }
-        ]
-      },
-      "effects": [
-        {
-          "when": {
-            "question_id": "P2_margen_calor_humedad",
-            "equals": "calor_sed"
-          },
-          "adjust_scores": {
-            "calor": 1
-          }
-        },
-        {
-          "when": {
-            "question_id": "P2_margen_calor_humedad",
-            "equals": "pesadez_hinchazon"
-          },
-          "adjust_scores": {
-            "humedad": 1
-          }
-        },
-        {
-          "when": {
-            "question_id": "P2_margen_calor_humedad",
-            "equals": "ambas"
-          },
-          "adjust_scores": {
-            "calor": 1,
-            "humedad": 1
-          }
-        }
-      ],
-      "floor_at_zero": true,
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "hot_drink_cold_guard": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P5b_preferencia_termica_bebidas",
-            "equals": "bebidas_calientes"
-          },
-          {
-            "none_in": {
-              "question_id": "P3",
-              "values": [
-                "Frío en manos/pies",
-                "Lengua pálida"
-              ]
-            }
-          },
-          {
-            "none_in_2": {
-              "question_id": "P8_signos_corporales",
-              "values": [
-                "Poco o nada de sudor incluso con calor"
-              ]
-            }
-          }
-        ]
-      },
-      "effect": {
-        "ignore_scores_from": {
-          "questions": [
-            "P5b_preferencia_termica_bebidas"
-          ],
-          "axis": "frio"
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "caffeine_calor_guard": {
-      "enabled": true,
-      "apply_if": {
-        "question_id": "P9_cafeina",
-        "equals": "3+"
-      },
-      "effect": {
-        "adjust_scores_if": {
-          "when_any": [
-            {
-              "question_id": "P2_color",
-              "equals": "rojo_brillante"
-            },
-            {
-              "question_id": "P3",
-              "includes_any": [
-                "Calor, enrojecimiento",
-                "Punta de la lengua roja"
-              ]
-            }
-          ],
-          "adjust": {
-            "calor": 1
-          }
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "alcohol_calor_guard": {
-      "enabled": true,
-      "apply_if": {
-        "question_id": "P9_alcohol",
-        "equals": ">=4_sem"
-      },
-      "effect": {
-        "adjust_scores_if": {
-          "when_any": [
-            {
-              "question_id": "P2_color",
-              "equals": "rojo_brillante"
-            },
-            {
-              "question_id": "P3",
-              "includes_any": [
-                "Calor, enrojecimiento",
-                "Punta de la lengua roja"
-              ]
-            }
-          ],
-          "adjust": {
-            "calor": 1
-          }
-        }
-      },
-      "modes": [
-        "pro"
-      ]
-    },
-    "consistency_penalty_heat": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_oscuro"
-          },
-          {
-            "question_id": "P2_margen_calor_humedad",
-            "equals": "calor_sed"
-          },
-          {
-            "none_in": {
-              "question_id": "P3",
-              "values": [
-                "Calor, enrojecimiento",
-                "Punta de la lengua roja"
-              ]
-            }
-          },
-          {
-            "question_id": "P2_hinchazon_severidad",
-            "at_least": 5
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": -1
-        },
-        "floor_at_zero": true
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "consistency_penalty_damp": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_color",
-            "equals": "rojo_brillante"
-          },
-          {
-            "question_id": "P2_margen_calor_humedad",
-            "equals": "pesadez_hinchazon"
-          },
-          {
-            "not_in": {
-              "question_id": "P2_textura",
-              "values": [
-                "coagulos"
-              ]
-            }
-          },
-          {
-            "none_in": {
-              "question_id": "P3",
-              "values": [
-                "Hinchazón, pesadez, retención",
-                "Lengua hinchada"
-              ]
-            }
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "humedad": -1
-        },
-        "floor_at_zero": true
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "temporal_day12_multi_boosts_humedad": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P7",
-            "equals": "durante"
-          },
-          {
-            "question_id": "P7_durante",
-            "includes_any": [
-              "1",
-              "2"
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "humedad": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "temporal_day12_heavy_clot_boosts_humedad": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P7",
-            "equals": "durante"
-          },
-          {
-            "question_id": "P7_durante",
-            "includes_any": [
-              "1",
-              "2"
-            ]
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_textura",
-                "includes": [
-                  "coagulos"
-                ]
-              },
-              {
-                "question_id": "P2_coagulo_tamano",
-                "equals": ">2.4cm"
-              }
-            ]
-          },
-          {
-            "either": [
-              {
-                "question_id": "P2_hinchazon_severidad",
-                "at_least": 6
-              },
-              {
-                "question_id": "P3",
-                "includes": [
-                  "Hinchazón, pesadez, retención"
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "humedad": 1
-        }
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "hormonal_amenorrhea_guard": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P1",
-            "equals": "No tengo sangrado actualmente"
-          },
-          {
-            "any_in": {
-              "question_id": "P0_contraception",
-              "values": [
-                "hormonal_sistemica",
-                "hormonal_larga",
-                "diu_hormonal"
-              ]
-            }
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "sequedad": -1,
-          "frio": -1
-        },
-        "floor_at_zero": true
-      },
-      "modes": [
-        "regular",
-        "pro"
-      ]
-    },
-    "pro_flow_flooding_heat_bonus": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_patron_flujo",
-            "equals": "oleadas_inundaciones"
-          },
-          {
-            "question_id": "P2_cantidad",
-            "at_least": 9
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "calor": 1
-        }
-      },
-      "modes": [
-        "pro"
-      ]
-    },
-    "pro_drip_long_damp_bonus": {
-      "enabled": true,
-      "apply_if": {
-        "all": [
-          {
-            "question_id": "P2_patron_flujo",
-            "equals": "goteo_lento_prolongado"
-          },
-          {
-            "question_id": "P2_duracion_dias",
-            "equals": "7+"
-          }
-        ]
-      },
-      "effect": {
-        "adjust_scores": {
-          "humedad": 1
-        }
-      },
-      "modes": [
-        "pro"
-      ]
-    }
-  },
-  "confidence": {
-    "tie_breaking": {
-      "prefer_domains": [
-        "P3",
-        "P2",
-        "P2_color",
-        "P2_textura"
-      ],
-      "secondary_domains": [
-        "P4",
-        "P5",
-        "P6",
-        "P7",
-        "P2_cantidad",
-        "P3_quick_test_frio_sequedad",
-        "P2_spotting_frecuencia",
-        "P2_spotting_context",
-        "P2_coagulo_tamano",
-        "P3_capa_lingual",
-        "P2_patron_flujo",
-        "P2_olor",
-        "P2_duracion_dias",
-        "P2q_dolor_caracter",
-        "P9_digestion_transito",
-        "P9_sensibilidad_clima",
-        "P7_mastalgia_premenstrual",
-        "P2_spot_pre_post",
-        "P8_acne_ciclico"
-      ]
-    },
-    "labels": {
-      "high": "Alta",
-      "medium": "Media",
-      "low": "Baja"
-    },
-    "high_if": {
-      "margin_at_least": 3,
-      "or_dominance_override": true
-    },
-    "overrides": {
-      "mixed_high_if_margin_at_least": 4
-    },
-    "medium_if": {
-      "margin_at_least": 2
-    },
-    "low_otherwise": true,
-    "min_top_for_any_confidence": 2,
-    "near_mixed_flag_if": {
-      "enabled": true,
-      "margin_at_most": 1,
-      "secondary_core_points_at_least": 3,
-      "secondary_core_points_below": 4
-    }
-  },
-  "triage": [
-    {
-      "id": "triage_heavy",
-      "visible_if": {
-        "all": [
-          {
-            "any": [
-              {
-                "question_id": "P2",
-                "includes_any": [
-                  "Sangrado abundante (rojo brillante, sensación de calor/sed/irritabilidad)",
-                  "Sangrado abundante (prolongado, con coágulos/espeso, sensación de pesadez)"
-                ]
-              },
-              {
-                "question_id": "P2_cantidad",
-                "at_least": 7
-              }
-            ]
-          },
-          {
-            "question_id": "P2_abundancia",
-            "equals": "<1h"
-          }
-        ]
-      },
-      "payload": {
-        "severity": "high",
-        "reason": "Cambio de toalla/tampón <1h en días intensos"
-      }
-    },
-    {
-      "id": "triage_heavy_80ml",
-      "visible_if": {
-        "any": [
-          {
-            "question_id": "P2_productos_por_dia",
-            "equals": ">=7"
-          },
-          {
-            "all": [
-              {
-                "either": [
-                  {
-                    "question_id": "P2_textura",
-                    "includes": [
-                      "coagulos"
-                    ]
-                  },
-                  {
-                    "question_id": "P2_coagulo_tamano",
-                    "equals": ">2.4cm"
-                  }
-                ]
-              },
-              {
-                "question_id": "P2_cantidad",
-                "at_least": 8
-              }
-            ]
-          }
-        ]
-      },
-      "payload": {
-        "severity": "high",
-        "reason": "Flujo estimado elevado (productos ≥7/día o cantidad alta con coágulos/coágulos grandes)"
-      }
-    },
-    {
-      "id": "triage_pain",
-      "visible_if": {
-        "all": [
-          {
-            "question_id": "P2",
-            "includes": [
-              "Dolor o cólicos"
-            ]
-          },
-          {
-            "question_id": "P2q_dolor_severidad",
-            "at_least": 9
-          }
-        ]
-      },
-      "payload": {
-        "severity": "medium",
-        "reason": "Dolor 9–10/10"
-      }
-    },
-    {
-      "id": "triage_low_flow",
-      "visible_if": {
-        "all": [
-          {
-            "question_id": "P1",
-            "equals": "Irregular (varía >7 días entre ciclos)"
-          },
-          {
-            "question_id": "P2",
-            "includes": [
-              "Sangrado escaso o ausente"
-            ]
-          },
-          {
-            "question_id": "P2_escaso_frecuencia",
-            "equals": "casi_siempre"
-          },
-          {
-            "not_in": {
-              "question_id": "P0_contraception",
-              "values": [
-                "hormonal_sistemica",
-                "hormonal_larga",
-                "diu_hormonal"
-              ]
-            }
-          }
-        ]
-      },
-      "payload": {
-        "severity": "low",
-        "reason": "Irregularidad prolongada y/o sangrado escaso frecuente (conciencia de amenorrea/oligoovulación)"
-      }
-    }
-  ],
-  "labels": {
-    "tension": "Tensión",
-    "calor": "Calor",
-    "frio": "Frío",
-    "humedad": "Retención (Humedad)",
-    "sequedad": "Sequedad",
-    "tension_tendency": "Tendencia a tensión"
-  },
-  "label_explanations": {
-    "tension_tendency": "Hay nervio alto sin evidencia clara de cólico: cuida el tono del sistema nervioso y observa si aparece dolor—si sí, cambiamos a Tensión. Te daremos micro-prácticas somáticas y ‘qué observar’ para recapturar Tensión si se presentan cólicos en 1–2 ciclos."
-  },
-  "telemetry": {
-    "enabled": true,
-    "schema_version": "1.0",
-    "log_fields": [
-      "user_id",
-      "session_id",
-      "mapping_version",
-      "scores_by_axis",
-      "final_margin",
-      "top_axes",
-      "is_mixed",
-      "mixed_pair",
-      "core_points_by_axis",
-      "rules_fired",
-      "triage_flags",
-      "missing_answers",
-      "near_mixed_flag",
-      "top2_margin",
-      "pair_specific_mixed_applied:calor_humedad",
-      "tension_downgrade_guard_applied",
-      "dry_cold_disamb_boost_applied",
-      "red_flags_summary",
-      "contraception_type"
-    ],
-    "log_rules_fired": true,
-    "log_axis_points": true,
-    "log_core_points_from_domains": [
-      "P2",
-      "P3",
-      "P2_color",
-      "P2_textura"
-    ],
-    "log_missing_questions": [
-      "P2_margen_calor_humedad",
-      "P2b_margen_calor_humedad"
-    ]
-  },
-  "tie_logic": {
-    "detect_after_domains": [
-      "P2",
-      "P3",
-      "P2_color",
-      "P2_textura"
-    ],
-    "margin_threshold": 0,
-    "max_extra_prompts": 2,
-    "pairs": [
-      {
-        "top2": [
-          "frio",
-          "sequedad"
-        ],
-        "ask_ids": [
-          "P8_sequedad_detalle",
-          "P2q_dolor_alivio"
-        ],
-        "modes": [
-          "regular",
-          "pro"
-        ]
-      },
-      {
-        "top2": [
-          "tension",
-          "frio"
-        ],
-        "ask_ids": [
-          "P2q_dolor_alivio"
-        ],
-        "modes": [
-          "regular",
-          "pro"
-        ]
-      },
-      {
-        "top2": [
-          "calor",
-          "humedad"
-        ],
-        "ask_ids": [
-          "P2_margen_calor_humedad",
-          "P2b_margen_calor_humedad"
-        ],
-        "modes": [
-          "regular"
-          ]
-      },
-      {
-        "top2": [
-          "calor",
-          "humedad"
-        ],
-        "ask_ids": [
-          "P2_margen_calor_humedad"
-        ],
-        "modes": [
-          "pro"
-        ]
-      }
-    ],
-    "tag_preference": {
-      "enabled": true,
-      "apply_stage": "after_pairs",
-      "consider_tags": [
-        "bloqueo",
-        "deficiencia"
-      ],
-      "min_difference": 1,
-      "prefer_order": {
-        "bloqueo": [
-          "humedad",
-          "tension",
-          "calor",
-          "frio",
-          "sequedad"
-        ],
-        "deficiencia": [
-          "sequedad",
-          "frio",
-          "tension",
-          "humedad",
-          "calor"
-        ]
-      }
-    }
-  },
-  "ui_hints": {
-    "on_tie": {
-      "toast": "Afinemos la lectura con 1–2 preguntas rápidas ✨"
     }
   }
 }
