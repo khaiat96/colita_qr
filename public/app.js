@@ -15,6 +15,11 @@ window.surveyLoaded = false;
 
 console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
+window.handleTextInput = function(qId, value) {
+    answers[qId] = value;
+    window.updateNavigation();
+};
+
 // ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
@@ -55,10 +60,6 @@ window.startSurvey = function() {
   renderQuestion();
 };
 
-window.handleTextInput = function(qId, value) {
-    answers[qId] = value;
-    window.updateNavigation();
-};
 
 // ==================== MAIN INITIALIZATION ====================
 
@@ -93,13 +94,35 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 
 
-// --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
-    surveyQuestions.forEach(q => {
-      // 1. Top-level options
-      if (Array.isArray(q.options)) {
-        const mappingList = decisionMapping.scoring[q.id]; // ← FIXED: Added .scoring
+// Normalize all question types first
+surveyQuestions.forEach(q => {
+  if (q.type === 'singlechoice' || q.type === 'single') {
+    q.type = 'single_choice';
+  }
+});
+
+// --- THEN process the decision mapping logic ---
+surveyQuestions.forEach(q => {
+  // 1. Top-level options
+  if (Array.isArray(q.options)) {
+    const mappingList = decisionMapping.scoring[q.id];
+    if (mappingList) {
+      q.options.forEach(opt => {
+        const mapping = mappingList.find(m => m.value === opt.value);
+        if (mapping && mapping.scores) {
+          opt.scores = mapping.scores;
+        }
+      });
+    }
+  }
+
+  // 2. Compound questions (items)
+  if (q.type === "compound" && Array.isArray(q.items)) {
+    q.items.forEach(item => {
+      if (Array.isArray(item.options)) {
+        const mappingList = decisionMapping.scoring[item.id];
         if (mappingList) {
-          q.options.forEach(opt => {
+          item.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
             if (mapping && mapping.scores) {
               opt.scores = mapping.scores;
@@ -107,48 +130,26 @@ document.addEventListener('DOMContentLoaded', async function() {
           });
         }
       }
+    });
+  }
 
-      // 2. Compound questions (items)
-      if (q.type === "compound" && Array.isArray(q.items)) {
-        q.items.forEach(item => {
-          if (Array.isArray(item.options)) {
-            const mappingList = decisionMapping.scoring[item.id]; // ← FIXED: Added .scoring
-            if (mappingList) {
-              item.options.forEach(opt => {
-                const mapping = mappingList.find(m => m.value === opt.value);
-                if (mapping && mapping.scores) {
-                  opt.scores = mapping.scores;
-                }
-              });
+  // 3. Grouped questions (questions)
+  if (q.type === "grouped" && Array.isArray(q.questions)) {
+    q.questions.forEach(group => {
+      if (Array.isArray(group.options)) {
+        const mappingList = decisionMapping.scoring[group.id];
+        if (mappingList) {
+          group.options.forEach(opt => {
+            const mapping = mappingList.find(m => m.value === opt.value);
+            if (mapping && mapping.scores) {
+              opt.scores = mapping.scores;
             }
-          }
-        });
-      }
-
-      // 3. Grouped questions (questions)
-      if (q.type === "grouped" && Array.isArray(q.questions)) {
-        q.questions.forEach(group => {
-          if (Array.isArray(group.options)) {
-            const mappingList = decisionMapping.scoring[group.id]; // ← FIXED: Added .scoring
-            if (mappingList) {
-              group.options.forEach(opt => {
-                const mapping = mappingList.find(m => m.value === opt.value);
-                if (mapping && mapping.scores) {
-                  opt.scores = mapping.scores;
-                }
-              });
-            }
-          }
-        });
+          });
+        }
       }
     });
-
-    // Normalize type values for singlechoice
-    surveyQuestions.forEach(q => {
-      if (q.type === 'singlechoice') {
-        q.type = 'single_choice';
-      }
-    });
+  }
+});
 
     window.surveyLoaded = true;
     console.log('✅ Loaded', surveyQuestions.length, 'questions');
@@ -786,3 +787,4 @@ window.updateNavigation = function() {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
 };
+
