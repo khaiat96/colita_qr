@@ -3357,9 +3357,9 @@ html {
 }
 
 .tips-main-title {
-  color: #00D4AA;               /* Mismo tono teal del borde */
+  color: #00D4AA; /* mantiene el color teal */
   text-shadow:
-    0 0 6px rgba(0, 212, 170, 0.8),
-    0 0 12px rgba(0, 212, 170, 0.6);
+    0 0 2px rgba(0, 212, 170, 0.3),
+    0 0 4px rgba(0, 212, 170, 0.2);
   font-weight: 700;
 }
