@@ -27,6 +27,10 @@ window.scrollToWaitlist = function() {
   }
 };
 
+
+// ==================== INITIALIZE + LOAD TEMPLATE + DECISION MAPPING ====================
+
+
 window.startSurvey = function() {
   currentQuestionIndex = 0;
   answers = {};
@@ -69,31 +73,9 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-document.addEventListener('DOMContentLoaded', async function() {
-  showPage('landing-page');
-  isProMode = false;
 
   const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
-
-  try {
-    // ... load surveyQuestions, mapping, template ...
-    // When fully loaded, enable button:
-    if (quizBtn) quizBtn.disabled = false;
-  } catch (err) {
-    if (quizBtn) quizBtn.disabled = true;
-  }
-});
-
-// ==================== INITIALIZE + LOAD TEMPLATE + DECISION MAPPING ====================
-
-document.addEventListener('DOMContentLoaded', async function() {
-  showPage('landing-page');
-  isProMode = false;
-
-  // Disable the quiz button until loaded
-  const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = true;
+  if (quizBtn) quizBtn.disabled = false;
 
   try {
     console.log('🔍 Loading survey questions...');
