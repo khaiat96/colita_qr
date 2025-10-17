@@ -134,18 +134,37 @@
             <!-- Full detailed results will be populated here by JS -->
         </div>
         <div class="results-actions-stack">
-            <section id="email-results-form-section" style="display:none; margin-top:30px;">
-                <form id="email-results-form" class="results-footer-form">
-                    <h3>¿Quieres recibir tu reporte completo por email?</h3>
-                    <input type="text" id="email-results-name" placeholder="Tu nombre" required>
-                    <input type="email" id="email-results-email" placeholder="tu@email.com" required>
-                    <button type="submit" class="btn-primary btn-block">Enviar mi reporte</button>
-                </form>
-            </section>
+            <!-- Waitlist Footer for Results Page -->
+        <section class="waitlist-section" id="results-waitlist-section">
+        <div class="waitlist-content">
+        <h2>¿Te interesa nuestro lanzamiento?</h2>
+        <p class="waitlist-description">
+            Únete a la lista de espera y recibe novedades y beneficios exclusivos.
+        </p>
+        <form id="results-waitlist-form" class="main-waitlist-form">
+            <input type="text" id="results-waitlist-name" placeholder="Tu nombre" required>
+            <input type="email" id="results-waitlist-email" placeholder="tu@email.com" required>
+            <button type="submit" class="btn-primary">
+                Unirme a la lista de espera
+            </button>
+        </form>
+        <!-- Optionally, add same benefits grid as landing page -->
+        <div class="benefits-grid" style="margin-top:30px;">
+            <div class="benefit-item">💰 Descuento de miembro fundador</div>
+            <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
+            <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
+            <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
+        </div>
+        <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+    </div>
+</section>
             <button class="btn-primary btn-block volver-btn" onclick="showPage('landing-page')">Volver al inicio</button>
         </div>
     </div>
 </div>
+
+
+
 
     <!-- Survey Page -->
     <div id="survey-page" class="page">

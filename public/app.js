@@ -159,6 +159,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ==================== WAITLIST FORM HANDLER ====================
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Landing page waitlist
   const mainWaitlistForm = document.getElementById('main-waitlist-form');
   if (mainWaitlistForm) {
     mainWaitlistForm.addEventListener('submit', async function(e) {
@@ -179,8 +180,28 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+  // Results page waitlist
+  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+  if (resultsWaitlistForm) {
+    resultsWaitlistForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('results-waitlist-name').value;
+      const email = document.getElementById('results-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'results_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        resultsWaitlistForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
 });
-
 
 // ==================== UTILITY FUNCTIONS ====================
 
@@ -663,53 +684,17 @@ function showResults(patternKey) {
   // Inject into the results-card
   document.getElementById('results-card').innerHTML = html;
 
-  // Show email form
-  document.getElementById('email-results-form-section').style.display = 'block';
+  // HIDE email form (no longer used)
+  const emailFormSection = document.getElementById('email-results-form-section');
+  if (emailFormSection) {
+    emailFormSection.style.display = 'none';
+  }
 
   showPage('results-page');
 }
 
-// ==================== EMAIL RESULTS FORM ====================
-
-async function sendFullResultsReport(name, email) {
-  // Prepare the "full report" as HTML/text
-  // You can customize this to send all template sections, answers, and result summary
-  const patternKey = calculateResults();
-  const reportHtml = document.getElementById('results-card').innerHTML;
-
-  // Send to webhook (or Supabase, or email API)
-  try {
-    await fetch(EMAIL_REPORT_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name, email,
-        session_id: sessionId,
-        answers,
-        pattern: patternKey,
-        html_report: reportHtml
-      }),
-    });
-    alert('¡Tu reporte completo ha sido enviado a tu correo!');
-  } catch (err) {
-    alert('Hubo un error al enviar el reporte. Intenta de nuevo.');
-    console.error('Error sending report:', err);
-  }
-}
-
-// Email form handler
-document.addEventListener('DOMContentLoaded', function() {
-  const emailResultsForm = document.getElementById('email-results-form');
-  if (emailResultsForm) {
-    emailResultsForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const name = document.getElementById('email-results-name').value;
-      const email = document.getElementById('email-results-email').value;
-      await sendFullResultsReport(name, email);
-      emailResultsForm.reset();
-    });
-  }
-});
+// ==================== EMAIL RESULTS FORM (REMOVED/DEPRECATED) ====================
+// (No longer active; form is hidden by showResults)
 
 // ==================== PROGRESS BAR ====================
 
