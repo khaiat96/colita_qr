@@ -3290,63 +3290,68 @@ html {
     
 }
 
-/* Phase Care Tips – Teal-Unified Palette */
+/* Phase Care Tips – High Contrast Teal Theme */
 
 .tips-main-title {
-  background: linear-gradient(135deg, #00D4AA 0%, #20B2AA 100%);
-}
-.phase-block {
-  background: linear-gradient(135deg, rgba(6,182,212,0.15) 0%, rgba(6,182,212,0.05) 100%);
-  box-shadow: 0 8px 32px rgba(6,182,212,0.2);
-}
-.phase-block::before {
-  background: linear-gradient(135deg,
-    rgba(33,128,141,0.3) 0%,
-    rgba(33,128,141,0.3) 50%,
-    rgba(33,128,141,0.3) 100%);
-}
-.phase-block:hover {
-  box-shadow: 0 20px 60px rgba(6,182,212,0.3);
-}
-.phase-header {
-  background: rgba(6,182,212,0.1);
-  border-bottom: 1px solid rgba(6,182,212,0.3);
-}
-.phase-header::before {
-  content: '🌿';
-  color: #20B2AA;
-}
-.phase-title {
-  background: linear-gradient(135deg, #20B2AA 0%, #00D4AA 100%);
-}
-.phase-description {
-  color: #B2DFDB;
-}
-.phase-subsection {
-  background: rgba(0,212,170,0.08);
-  border-left-color: #20B2AA;
-}
-.phase-subsection::before {
-  content: '✔️';
-  color: #20B2AA;
-}
-.subsection-label {
+  font-size: 2.2rem;
   color: #00D4AA;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
+
+.phase-block {
+  background: rgba(0, 22, 27, 0.85) !important;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
+
+.phase-block::before {
+  display: none; /* remove gradient overlay */
+}
+
+.phase-header {
+  background: rgba(0, 212, 170, 0.15) !important;
+  border-bottom: 1px solid rgba(0, 212, 170, 0.4);
+}
+
+.phase-title {
+  font-size: 1.6rem;
+  color: #E0F7F4;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.phase-description {
+  color: #C0ECE8;
+  font-size: 1rem;
+}
+
+.phase-subsection {
+  background: rgba(0, 212, 170, 0.08) !important;
+  border-left-color: #00D4AA !important;
+  padding: 20px 24px;
+}
+
+.phase-subsection::before {
+  display: none; /* remove emoji */
+}
+
+.subsection-label {
+  color: #00F0C2 !important;
+  font-size: 1.1rem;
+}
+
 .subsection-list li {
-  background: rgba(6,182,212,0.05);
+  background: rgba(0, 212, 170, 0.04) !important;
+  color: #E6FFFB;
+  padding: 12px 16px;
+  border-radius: 8px;
 }
+
 .subsection-list li::before {
   content: '•';
-  color: #20B2AA;
+  color: #00DAC8 !important;
 }
+
 @media (min-width: 1200px) {
-  .phases-container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 768px) {
-  .tips-main-title { font-size: 1.8rem; }
-  .phase-title    { font-size: 1.4rem; }
-  .subsection-label { font-size: 1.1rem; }
+  .phases-container { grid-template-columns: repeat(2,1fr); }
 }
