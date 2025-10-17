@@ -3400,3 +3400,15 @@ html {
   margin-bottom: 32px;
   font-size: 2rem;
 }
+
+/* Match waitlist width to results block */
+#waitlist-section .waitlist-content {
+  max-width: 900px;    /* same as results-container */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;     /* side padding to match results */
+}
+#waitlist-section {
+  padding-top: 60px;   /* optional vertical spacing */
+  padding-bottom: 60px;
+}
