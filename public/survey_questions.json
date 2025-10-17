@@ -564,7 +564,7 @@
                     "Dolor o cólicos"
                 ]
             },
-            "questions": [
+            "items": [
                 {
                     "id": "P2q_dolor_severidad",
                     "type": "slider",
