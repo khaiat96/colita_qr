@@ -25,6 +25,34 @@ window.scrollToWaitlist = function() {
   }
 };
 
+
+// ==================== PAGE NAVIGATION ====================
+function showPage(pageId) {
+  // Hide all pages
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(page => {
+    page.classList.remove('active');
+    page.style.display = 'none';
+  });
+  
+  // Show the requested page
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) {
+    targetPage.classList.add('active');
+    targetPage.style.display = 'block';
+    
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    console.log(`✓ Switched to page: ${pageId}`);
+  } else {
+    console.error(`✗ Page not found: ${pageId}`);
+  }
+}
+
+
+
+
 window.startSurvey = function() {
   currentQuestionIndex = 0;
   answers = {};
