@@ -67,80 +67,67 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   try {
     // Load survey questions
-    const surveyResp = await fetch('survey_questions-combined.json');
+    const surveyResp = await fetch('survey_questions.json');
     if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
     const surveyData = await surveyResp.json();
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
     // Load decision mapping
-    const mappingResp = await fetch('decision_mapping-combined.json');
+    const mappingResp = await fetch('decision_mapping.json');
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
-    // --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
-    surveyQuestions.forEach(q => {
-      // 1. Top-level options
-      if (Array.isArray(q.options)) {
-        // For P5 special mapping
-        if (q.id === "P5" && Array.isArray(q.value_map)) {
-          const p5Scores = decisionMapping["P5_score_keys"];
-          q.options.forEach(opt => {
-            const mapEntry = q.value_map.find(vm => vm.value === opt.value);
-            if (mapEntry) {
-              const scoreEntry = p5Scores.find(ps => ps.value === mapEntry.score_key);
-              if (scoreEntry && scoreEntry.scores) {
-                opt.scores = scoreEntry.scores;
-              }
+// --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
+surveyQuestions.forEach(q => {
+  // 1. Top-level options
+  if (Array.isArray(q.options)) {
+    // Standard mapping for normal questions (no special P5 logic)
+    const mappingList = decisionMapping[q.id];
+    if (mappingList) {
+      q.options.forEach(opt => {
+        const mapping = mappingList.find(m => m.value === opt.value);
+        if (mapping && mapping.scores) {
+          opt.scores = mapping.scores;
+        }
+      });
+    }
+  }
+
+  // 2. Compound questions (items)
+  if (q.type === "compound" && Array.isArray(q.items)) {
+    q.items.forEach(item => {
+      if (Array.isArray(item.options)) {
+        const mappingList = decisionMapping[item.id];
+        if (mappingList) {
+          item.options.forEach(opt => {
+            const mapping = mappingList.find(m => m.value === opt.value);
+            if (mapping && mapping.scores) {
+              opt.scores = mapping.scores;
             }
           });
-        } else {
-          const mappingList = decisionMapping[q.id];
-          if (mappingList) {
-            q.options.forEach(opt => {
-              const mapping = mappingList.find(m => m.value === opt.value);
-              if (mapping && mapping.scores) {
-                opt.scores = mapping.scores;
-              }
-            });
-          }
         }
       }
+    });
+  }
 
-      // 2. Compound questions (items)
-      if (q.type === "compound" && Array.isArray(q.items)) {
-        q.items.forEach(item => {
-          if (Array.isArray(item.options)) {
-            const mappingList = decisionMapping[item.id];
-            if (mappingList) {
-              item.options.forEach(opt => {
-                const mapping = mappingList.find(m => m.value === opt.value);
-                if (mapping && mapping.scores) {
-                  opt.scores = mapping.scores;
-                }
-              });
+  // 3. Grouped questions (questions)
+  if (q.type === "grouped" && Array.isArray(q.questions)) {
+    q.questions.forEach(group => {
+      if (Array.isArray(group.options)) {
+        const mappingList = decisionMapping[group.id];
+        if (mappingList) {
+          group.options.forEach(opt => {
+            const mapping = mappingList.find(m => m.value === opt.value);
+            if (mapping && mapping.scores) {
+              opt.scores = mapping.scores;
             }
-          }
-        });
-      }
-
-      // 3. Grouped questions (questions)
-      if (q.type === "grouped" && Array.isArray(q.questions)) {
-        q.questions.forEach(group => {
-          if (Array.isArray(group.options)) {
-            const mappingList = decisionMapping[group.id];
-            if (mappingList) {
-              group.options.forEach(opt => {
-                const mapping = mappingList.find(m => m.value === opt.value);
-                if (mapping && mapping.scores) {
-                  opt.scores = mapping.scores;
-                }
-              });
-            }
-          }
-        });
+          });
+        }
       }
     });
+  }
+});
 
     // Load results template
     const templateResp = await fetch('results_template.json');

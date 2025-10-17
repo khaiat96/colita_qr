@@ -1116,36 +1116,6 @@
       "validation": {
         "minselected": 0
       },
-      "value_map": [
-        {
-          "value": "P5_dulce_simple",
-          "score_key": "Dulce simple"
-        },
-        {
-          "value": "P5_carbo_complejos",
-          "score_key": "Carbohidratos complejos"
-        },
-        {
-          "value": "P5_salado",
-          "score_key": "Salado"
-        },
-        {
-          "value": "P5_picante",
-          "score_key": "Picante"
-        },
-        {
-          "value": "P5_frio_hielo",
-          "score_key": "Alimentos fríos / hielo"
-        },
-        {
-          "value": "P5_caliente",
-          "score_key": "Caldos, sopas o tés calientes"
-        },
-        {
-          "value": "P5_jugoso",
-          "score_key": "Frutas jugosas o alimentos húmedos"
-        }
-      ],
       "modes": [
         "regular",
         "pro"
