@@ -292,7 +292,8 @@ function renderQuestion() {
         finishSurvey();
         return;
     }
-
+    console.log('Rendering question:', question.id, 'type:', question.type, 'options:', question.options);
+  
     // Skip invisible questions
     while (question && !isQuestionVisible(question, answers)) {
         const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
