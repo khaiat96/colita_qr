@@ -10,7 +10,6 @@ let surveyQuestions = [];
 let answers = {};
 let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-let isProMode = false;
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
@@ -60,7 +59,6 @@ window.startSurvey = function() {
 
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
-  isProMode = false;
 
   const quizBtn = document.getElementById('take-quiz-btn');
   if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
@@ -609,7 +607,6 @@ function showResults(patternKey) {
   // ─────────── Build your results HTML ───────────
 
   let html = `
-    ${proModeText}
     <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || label}</h2>
     <h3>${summary}</h3>
     ${renderPatternCard(patternKey)}
