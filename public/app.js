@@ -27,13 +27,29 @@ window.scrollToWaitlist = function() {
   }
 };
 
+// At top of file, or at least before DOMContentLoaded
 window.startSurvey = function() {
-  // Set initial values, show survey page, render first question
   currentQuestionIndex = 0;
   answers = {};
   showPage('survey-page');
   renderQuestion();
 };
+
+document.addEventListener('DOMContentLoaded', async function() {
+  showPage('landing-page');
+  isProMode = false;
+
+  const quizBtn = document.getElementById('take-quiz-btn');
+  if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
+
+  try {
+    // ... load surveyQuestions, mapping, template ...
+    // When fully loaded, enable button:
+    if (quizBtn) quizBtn.disabled = false;
+  } catch (err) {
+    if (quizBtn) quizBtn.disabled = true;
+  }
+});
 
 // ==================== INITIALIZE + LOAD TEMPLATE + DECISION MAPPING ====================
 
