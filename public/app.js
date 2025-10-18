@@ -130,8 +130,8 @@ surveyQuestions.forEach(q => {
 surveyQuestions.forEach(q => {
   // 1. Top-level options
   if (Array.isArray(q.options)) {
-    const mappingList = decisionMapping.scoring[q.id];
-    if (mappingList) {
+const mappingList = decisionMapping?.scoring?.[id] || decisionMapping?.decision_map?.[id];
+if (mappingList) {
       q.options.forEach(opt => {
         const mapping = mappingList.find(m => m.value === opt.value);
         if (mapping && mapping.scores) {
