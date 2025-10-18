@@ -240,8 +240,25 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==================== UTILITY FUNCTIONS ====================
 
 function getQuestionById(qId) {
-  return surveyQuestions.find(q => q.id === qId);
+  for (const q of surveyQuestions) {
+    if (q.id === qId) return q;
+
+    // Check compound items
+    if (q.type === 'compound' && Array.isArray(q.items)) {
+      const match = q.items.find(item => item.id === qId);
+      if (match) return match;
+    }
+
+    // Check grouped questions
+    if (q.type === 'grouped' && Array.isArray(q.questions)) {
+      const match = q.questions.find(item => item.id === qId);
+      if (match) return match;
+    }
+  }
+
+  return null; // Not found
 }
+
 
 function isQuestionVisible(question, answers) {
   if (!question) return false;
