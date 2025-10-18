@@ -130,10 +130,10 @@ surveyQuestions.forEach(q => {
 surveyQuestions.forEach(q => {
   // 1. Top-level options
   if (Array.isArray(q.options)) {
-const mappingList = decisionMapping?.scoring?.[q.id] || decisionMapping?.decision_map?.[q.id];
+const mappingList = decisionMapping?.decision_map?.[q.id];
 if (mappingList) {
       q.options.forEach(opt => {
-        const mapping = mappingList.find(m => m.value === opt.value);
+    const mapping = mappingList[opt.value];
         if (mapping && mapping.scores) {
           opt.scores = mapping.scores;
         }
@@ -145,11 +145,11 @@ if (mappingList) {
   if (q.type === "compound" && Array.isArray(q.items)) {
     q.items.forEach(item => {
       if (Array.isArray(item.options)) {
-        const mappingList = decisionMapping?.decision_map?.[id][item.id];
+      const mappingList = decisionMapping?.decision_map?.[q.id][item.id];
         if (mappingList) {
           item.options.forEach(opt => {
-            const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
+        const mapping = mappingList[opt.value];            
+if (mapping && mapping.scores) {
               opt.scores = mapping.scores;
             }
           });
