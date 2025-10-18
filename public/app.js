@@ -60,6 +60,72 @@ function evaluateCondition(condition, currentAnswers) {
   return false;
 }
 
+// ==================== COMPOUND HELPER FUNCTION ====================
+
+function renderCompoundItem(item) {
+  const qId = item.id;
+  let html = `<div style="margin: 20px 0; padding: 15px; border-left: 3px solid #00D4AA; background: rgba(0, 212, 170, 0.05);">`;
+  html += `<h4 style="margin: 0 0 10px 0; color: #333;">${item.title}</h4>`;
+  
+  if (item.help_text) {
+    html += `<p style="color: #b0b0b0; margin-bottom: 15px; font-size: 14px;">${item.help_text}</p>`;
+  }
+
+  // Single choice or single_choice
+  if (item.type === 'single' || item.type === 'single_choice') {
+    html += `<div class="options">`;
+    item.options.forEach(opt => {
+      const checked = answers[qId] === opt.value ? 'selected' : '';
+      html += `
+        <div class="option ${checked}" onclick="selectSingleOption('${qId}', '${opt.value}', this)">
+          ${opt.label}
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Multiselect
+  else if (item.type === 'multiselect') {
+    html += `<div class="options">`;
+    const currentAnswers = answers[qId] || [];
+    item.options.forEach(opt => {
+      const checked = currentAnswers.includes(opt.value) ? 'selected' : '';
+      html += `
+        <div class="option ${checked}" onclick="toggleMultiOption('${qId}', '${opt.value}', this)">
+          ${opt.label}
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Text input
+  else if (item.type === 'text') {
+    const currentValue = answers[qId] || '';
+    html += `<input type="text" class="input-text" 
+      value="${currentValue}" 
+      oninput="window.handleTextInput('${qId}', this.value)" 
+      placeholder="${item.placeholder || 'Escribe tu respuesta...'}">`;
+  }
+
+  // Slider
+  else if (item.type === 'slider') {
+    const val = answers[qId] || item.default || item.min || 5;
+    html += `<div class="slider-container" style="margin: 20px 0;">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="color: #b0b0b0; min-width: 20px;">${item.min || 0}</span>
+        <input type="range" min="${item.min || 1}" max="${item.max || 10}" 
+          value="${val}" class="slider" style="flex: 1;"
+          oninput="answers['${qId}'] = parseInt(this.value); this.nextElementSibling.nextElementSibling.textContent = this.value; window.updateNavigation();">
+        <span style="color: #b0b0b0; min-width: 20px;">${item.max || 10}</span>
+        <span style="color: #00D4AA; font-weight: bold; min-width: 30px;">${val}</span>
+      </div>
+    </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
 // ==================== WAITLIST HANDLING ====================
 
 async function handleWaitlistSubmission(formData) {
@@ -301,6 +367,15 @@ function renderQuestion() {
     </div>`;
   }
 
+  // COMPOUND QUESTIONS - NEW ADDITION (KEEPS YOUR EXISTING STYLING)
+  else if (question.type === 'compound' && Array.isArray(question.items)) {
+    html += '</div>'; // Close the options div first
+    question.items.forEach(item => {
+      html += renderCompoundItem(item);
+    });
+    html += '<div class="options">'; // Reopen for consistency
+  }
+
   html += `</div></div>`;
   container.innerHTML = html;
 
@@ -494,7 +569,25 @@ window.updateNavigation = function() {
 
   if (!question) return;
 
-  if (question.type === 'multiselect') {
+  // ADD COMPOUND VALIDATION
+  if (question.type === 'compound') {
+    let allRequired = true;
+    if (question.items && Array.isArray(question.items)) {
+      question.items.forEach(item => {
+        if (item.required) {
+          const itemAnswer = answers[item.id];
+          if (!itemAnswer || (typeof itemAnswer === 'string' && itemAnswer.trim() === '')) {
+            allRequired = false;
+          }
+          if (item.type === 'multiselect' && Array.isArray(itemAnswer) && itemAnswer.length === 0) {
+            allRequired = false;
+          }
+        }
+      });
+    }
+    hasAnswer = allRequired;
+  }
+  else if (question.type === 'multiselect') {
     const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
     const minSelected = question.validation?.minselected ?? 1;
     hasAnswer = minSelected === 0 || selected.length >= minSelected;
@@ -608,4 +701,4 @@ window.resetSurvey = function () {
   }
 };
 
-console.log("✅ app.js loaded and ready - USING YOUR CSS CLASSES!");
+console.log("✅ app.js loaded and ready - USING YOUR CSS CLASSES + COMPOUND SUPPORT!");
