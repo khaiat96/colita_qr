@@ -145,7 +145,7 @@ if (mappingList) {
   if (q.type === "compound" && Array.isArray(q.items)) {
     q.items.forEach(item => {
       if (Array.isArray(item.options)) {
-        const mappingList = decisionMapping.scoring[item.id];
+        const mappingList = decisionMapping?.decision_map?.[id][item.id];
         if (mappingList) {
           item.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
@@ -162,7 +162,7 @@ if (mappingList) {
   if (q.type === "grouped" && Array.isArray(q.questions)) {
     q.questions.forEach(group => {
       if (Array.isArray(group.options)) {
-        const mappingList = decisionMapping.scoring[group.id];
+        const mappingList = decisionMapping?.decision_map?.[id][group.id];
         if (mappingList) {
           group.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
