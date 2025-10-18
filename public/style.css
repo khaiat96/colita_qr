@@ -3507,3 +3507,76 @@ html {
   background: linear-gradient(90deg, #20b8a0 0%, #6b73ff 60%, #FF6B9D 100%);
   transform: translateY(-2px) scale(1.03);
 }
+
+/* === SURVEY OVERRIDES === */
+
+/* Question container formatting */
+.question {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+/* Question title (e.g. P1 - Energy) */
+.question h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #ffffff;
+  line-height: 1.4;
+  background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Label for inputs */
+.question label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #b0b0b0;
+  cursor: pointer;
+  padding-left: 5px;
+}
+
+/* Radio and checkbox options */
+.question input[type="radio"],
+.question input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.2);
+}
+
+/* Input wrapper for inline spacing */
+.question .option {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+
+/* Progress bar styling */
+#progress-bar {
+  height: 10px;
+  background: linear-gradient(to right, #00D4AA, #6B73FF);
+  border-radius: 5px;
+  margin: 20px 0;
+  transition: width 0.3s ease-in-out;
+}
+
+/* Navigation buttons in survey */
+.survey-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.survey-nav .btn-back,
+.survey-nav .btn-next {
+  flex: 1;
+  margin: 0 10px;
+}
