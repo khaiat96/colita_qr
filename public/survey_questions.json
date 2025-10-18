@@ -494,7 +494,7 @@
                         },
                         {
                              "label": "Espeso o pegajoso",
-                             "value": "espeso",
+                             "value": "espeso"
                         }
                     ],
                     "validation": {
