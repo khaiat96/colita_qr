@@ -13,7 +13,7 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - FIXED TO MATCH YOUR CSS CLASSES');
+console.log('🚀 APP.JS LOADED - FIXED FOR YOUR JSON STRUCTURE + COMPOUND QUESTIONS');
 
 // ==================== HELPER FUNCTIONS ====================
 
@@ -58,6 +58,97 @@ function evaluateCondition(condition, currentAnswers) {
   }
   
   return false;
+}
+
+// ==================== COMPOUND QUESTION ITEM RENDERER ====================
+
+function renderQuestionItem(item, isInCompound = false) {
+  const qId = item.id;
+  let html = '';
+  
+  if (isInCompound) {
+    html += `<div class="compound-item">`;
+    html += `<h4 class="compound-item-title">${item.title}</h4>`;
+    if (item.help_text) {
+      html += `<p class="compound-item-help">${item.help_text}</p>`;
+    }
+  }
+
+  // Single choice or single_choice (your JSON has both)
+  if (item.type === 'single' || item.type === 'single_choice') {
+    html += '<div class="options-container">';
+    item.options.forEach(opt => {
+      const checked = answers[qId] === opt.value ? 'checked' : '';
+      html += `
+        <label class="option-label ${checked}">
+          <input type="radio" name="${qId}" value="${opt.value}" 
+            onchange="answers['${qId}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
+          <span>${opt.label}</span>
+        </label>`;
+    });
+    html += '</div>';
+  }
+
+  // Multiselect
+  else if (item.type === 'multiselect') {
+    html += '<div class="options-container multiselect">';
+    const currentAnswers = answers[qId] || [];
+    item.options.forEach(opt => {
+      const checked = currentAnswers.includes(opt.value) ? 'checked' : '';
+      html += `
+        <label class="option-label ${checked}">
+          <input type="checkbox" value="${opt.value}" 
+            onchange="
+              if (!Array.isArray(answers['${qId}'])) answers['${qId}'] = [];
+              if (this.checked) {
+                if (!answers['${qId}'].includes(this.value)) answers['${qId}'].push(this.value);
+              } else {
+                answers['${qId}'] = answers['${qId}'].filter(v => v !== this.value);
+              }
+              window.updateNavigation();
+              updateOptionSelection(this);
+            " ${checked}>
+          <span>${opt.label}</span>
+        </label>`;
+    });
+    html += '</div>';
+  }
+
+  // Text input
+  else if (item.type === 'text') {
+    const currentValue = answers[qId] || '';
+    html += `<input type="text" class="text-input" 
+      value="${currentValue}" 
+      oninput="window.handleTextInput('${qId}', this.value)" 
+      placeholder="${item.placeholder || ''}">`;
+  }
+
+  // Slider
+  else if (item.type === 'slider') {
+    const val = answers[qId] || item.default || item.min || 5;
+    html += `<div class="slider-container">
+      <input type="range" min="${item.min || 1}" max="${item.max || 10}" 
+        value="${val}" class="slider"
+        oninput="answers['${qId}'] = parseInt(this.value); this.nextElementSibling.textContent = this.value; window.updateNavigation();">
+      <span class="slider-value">${val}</span>
+    </div>`;
+    
+    // Add tick marks if they exist
+    if (item.tick_marks && item.tick_labels) {
+      html += '<div class="slider-ticks">';
+      item.tick_marks.forEach(tick => {
+        const label = item.tick_labels[tick] || tick;
+        html += `<span class="tick-label">${label}</span>`;
+      });
+      html += '</div>';
+    }
+  }
+
+  if (isInCompound) {
+    html += '</div>'; // Close compound-item
+  }
+
+  return html;
 }
 
 // ==================== WAITLIST HANDLING ====================
@@ -242,102 +333,112 @@ function renderQuestion() {
     return;
   }
 
-  // Use CSS classes that match your style.css
-  let html = `<div class="question">
-    <h3>${question.title}</h3>`;
+  let html = `<div class="question-header">
+    <p class="question-number">Pregunta ${currentQuestionIndex + 1}</p>
+    <h3 class="question-text">${question.title}</h3>`;
 
   if (question.help_text) {
-    html += `<p style="color: #b0b0b0; margin-bottom: 20px;">${question.help_text}</p>`;
+    html += `<p class="question-subtext">${question.help_text}</p>`;
   }
 
-  html += `<div class="options">`;
+  html += `</div><div class="question-body">`;
 
   // Single choice (your JSON uses "single")
   if (question.type === 'single') {
+    html += '<div class="options-container">';
     question.options.forEach(opt => {
-      const checked = answers[qId] === opt.value ? 'selected' : '';
+      const checked = answers[qId] === opt.value ? 'checked' : '';
       html += `
-        <div class="option ${checked}" onclick="selectSingleOption('${qId}', '${opt.value}', this)">
-          <input type="radio" name="${qId}" value="${opt.value}" ${checked ? 'checked' : ''} style="display: none;">
-          ${opt.label}
-        </div>`;
+        <label class="option-label ${checked}">
+          <input type="radio" name="${qId}" value="${opt.value}" 
+            onchange="answers['${qId}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
+          <span>${opt.label}</span>
+        </label>`;
     });
+    html += '</div>';
   }
 
   // Multiselect
   else if (question.type === 'multiselect') {
+    html += '<div class="options-container multiselect">';
     const currentAnswers = answers[qId] || [];
     question.options.forEach(opt => {
-      const checked = currentAnswers.includes(opt.value) ? 'selected' : '';
+      const checked = currentAnswers.includes(opt.value) ? 'checked' : '';
       html += `
-        <div class="option ${checked}" onclick="toggleMultiOption('${qId}', '${opt.value}', this)">
-          <input type="checkbox" value="${opt.value}" ${checked ? 'checked' : ''} style="display: none;">
-          ${opt.label}
-        </div>`;
+        <label class="option-label ${checked}">
+          <input type="checkbox" value="${opt.value}" 
+            onchange="
+              if (!Array.isArray(answers['${qId}'])) answers['${qId}'] = [];
+              if (this.checked) {
+                if (!answers['${qId}'].includes(this.value)) answers['${qId}'].push(this.value);
+              } else {
+                answers['${qId}'] = answers['${qId}'].filter(v => v !== this.value);
+              }
+              window.updateNavigation();
+              updateOptionSelection(this);
+            " ${checked}>
+          <span>${opt.label}</span>
+        </label>`;
     });
+    html += '</div>';
   }
 
   // Text input
   else if (question.type === 'text') {
     const currentValue = answers[qId] || '';
-    html += `<input type="text" class="input-text" 
+    html += `<input type="text" class="text-input" 
       value="${currentValue}" 
       oninput="window.handleTextInput('${qId}', this.value)" 
-      placeholder="${question.placeholder || 'Escribe tu respuesta...'}">`;
+      placeholder="${question.placeholder || ''}">`;
   }
 
   // Slider
   else if (question.type === 'slider') {
     const val = answers[qId] || question.default || question.min || 5;
-    html += `<div class="slider-container" style="margin: 20px 0;">
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="color: #b0b0b0; min-width: 20px;">${question.min || 0}</span>
-        <input type="range" min="${question.min || 1}" max="${question.max || 10}" 
-          value="${val}" class="slider" style="flex: 1;"
-          oninput="answers['${qId}'] = parseInt(this.value); this.nextElementSibling.nextElementSibling.textContent = this.value; window.updateNavigation();">
-        <span style="color: #b0b0b0; min-width: 20px;">${question.max || 10}</span>
-        <span style="color: #00D4AA; font-weight: bold; min-width: 30px;">${val}</span>
-      </div>
+    html += `<div class="slider-container">
+      <input type="range" min="${question.min || 1}" max="${question.max || 10}" 
+        value="${val}" class="slider"
+        oninput="answers['${qId}'] = parseInt(this.value); this.nextElementSibling.textContent = this.value; window.updateNavigation();">
+      <span class="slider-value">${val}</span>
     </div>`;
   }
 
-  html += `</div></div>`;
+  // Compound questions - NOW PROPERLY IMPLEMENTED
+  else if (question.type === 'compound' && Array.isArray(question.items)) {
+    html += '<div class="compound-question">';
+    question.items.forEach(item => {
+      html += renderQuestionItem(item, true);
+    });
+    html += '</div>';
+  }
+
+  html += `</div>`;
   container.innerHTML = html;
 
   updateProgress();
   window.updateNavigation();
 }
 
-// ==================== OPTION SELECTION HANDLERS ====================
-
-window.selectSingleOption = function(qId, value, element) {
-  // Remove selected class from all options in this question
-  const container = element.parentElement;
-  container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+// Helper function to update option selection visual state
+function updateOptionSelection(inputElement) {
+  const label = inputElement.closest('.option-label');
+  if (!label) return;
   
-  // Add selected class to clicked option
-  element.classList.add('selected');
-  
-  // Update answer
-  answers[qId] = value;
-  window.updateNavigation();
-};
-
-window.toggleMultiOption = function(qId, value, element) {
-  if (!Array.isArray(answers[qId])) answers[qId] = [];
-  
-  if (answers[qId].includes(value)) {
-    // Remove from selection
-    answers[qId] = answers[qId].filter(v => v !== value);
-    element.classList.remove('selected');
-  } else {
-    // Add to selection
-    answers[qId].push(value);
-    element.classList.add('selected');
+  if (inputElement.type === 'radio') {
+    // Remove checked class from all radio options in the same group
+    const container = label.closest('.options-container');
+    if (container) {
+      container.querySelectorAll('.option-label').forEach(l => l.classList.remove('checked'));
+    }
   }
   
-  window.updateNavigation();
-};
+  // Add or remove checked class based on input state
+  if (inputElement.checked) {
+    label.classList.add('checked');
+  } else {
+    label.classList.remove('checked');
+  }
+}
 
 window.handleTextInput = function(qId, value) {
   answers[qId] = value;
@@ -494,7 +595,34 @@ window.updateNavigation = function() {
 
   if (!question) return;
 
-  if (question.type === 'multiselect') {
+  // For compound questions, check if all required sub-items are answered
+  if (question.type === 'compound') {
+    let allCompoundItemsAnswered = true;
+    
+    if (question.items && Array.isArray(question.items)) {
+      question.items.forEach(item => {
+        if (item.required) {
+          const itemAnswer = answers[item.id];
+          if (item.type === 'multiselect') {
+            const selected = Array.isArray(itemAnswer) ? itemAnswer : [];
+            const minSelected = item.validation?.minselected ?? 1;
+            if (minSelected > 0 && selected.length < minSelected) {
+              allCompoundItemsAnswered = false;
+            }
+          } else if (item.type === 'single' || item.type === 'single_choice') {
+            if (!itemAnswer) allCompoundItemsAnswered = false;
+          } else if (item.type === 'slider') {
+            if (typeof itemAnswer !== 'number') allCompoundItemsAnswered = false;
+          } else if (item.type === 'text') {
+            if (!itemAnswer || itemAnswer.trim() === '') allCompoundItemsAnswered = false;
+          }
+        }
+      });
+    }
+    
+    hasAnswer = allCompoundItemsAnswered;
+  }
+  else if (question.type === 'multiselect') {
     const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
     const minSelected = question.validation?.minselected ?? 1;
     hasAnswer = minSelected === 0 || selected.length >= minSelected;
@@ -608,4 +736,4 @@ window.resetSurvey = function () {
   }
 };
 
-console.log("✅ app.js loaded and ready - USING YOUR CSS CLASSES!");
+console.log("✅ app.js loaded and ready - COMPOUND QUESTIONS FIXED!");
