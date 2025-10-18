@@ -660,22 +660,22 @@
     {
       "label": "Irritabilidad o enojo",
       "value": "irritabilidad",
-      "scores": { "calor": 3, "tension": 2 }  // Heat + tension
+      "scores": { "calor": 3, "tension": 2 } 
     },
     {
       "label": "Tristeza o llanto fácil",
       "value": "tristeza",
-      "scores": { "frio": 3 }  // Cold/depression
+      "scores": { "frio": 3 }  
     },
     {
       "label": "Antojos intensos de comida",
       "value": "antojos",
-      "scores": { "humedad": 2 }  // Damp pattern
+      "scores": { "humedad": 2 }  
     },
     {
       "label": "Insomnio o sueño inquieto",
       "value": "insomnio",
-      "scores": { "tension": 3, "calor": 2 }  // Wind/tension + heat
+      "scores": { "tension": 3, "calor": 2 }  
     },
     {
       "label": "Ninguno en particular",
