@@ -1,4 +1,4 @@
-// Configuration
+// Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
@@ -13,413 +13,12 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - FIXED TO MATCH YOUR CSS CLASSES');
-
-// ==================== HELPER FUNCTIONS ====================
-
-function getQuestionById(qId) {
-  return surveyQuestions.find(q => q.id === qId);
-}
-
-function isQuestionVisible(question, currentAnswers) {
-  if (!question || !question.visible_if) return true;
-  
-  const cond = question.visible_if;
-  
-  // Handle "any" conditions
-  if (cond.any && Array.isArray(cond.any)) {
-    return cond.any.some(condition => evaluateCondition(condition, currentAnswers));
-  }
-  
-  // Handle "all" conditions  
-  if (cond.all && Array.isArray(cond.all)) {
-    return cond.all.every(condition => evaluateCondition(condition, currentAnswers));
-  }
-  
-  // Handle direct condition
-  return evaluateCondition(cond, currentAnswers);
-}
-
-function evaluateCondition(condition, currentAnswers) {
-  const answer = currentAnswers[condition.question_id];
-  
-  if (!answer) return false;
-  
-  if (condition.equals) {
-    return answer === condition.equals;
-  }
-  
-  if (condition.includes && Array.isArray(condition.includes)) {
-    if (Array.isArray(answer)) {
-      return condition.includes.some(val => answer.includes(val));
-    } else {
-      return condition.includes.includes(answer);
-    }
-  }
-  
-  return false;
-}
-
-// ==================== COMPOUND HELPER FUNCTION ====================
-
-function renderCompoundItem(item) {
-  const qId = item.id;
-  let html = `<div style="margin: 20px 0; padding: 15px; border-left: 3px solid #00D4AA; background: rgba(0, 212, 170, 0.05);">`;
-  html += `<h4 style="margin: 0 0 10px 0; color: #333;">${item.title}</h4>`;
-  
-  if (item.help_text) {
-    html += `<p style="color: #b0b0b0; margin-bottom: 15px; font-size: 14px;">${item.help_text}</p>`;
-  }
-
-  // Single choice or single_choice
-  if (item.type === 'single' || item.type === 'single_choice') {
-    html += `<div class="options">`;
-    item.options.forEach(opt => {
-      const checked = answers[qId] === opt.value ? 'selected' : '';
-      html += `
-        <div class="option ${checked}" onclick="selectSingleOption('${qId}', '${opt.value}', this)">
-          ${opt.label}
-        </div>`;
-    });
-    html += `</div>`;
-  }
-
-  // Multiselect
-  else if (item.type === 'multiselect') {
-    html += `<div class="options">`;
-    const currentAnswers = answers[qId] || [];
-    item.options.forEach(opt => {
-      const checked = currentAnswers.includes(opt.value) ? 'selected' : '';
-      html += `
-        <div class="option ${checked}" onclick="toggleMultiOption('${qId}', '${opt.value}', this)">
-          ${opt.label}
-        </div>`;
-    });
-    html += `</div>`;
-  }
-
-  // Text input
-  else if (item.type === 'text') {
-    const currentValue = answers[qId] || '';
-    html += `<input type="text" class="input-text" 
-      value="${currentValue}" 
-      oninput="window.handleTextInput('${qId}', this.value)" 
-      placeholder="${item.placeholder || 'Escribe tu respuesta...'}">`;
-  }
-
-  // Slider
-  else if (item.type === 'slider') {
-    const val = answers[qId] || item.default || item.min || 5;
-    html += `<div class="slider-container" style="margin: 20px 0;">
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="color: #b0b0b0; min-width: 20px;">${item.min || 0}</span>
-        <input type="range" min="${item.min || 1}" max="${item.max || 10}" 
-          value="${val}" class="slider" style="flex: 1;"
-          oninput="answers['${qId}'] = parseInt(this.value); this.nextElementSibling.nextElementSibling.textContent = this.value; window.updateNavigation();">
-        <span style="color: #b0b0b0; min-width: 20px;">${item.max || 10}</span>
-        <span style="color: #00D4AA; font-weight: bold; min-width: 30px;">${val}</span>
-      </div>
-    </div>`;
-  }
-
-  html += `</div>`;
-  return html;
-}
-
-// ==================== WAITLIST HANDLING ====================
-
-async function handleWaitlistSubmission(formData) {
-  try {
-    console.log('📝 Submitting to waitlist:', formData);
-    
-    const response = await fetch(WAITLIST_WEBHOOK, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        timestamp: new Date().toISOString(),
-        source: formData.source || 'landing_page'
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    console.log('✅ Waitlist submission successful');
-    
-    // Show success message
-    alert('¡Gracias! Te has unido exitosamente a la lista de espera. Te notificaremos cuando estemos listos para el lanzamiento.');
-    
-    return true;
-  } catch (error) {
-    console.error('❌ Waitlist submission failed:', error);
-    alert('Hubo un error al unirte a la lista de espera. Por favor intenta de nuevo.');
-    return false;
-  }
-}
-
-function setupWaitlistForms() {
-  // Main waitlist form on landing page
-  const mainWaitlistForm = document.getElementById('main-waitlist-form');
-  if (mainWaitlistForm) {
-    mainWaitlistForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = document.getElementById('main-waitlist-name').value.trim();
-      const email = document.getElementById('main-waitlist-email').value.trim();
-      
-      if (!name || !email) {
-        alert('Por favor completa todos los campos.');
-        return;
-      }
-      
-      const success = await handleWaitlistSubmission({
-        name,
-        email,
-        source: 'landing_page'
-      });
-      
-      if (success) {
-        mainWaitlistForm.reset();
-      }
-    });
-  }
-
-  // Results page waitlist form
-  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
-  if (resultsWaitlistForm) {
-    resultsWaitlistForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = document.getElementById('results-waitlist-name').value.trim();
-      const email = document.getElementById('results-waitlist-email').value.trim();
-      
-      if (!name || !email) {
-        alert('Por favor completa todos los campos.');
-        return;
-      }
-      
-      const success = await handleWaitlistSubmission({
-        name,
-        email,
-        source: 'results_page'
-      });
-      
-      if (success) {
-        resultsWaitlistForm.reset();
-      }
-    });
-  }
-
-  // Standalone waitlist page form
-  const waitlistForm = document.getElementById('waitlist-form');
-  if (waitlistForm) {
-    waitlistForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = document.getElementById('waitlist-name').value.trim();
-      const email = document.getElementById('waitlist-email').value.trim();
-      
-      if (!name || !email) {
-        alert('Por favor completa todos los campos.');
-        return;
-      }
-      
-      const success = await handleWaitlistSubmission({
-        name,
-        email,
-        source: 'waitlist_page'
-      });
-      
-      if (success) {
-        waitlistForm.reset();
-        // Optionally redirect to landing page
-        showPage('landing-page');
-      }
-    });
-  }
-}
-
-// ==================== PAGE NAVIGATION ====================
-
-function showPage(pageId) {
-  const pages = document.querySelectorAll('.page');
-  pages.forEach(page => {
-    page.classList.remove('active');
-    page.style.display = 'none';
-  });
-
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) {
-    targetPage.classList.add('active');
-    targetPage.style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    console.log(`✓ Switched to page: ${pageId}`);
-  } else {
-    console.error(`✗ Page not found: ${pageId}`);
-  }
-}
-
-// ==================== WAITLIST SCROLL ====================
-
-window.scrollToWaitlist = function () {
-  const waitlistSection = document.getElementById('waitlist-section');
-  if (waitlistSection) {
-    waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  } else {
-    console.error('⚠️ Could not find waitlist-section');
-  }
-};
-
-// ==================== SURVEY START ====================
-
-window.startSurvey = function () {
-  if (!surveyQuestions || surveyQuestions.length === 0) {
-    alert('Las preguntas no se han cargado correctamente.');
-    return;
-  }
-  
-  currentQuestionIndex = 0;
-  answers = {};
-  showPage('survey-page');
-  renderQuestion();
-};
-
-// ==================== RENDER QUESTION ====================
-
-function renderQuestion() {
-  const qId = questionOrder[currentQuestionIndex];
-  const question = getQuestionById(qId);
-
-  if (!question) {
-    console.error('⚠️ Question not found:', qId);
-    return;
-  }
-
-  console.log('📝 Rendering question:', qId, question.type);
-
-  const container = document.getElementById('question-container');
-  if (!container) {
-    console.error('⚠️ question-container not found in DOM');
-    return;
-  }
-
-  // Use CSS classes that match your style.css
-  let html = `<div class="question">
-    <h3>${question.title}</h3>`;
-
-  if (question.help_text) {
-    html += `<p style="color: #b0b0b0; margin-bottom: 20px;">${question.help_text}</p>`;
-  }
-
-  html += `<div class="options">`;
-
-  // Single choice (your JSON uses "single")
-  if (question.type === 'single') {
-    question.options.forEach(opt => {
-      const checked = answers[qId] === opt.value ? 'selected' : '';
-      html += `
-        <div class="option ${checked}" onclick="selectSingleOption('${qId}', '${opt.value}', this)">
-          <input type="radio" name="${qId}" value="${opt.value}" ${checked ? 'checked' : ''} style="display: none;">
-          ${opt.label}
-        </div>`;
-    });
-  }
-
-  // Multiselect
-  else if (question.type === 'multiselect') {
-    const currentAnswers = answers[qId] || [];
-    question.options.forEach(opt => {
-      const checked = currentAnswers.includes(opt.value) ? 'selected' : '';
-      html += `
-        <div class="option ${checked}" onclick="toggleMultiOption('${qId}', '${opt.value}', this)">
-          <input type="checkbox" value="${opt.value}" ${checked ? 'checked' : ''} style="display: none;">
-          ${opt.label}
-        </div>`;
-    });
-  }
-
-  // Text input
-  else if (question.type === 'text') {
-    const currentValue = answers[qId] || '';
-    html += `<input type="text" class="input-text" 
-      value="${currentValue}" 
-      oninput="window.handleTextInput('${qId}', this.value)" 
-      placeholder="${question.placeholder || 'Escribe tu respuesta...'}">`;
-  }
-
-  // Slider
-  else if (question.type === 'slider') {
-    const val = answers[qId] || question.default || question.min || 5;
-    html += `<div class="slider-container" style="margin: 20px 0;">
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="color: #b0b0b0; min-width: 20px;">${question.min || 0}</span>
-        <input type="range" min="${question.min || 1}" max="${question.max || 10}" 
-          value="${val}" class="slider" style="flex: 1;"
-          oninput="answers['${qId}'] = parseInt(this.value); this.nextElementSibling.nextElementSibling.textContent = this.value; window.updateNavigation();">
-        <span style="color: #b0b0b0; min-width: 20px;">${question.max || 10}</span>
-        <span style="color: #00D4AA; font-weight: bold; min-width: 30px;">${val}</span>
-      </div>
-    </div>`;
-  }
-
-  // COMPOUND QUESTIONS - NEW ADDITION (KEEPS YOUR EXISTING STYLING)
-  else if (question.type === 'compound' && Array.isArray(question.items)) {
-    html += '</div>'; // Close the options div first
-    question.items.forEach(item => {
-      html += renderCompoundItem(item);
-    });
-    html += '<div class="options">'; // Reopen for consistency
-  }
-
-  html += `</div></div>`;
-  container.innerHTML = html;
-
-  updateProgress();
-  window.updateNavigation();
-}
-
-// ==================== OPTION SELECTION HANDLERS ====================
-
-window.selectSingleOption = function(qId, value, element) {
-  // Remove selected class from all options in this question
-  const container = element.parentElement;
-  container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-  
-  // Add selected class to clicked option
-  element.classList.add('selected');
-  
-  // Update answer
-  answers[qId] = value;
-  window.updateNavigation();
-};
-
-window.toggleMultiOption = function(qId, value, element) {
-  if (!Array.isArray(answers[qId])) answers[qId] = [];
-  
-  if (answers[qId].includes(value)) {
-    // Remove from selection
-    answers[qId] = answers[qId].filter(v => v !== value);
-    element.classList.remove('selected');
-  } else {
-    // Add to selection
-    answers[qId].push(value);
-    element.classList.add('selected');
-  }
-  
-  window.updateNavigation();
-};
+console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
 window.handleTextInput = function(qId, value) {
-  answers[qId] = value;
-  window.updateNavigation();
+    answers[qId] = value;
+    window.updateNavigation();
 };
-
-// ==================== SEND RESPONSES ====================
 
 async function sendResponsesToGoogleSheet() {
   try {
@@ -439,195 +38,542 @@ async function sendResponsesToGoogleSheet() {
       throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
     }
 
-    console.log('✅ Survey responses sent to webhook.');
+    console.log('✅ Survey responses sent to Google Sheets via Make webhook.');
   } catch (err) {
-    console.error('❌ Failed to send survey:', err);
+    console.error('❌ Failed to send survey data to Google Sheets:', err);
   }
 }
 
-// ==================== LOAD SURVEY DATA ====================
 
-document.addEventListener('DOMContentLoaded', async function () {
+// ==================== WAITLIST FUNCTIONS ====================
+
+window.scrollToWaitlist = function() {
+  const waitlistSection = document.getElementById('waitlist-section');
+  if (waitlistSection) {
+    waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+// ==================== PAGE NAVIGATION ====================
+function showPage(pageId) {
+  // Hide all pages
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(page => {
+    page.classList.remove('active');
+    page.style.display = 'none';
+  });
+
+  // Show the requested page
+  const targetPage = document.getElementById(pageId);
+  if (targetPage) {
+    targetPage.classList.add('active');
+    targetPage.style.display = 'block';
+
+    // Scroll to top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    console.log(`✓ Switched to page: ${pageId}`);
+  } else {
+    console.error(`✗ Page not found: ${pageId}`);
+  }
+}
+
+window.startSurvey = function() {
+  currentQuestionIndex = 0;
+  answers = {};
+  showPage('survey-page');
+  renderQuestion();
+};
+
+
+// ==================== MAIN INITIALIZATION ====================
+
+document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
-  const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = true;
 
-  // Set up waitlist forms
-  setupWaitlistForms();
+  const quizBtn = document.getElementById('take-quiz-btn');
+  if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
 
   try {
+    // Load survey questions
     const surveyResp = await fetch('survey_questions.json');
     if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
     const surveyData = await surveyResp.json();
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
+    // Load decision mapping
     const mappingResp = await fetch('decision_mapping.json');
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
-    const resultsResp = await fetch('results_template.json');
-    if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
-    resultsTemplate = await resultsResp.json();
+  // Load results_template.json (add this after the other fetches)
+  try {
+  const resultsResp = await fetch('results_template.json');
+  if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
+  resultsTemplate = await resultsResp.json();
+  console.log('✅ Loaded results_template.json');
+  } catch (err) {
+  resultsTemplate = null;
+  console.error('❌ Failed to load results_template.json:', err);
+  }
 
-    // Apply scoring (if you have decision mapping)
-    surveyQuestions.forEach(q => {
-      const applyScores = (items, id) => {
-        const mappingList = decisionMapping?.scoring?.[id];
-        if (!mappingList) {
-          console.warn(`⚠️ No scoring found for ${id}`);
-          return;
+
+// Normalize all question types first
+surveyQuestions.forEach(q => {
+  if (q.type === 'singlechoice' || q.type === 'single') {
+    q.type = 'single_choice';
+  }
+});
+
+// --- THEN process the decision mapping logic ---
+surveyQuestions.forEach(q => {
+  // 1. Top-level options
+  if (Array.isArray(q.options)) {
+    const mappingList = decisionMapping.scoring[q.id];
+    if (mappingList) {
+      q.options.forEach(opt => {
+        const mapping = mappingList.find(m => m.value === opt.value);
+        if (mapping && mapping.scores) {
+          opt.scores = mapping.scores;
         }
-        items.forEach(opt => {
-          const mapping = mappingList.find(m => m.value === opt.value);
-          if (mapping?.scores) opt.scores = mapping.scores;
-        });
-      };
+      });
+    }
+  }
 
-      if (Array.isArray(q.options)) applyScores(q.options, q.id);
+  // 2. Compound questions (items)
+  if (q.type === "compound" && Array.isArray(q.items)) {
+    q.items.forEach(item => {
+      if (Array.isArray(item.options)) {
+        const mappingList = decisionMapping.scoring[item.id];
+        if (mappingList) {
+          item.options.forEach(opt => {
+            const mapping = mappingList.find(m => m.value === opt.value);
+            if (mapping && mapping.scores) {
+              opt.scores = mapping.scores;
+            }
+          });
+        }
+      }
     });
+  }
+
+  // 3. Grouped questions (questions)
+  if (q.type === "grouped" && Array.isArray(q.questions)) {
+    q.questions.forEach(group => {
+      if (Array.isArray(group.options)) {
+        const mappingList = decisionMapping.scoring[group.id];
+        if (mappingList) {
+          group.options.forEach(opt => {
+            const mapping = mappingList.find(m => m.value === opt.value);
+            if (mapping && mapping.scores) {
+              opt.scores = mapping.scores;
+            }
+          });
+        }
+      }
+    });
+  }
+});
 
     window.surveyLoaded = true;
-    console.log('✅ Survey loaded:', surveyQuestions.length, 'questions');
-    if (quizBtn) quizBtn.disabled = false;
+    console.log('✅ Loaded', surveyQuestions.length, 'questions');
 
+    if (quizBtn) quizBtn.disabled = false;
   } catch (err) {
-    console.error('❌ Error loading survey:', err);
-    alert(`No se pudieron cargar las preguntas: ${err.message}`);
+    console.error('❌ Error:', err);
+    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     if (quizBtn) quizBtn.disabled = true;
   }
 });
 
-// ==================== NAVIGATION ====================
+// ==================== WAITLIST FORM HANDLER ====================
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Landing page waitlist
+  const mainWaitlistForm = document.getElementById('main-waitlist-form');
+  if (mainWaitlistForm) {
+    mainWaitlistForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('main-waitlist-name').value;
+      const email = document.getElementById('main-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'landing_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        mainWaitlistForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
+  // Results page waitlist
+  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+  if (resultsWaitlistForm) {
+    resultsWaitlistForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('results-waitlist-name').value;
+      const email = document.getElementById('results-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'results_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        resultsWaitlistForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
+});
+
+// ==================== UTILITY FUNCTIONS ====================
+
+function getQuestionById(qId) {
+  return surveyQuestions.find(q => q.id === qId);
+}
+
+function isQuestionVisible(question, answers) {
+  if (!question) return false;
+  const qId = typeof question.id === 'string' ? question.id : '';
+
+  // always show P0 and P1
+  if (qId === 'P0_contraception' || qId === 'P1') return true;
+
+  // P1_ follow-ups
+  if (qId.startsWith('P1_')) {
+    return answers.P1 === 'No tengo sangrado actualmente';
+  }
+
+  if (!question.visible_if) return true;
+  const cond = question.visible_if;
+
+  // equals
+  if (cond.question_id && typeof cond.equals !== 'undefined') {
+    return answers[cond.question_id] === cond.equals;
+  }
+  // includes
+  if (cond.question_id && cond.includes) {
+    const ans = answers[cond.question_id];
+    const inclArr = Array.isArray(cond.includes) ? cond.includes : [cond.includes];
+    const ansArr = Array.isArray(ans) ? ans : [ans];
+    return inclArr.some(v => ansArr.includes(v));
+  }
+  // not_includes, includes_any, not_in, not_includes_any, at_least...
+  // (keep your existing blocks here, none of which use question.id)
+
+  // all / any
+  if (cond.all) {
+    return cond.all.every(subCond =>
+      isQuestionVisible({ visible_if: subCond, id: '' }, answers)
+    );
+  }
+  if (cond.any) {
+    return cond.any.some(subCond =>
+      isQuestionVisible({ visible_if: subCond, id: '' }, answers)
+    );
+  }
+
+  return true;
+}
 
 function getNextVisibleQuestionIndex(currentIndex) {
   for (let i = currentIndex + 1; i < questionOrder.length; i++) {
     const qId = questionOrder[i];
     const question = getQuestionById(qId);
-    if (isQuestionVisible(question, answers)) return i;
+    if (isQuestionVisible(question, answers)) {
+      return i;
+    }
   }
   return -1;
 }
 
 function getPrevVisibleQuestionIndex(currentIndex) {
-  for (let i = currentIndex - 1; i >= 0; i--) {
+  for (let i = currentQuestionIndex - 1; i >= 0; i--) {
     const qId = questionOrder[i];
     const question = getQuestionById(qId);
-    if (isQuestionVisible(question, answers)) return i;
+    if (isQuestionVisible(question, answers)) {
+      return i;
+    }
   }
   return -1;
 }
 
-window.nextQuestion = function () {
+window.finishSurvey = function () {
+  const patternKey = calculateResults();
+  showResults(patternKey);
+  sendResponsesToGoogleSheet(); 
+};
+
+
+// ==================== SURVEY RENDERING ====================
+
+function renderQuestion() {
+    let qId = questionOrder[currentQuestionIndex];
+    let question = getQuestionById(qId);
+
+    // Guard for undefined question
+    if (!question) {
+        finishSurvey();
+        return;
+    }
+    console.log('Rendering question:', question.id, 'type:', question.type, 'options:', question.options);
+  
+    // Skip invisible questions
+    while (question && !isQuestionVisible(question, answers)) {
+        const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+        if (nextIdx > -1) {
+            currentQuestionIndex = nextIdx;
+            qId = questionOrder[currentQuestionIndex];
+            question = getQuestionById(qId);
+        } else {
+            finishSurvey();
+            return;
+        }
+    }
+
+    if (!question) {
+        finishSurvey();
+        return;
+    }
+
+    // Initialize answers for multiselect
+    if (question.type === "multiselect" && !answers[qId]) {
+        answers[qId] = [];
+        console.log(`✅ Initialized ${qId} as empty array`);
+    }
+
+    const surveyContent = document.getElementById('survey-content');
+    if (!surveyContent) return;
+
+    let optionsHtml = '';
+
+    // Handle standard option types
+    if ((question.type === 'multiselect' || question.type === 'single_choice') && Array.isArray(question.options)) {
+        question.options.forEach((option, index) => {
+            const isMultiSelect = question.type === 'multiselect';
+            const optionClass = isMultiSelect ? 'option multi-select' : 'option';
+            const selected = isMultiSelect 
+                ? (answers[qId] && answers[qId].includes(option.value)) 
+                : answers[qId] === option.value;
+            optionsHtml += `
+                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" data-qid="${qId}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
+                    ${option.label}
+                </div>
+            `;
+        });
+    } else if (question.type === 'slider') {
+        optionsHtml = `
+            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
+                value="${answers[question.id] || question.min}" id="slider-input"
+                oninput="selectSlider('${question.id}', this.value)">
+            <span id="slider-value">${answers[question.id] || question.min}</span>
+        `;
+    } else if (question.type === 'compound' && Array.isArray(question.items)) {
+        optionsHtml = `<div class="compound-question">
+            <div class="sub-questions">
+                ${question.items.map(item => {
+                    if ((item.type === 'multiselect' || item.type === 'single_choice') && Array.isArray(item.options)) {
+                        return `<div class="sub-question">
+                            <h4>${item.title}</h4>
+                            <div class="sub-options">
+                                ${item.options.map(opt => {
+                                    const isMultiSelect = item.type === 'multiselect';
+                                    const selected = isMultiSelect
+                                        ? (answers[item.id] && answers[item.id].includes(opt.value))
+                                        : answers[item.id] === opt.value;
+                                    return `
+                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${item.id}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
+                                            ${opt.label}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    } else if (item.type === 'slider') {
+                        return `<div class="sub-question">
+                            <h4>${item.title}</h4>
+                            <div class="slider-container">
+                                <input type="range" min="${item.min}" max="${item.max}" step="${item.step}" 
+                                    value="${answers[item.id] || item.min}" id="slider-input-${item.id}"
+                                    oninput="selectSlider('${item.id}', this.value)">
+                                <span id="slider-value-${item.id}">${answers[item.id] || item.min}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        return `<div class="sub-question">${item.title} (Tipo no soportado)</div>`;
+                    }
+                }).join('')}
+            </div>
+        </div>`;
+    } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
+        optionsHtml = `<div class="grouped-question">
+            <div class="question-groups">
+                ${question.questions.map(group => {
+                    if ((group.type === 'multiselect' || group.type === 'single_choice') && Array.isArray(group.options)) {
+                        return `<div class="question-group">
+                            <h4>${group.title}</h4>
+                            <div class="group-options">
+                                ${group.options.map(opt => {
+                                    const isMultiSelect = group.type === 'multiselect';
+                                    const selected = isMultiSelect
+                                        ? (answers[group.id] && answers[group.id].includes(opt.value))
+                                        : answers[group.id] === opt.value;
+                                    return `
+                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${group.id}" onclick="selectOption('${group.id}', '${opt.value}', ${isMultiSelect})">
+                                            ${opt.label}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>`;
+                    } else if (group.type === 'slider') {
+                        return `<div class="question-group">
+                            <h4>${group.title}</h4>
+                            <div class="slider-container">
+                                <input type="range" min="${group.min}" max="${group.max}" step="${group.step}" 
+                                    value="${answers[group.id] || group.min}" id="slider-input-${group.id}"
+                                    oninput="selectSlider('${group.id}', this.value)">
+                                <span id="slider-value-${group.id}">${answers[group.id] || group.min}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        return `<div class="question-group">${group.title} (Tipo no soportado)</div>`;
+                    }
+                }).join('')}
+            </div>
+        </div>`;
+    } else if (question.type === 'text') {
+    optionsHtml = `
+        <input type="text"
+            id="input-${qId}"
+            class="input-text"
+            value="${answers[qId] || ''}"
+            placeholder="${question.help_text || ''}"
+            oninput="window.handleTextInput('${qId}', this.value)">
+    `;
+}
+else {
+    optionsHtml = `<div>No options for this question type.</div>`;
+}
+
+    surveyContent.innerHTML = `
+        <div class="question">
+            <h3>${question.title}</h3>
+            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
+            <div class="options">
+                ${optionsHtml}
+            </div>
+        </div>
+        <div class="survey-navigation">
+            <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display:none;">← Anterior</button>
+            <button class="btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+        </div>
+    `;
+
+    updateProgress();
+    updateNavigation();
+}
+
+// Updated selectOption function with scoped selection for compound/grouped sub-questions
+window.selectOption = function(qId, value, isMultiSelect) {
+  console.log("Option clicked:", { qId, value, isMultiSelect });
+
+  // Find the question type for this qId (may be item inside compound/grouped)
+  let question = getQuestionById(qId);
+  if (!question) {
+    for (const q of surveyQuestions) {
+      if (q.type === 'compound' && Array.isArray(q.items)) {
+        const found = q.items.find(item => item.id === qId);
+        if (found) {
+          question = found;
+          break;
+        }
+      } else if (q.type === 'grouped' && Array.isArray(q.questions)) {
+        const found = q.questions.find(item => item.id === qId);
+        if (found) {
+          question = found;
+          break;
+        }
+      }
+    }
+  }
+  if (!question) return;
+
+  let optionSelector = `.option[data-qid="${qId}"]`;
+  if (document.querySelector(`.sub-option[data-qid="${qId}"]`)) {
+    optionSelector = `.sub-option[data-qid="${qId}"]`;
+  } else if (document.querySelector(`.group-option[data-qid="${qId}"]`)) {
+    optionSelector = `.group-option[data-qid="${qId}"]`;
+  }
+
+  if (isMultiSelect) {
+    if (!answers[qId]) answers[qId] = [];
+    const currentAnswers = answers[qId];
+    const index = currentAnswers.indexOf(value);
+    if (index > -1) {
+      currentAnswers.splice(index, 1);
+    } else {
+      if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
+        currentAnswers.shift();
+      }
+      currentAnswers.push(value);
+    }
+    document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(elem => {
+      elem.classList.toggle('selected');
+    });
+  } else {
+    answers[qId] = value;
+    document.querySelectorAll(`${optionSelector}`).forEach(option => {
+      option.classList.remove('selected');
+    });
+    document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(option => {
+      option.classList.add('selected');
+    });
+  }
+
+  console.log("answers state after click:", JSON.stringify(answers));
+  window.updateNavigation();
+};
+
+window.selectSlider = function(qId, value) {
+    answers[qId] = Number(value);
+    const sliderValueSpan = document.getElementById(`slider-value-${qId}`) || document.getElementById('slider-value');
+    if (sliderValueSpan) sliderValueSpan.textContent = value;
+    console.log("answers state after slider:", JSON.stringify(answers));
+    window.updateNavigation();
+};
+
+// ==================== NAVIGATION ====================
+
+window.nextQuestion = function() {
   console.log('⏭️ Next clicked from:', questionOrder[currentQuestionIndex]);
-  const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+  let nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
   if (nextIdx > -1) {
     currentQuestionIndex = nextIdx;
     renderQuestion();
   } else {
-    window.finishSurvey();
+    finishSurvey();
   }
 };
 
-window.previousQuestion = function () {
+window.previousQuestion = function() {
   console.log('⏮️ Previous clicked from:', questionOrder[currentQuestionIndex]);
-  const prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
+  let prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
   if (prevIdx > -1) {
     currentQuestionIndex = prevIdx;
     renderQuestion();
   }
 };
 
-// ==================== PROGRESS BAR ====================
-
-function updateProgress() {
-  let visibleCount = 0;
-  for (let i = 0; i <= currentQuestionIndex; i++) {
-    const q = getQuestionById(questionOrder[i]);
-    if (isQuestionVisible(q, answers)) visibleCount++;
-  }
-
-  const totalVisible = questionOrder.filter(qId => {
-    const q = getQuestionById(qId);
-    return isQuestionVisible(q, answers);
-  }).length;
-
-  const progress = (visibleCount / totalVisible) * 100;
-  const progressBar = document.getElementById('progress-bar');
-  const progressText = document.getElementById('progress-text');
-
-  if (progressBar) progressBar.style.width = `${progress}%`;
-  if (progressText) progressText.textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
-}
-
-// ==================== UPDATE NAVIGATION ====================
-
-window.updateNavigation = function() {
-  const qId = questionOrder[currentQuestionIndex];
-  const question = getQuestionById(qId);
-  let hasAnswer = false;
-
-  if (!question) return;
-
-  // ADD COMPOUND VALIDATION
-  if (question.type === 'compound') {
-    let allRequired = true;
-    if (question.items && Array.isArray(question.items)) {
-      question.items.forEach(item => {
-        if (item.required) {
-          const itemAnswer = answers[item.id];
-          if (!itemAnswer || (typeof itemAnswer === 'string' && itemAnswer.trim() === '')) {
-            allRequired = false;
-          }
-          if (item.type === 'multiselect' && Array.isArray(itemAnswer) && itemAnswer.length === 0) {
-            allRequired = false;
-          }
-        }
-      });
-    }
-    hasAnswer = allRequired;
-  }
-  else if (question.type === 'multiselect') {
-    const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
-    const minSelected = question.validation?.minselected ?? 1;
-    hasAnswer = minSelected === 0 || selected.length >= minSelected;
-
-  } else if (question.type === 'single') {
-    hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
-
-  } else if (question.type === 'slider') {
-    hasAnswer = typeof answers[qId] === 'number';
-    
-  } else if (question.type === 'text') {
-    const value = answers[qId];
-    if (question.required) {
-      hasAnswer = value !== undefined && value !== null && value.trim() !== '';
-    } else {
-      hasAnswer = true; // Text input is optional by default
-    }
-
-  } else {
-    hasAnswer = !!answers[qId];
-  }
-
-  const nextBtn = document.getElementById('next-btn');
-  if (nextBtn) nextBtn.disabled = !hasAnswer;
-
-  const backBtn = document.getElementById('back-btn');
-  if (backBtn) {
-    backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
-  }
-};
-
-// ==================== SURVEY COMPLETION ====================
-
-window.finishSurvey = function () {
-  const patternKey = calculateResults();
-  showResults(patternKey);
-  sendResponsesToGoogleSheet();
-};
-
-// ==================== RESULTS CALCULATION ====================
+// ==================== RESULTS ====================
 
 function calculateResults() {
   const scores = {
@@ -640,24 +586,26 @@ function calculateResults() {
 
   surveyQuestions.forEach(question => {
     const answer = answers[question.id];
-    if (!answer || !question.options) return;
+    if (!answer) return;
 
     const answerArray = Array.isArray(answer) ? answer : [answer];
-    answerArray.forEach(value => {
-      const option = question.options.find(opt => opt.value === value);
-      if (option && option.scores) {
-        Object.entries(option.scores).forEach(([key, val]) => {
-          scores[key] += val;
-        });
-      }
-    });
+    if (question.options) {
+      answerArray.forEach(value => {
+        const option = question.options.find(opt => opt.value === value);
+        if (option && option.scores) {
+          Object.keys(option.scores).forEach(key => {
+            scores[key] += option.scores[key];
+          });
+        }
+      });
+    }
   });
 
   let maxScore = 0;
   let dominantPattern = 'sequedad';
-  Object.entries(scores).forEach(([pattern, score]) => {
-    if (score > maxScore) {
-      maxScore = score;
+  ['tension', 'calor', 'frio', 'humedad', 'sequedad'].forEach(pattern => {
+    if (scores[pattern] > maxScore) {
+      maxScore = scores[pattern];
       dominantPattern = pattern;
     }
   });
@@ -665,154 +613,203 @@ function calculateResults() {
   return dominantPattern;
 }
 
-// ==================== RESULTS DISPLAY ====================
+// ==================== DETAILED RESULTS RENDERING ====================
 
-function showResults(patternKey) {
-  if (!resultsTemplate) {
-    console.error('Results template not loaded');
-    return;
-  }
+// Helper to safely get nested property from template
+function getTemplateSection(section, patternKey) {
+  if (!resultsTemplate || !resultsTemplate[section]) return null;
+  return resultsTemplate[section][patternKey] || resultsTemplate[section]['by_pattern']?.[patternKey] || null;
+}
 
-  const label = resultsTemplate.labels?.[patternKey] || patternKey;
-  let html = '';
+function renderCareTips(patternKey) {
+  const tips = resultsTemplate?.care_tips?.by_pattern?.[patternKey] || [];
+  if (!tips.length) return '';
+  return `
+    <div class="recommendations">
+      <h4>Mini-hábitos por patrón</h4>
+      <ul class="recommendations-list">
+        ${tips.map(tip => `<li>${tip}</li>`).join('')}
+      </ul>
+    </div>
+  `;
+}
 
-  // HEADER
-  html += `<h2>${resultsTemplate.element?.by_pattern?.[patternKey]?.[0] || label}</h2>`;
+// ENHANCED renderPhaseAdvice function for beautiful phase cards
+function renderPhaseAdvice(patternKey) {
+  const phaseSections = resultsTemplate?.phase?.generic || {};
+  if (!Object.keys(phaseSections).length) return '';
   
-  // SUMMARY
-  const summary = resultsTemplate.summary?.single
-    ? resultsTemplate.summary.single.replace('{{label_top}}', label)
-    : `Tu tipo de ciclo: ${label}`;
-  html += `<h3>${summary}</h3>`;
-
-  // ELEMENT EXPLAINER
-  if (resultsTemplate.element_explainer?.by_pattern?.[patternKey]) {
-    html += `<div class="pattern-description">${resultsTemplate.element_explainer.by_pattern[patternKey][0]}</div>`;
-  }
-
-  // PATTERN CARD - Characteristics
-  if (resultsTemplate.pattern_card?.single?.[patternKey]) {
-    const pattern = resultsTemplate.pattern_card.single[patternKey];
-    html += `
-      <div class="pattern-characteristics">
-        <h4>Características principales:</h4>
-        <ul>
-    `;
-    if (pattern.characteristics) {
-      pattern.characteristics.forEach(char => {
-        html += `<li>${char}</li>`;
-      });
-    }
-    html += `</ul></div>`;
-  }
-
-  // WHY CLUSTER
-  if (resultsTemplate.why_cluster?.by_pattern?.[patternKey]) {
-    html += `
-      <div class="pattern-explanation">
-        <h4>¿Por qué se agrupan tus síntomas?</h4>
-        <p>${resultsTemplate.why_cluster.by_pattern[patternKey][0]}</p>
+  let html = `<div class="tips-phase-section">
+    <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
+    <div class="phases-container">`;
+  
+  Object.keys(phaseSections).forEach(phaseKey => {
+    const phase = phaseSections[phaseKey];
+    html += `<div class="phase-block">
+      <div class="phase-header">
+        <h5 class="phase-title">${phase.label}</h5>
+        <div class="phase-description">${phase.about}</div>
       </div>
-    `;
-  }
+      <div class="phase-content">`;
+    
+    // Foods section
+    if (phase.foods && phase.foods.length > 0) {
+      html += `<div class="phase-subsection">
+        <div class="subsection-label">Alimentos</div>
+        <ul class="subsection-list">
+          ${phase.foods.map(food => `<li>${food}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+    
+    // Do section  
+    if (phase.do && phase.do.length > 0) {
+      html += `<div class="phase-subsection">
+        <div class="subsection-label">Haz</div>
+        <ul class="subsection-list">
+          ${phase.do.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+    
+    // Avoid section
+    if (phase.avoid && phase.avoid.length > 0) {
+      html += `<div class="phase-subsection">
+        <div class="subsection-label">Evita</div>
+        <ul class="subsection-list">
+          ${phase.avoid.map(item => `<li>${item}</li>`).join('')}
+        </ul>
+      </div>`;
+    }
+    
+    html += `</div></div>`; // Close phase-content and phase-block
+  });
+  
+  html += `</div></div>`; // Close phases-container and tips-phase-section
+  return html;
+}
 
-  // PHASE TIPS SECTION
-  if (resultsTemplate.phase?.generic) {
-    html += `
-      <div class="tips-phase-section">
-        <h3 class="tips-main-title">Tips por fase del ciclo</h3>
-        <div class="phases-container">
-    `;
+function renderPatternCard(patternKey) {
+  const card = resultsTemplate?.pattern_card?.single?.[patternKey] || {};
+  if (!card.pattern_explainer) return '';
+  return `
+    <div class="pattern-description">${card.pattern_explainer}</div>
+    <ul class="characteristics">
+      ${(card.characteristics || []).map(char => `<li>${char}</li>`).join('')}
+    </ul>
+  `;
+}
 
-    // Get phases from common.phase_labels
-    const phaseLabels = resultsTemplate.common?.phase_labels || {
-      'antes': 'Antes del periodo (PMS)',
-      'durante': 'Durante', 
-      'despues': 'Después',
-      'entre': 'Entre periodos'
-    };
 
-    Object.keys(phaseLabels).forEach(phaseKey => {
-      const phaseData = resultsTemplate.phase.generic[phaseKey];
-      if (phaseData) {
-        html += `
-          <div class="phase-block">
-            <div class="phase-header">
-              <h4 class="phase-title">${phaseLabels[phaseKey]}</h4>
-              <p class="phase-description">${phaseData.que_significa || ''}</p>
-            </div>
-            <div class="phase-content">
-        `;
+// Main function to show results with full template
+function showResults(patternKey) {
+  // ─────────── Safe fallback for missing labels/summary ───────────
+  const label = resultsTemplate?.labels?.[patternKey] || patternKey;
+  const summary = resultsTemplate?.summary?.single
+    ? resultsTemplate.summary.single.replace('{{label_top}}', label)
+    : label;
 
-        // Add subsections (alimentos, haz, evita)
-        if (phaseData.alimentos) {
-          html += `
-            <div class="phase-subsection">
-              <div class="subsection-label">Alimentos:</div>
-              <ul class="subsection-list">
-          `;
-          phaseData.alimentos.forEach(item => {
-            html += `<li>${item}</li>`;
-          });
-          html += `</ul></div>`;
-        }
+  // ─────────── Build your results HTML ───────────
 
-        if (phaseData.haz) {
-          html += `
-            <div class="phase-subsection">
-              <div class="subsection-label">Haz:</div>
-              <ul class="subsection-list">
-          `;
-          phaseData.haz.forEach(item => {
-            html += `<li>${item}</li>`;
-          });
-          html += `</ul></div>`;
-        }
-
-        if (phaseData.evita) {
-          html += `
-            <div class="phase-subsection">
-              <div class="subsection-label">Evita:</div>
-              <ul class="subsection-list">
-          `;
-          phaseData.evita.forEach(item => {
-            html += `<li>${item}</li>`;
-          });
-          html += `</ul></div>`;
-        }
-
-        html += `</div></div>`; // Close phase-content and phase-block
-      }
-    });
-
-    html += `</div></div>`; // Close phases-container and tips-phase-section
-  }
-
-  // DISCLAIMER
-  html += `
+  let html = `
+    <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || label}</h2>
+    <h3>${summary}</h3>
+    ${renderPatternCard(patternKey)}
+    ${renderCareTips(patternKey)}
+    ${renderPhaseAdvice(patternKey)}
     <div class="disclaimer">
       <strong>Nota importante:</strong>
-      ${resultsTemplate.meta?.disclaimer || 'Esta evaluación es orientativa y no sustituye consejo médico.'}
+      ${resultsTemplate?.meta?.disclaimer ||
+        'Esta evaluación es orientativa.'}
     </div>
   `;
 
+  // Inject into the results-card
   document.getElementById('results-card').innerHTML = html;
+
+  // HIDE email form (no longer used)
+  const emailFormSection = document.getElementById('email-results-form-section');
+  if (emailFormSection) {
+    emailFormSection.style.display = 'none';
+  }
+
   showPage('results-page');
 }
 
-// ==================== DEBUG + HELPERS ====================
+// ==================== EMAIL RESULTS FORM (REMOVED/DEPRECATED) ====================
+// (No longer active; form is hidden by showResults)
 
-window.debugAnswers = function () {
-  console.log("🧪 Current answers:", JSON.stringify(answers, null, 2));
-};
+// ==================== PROGRESS BAR ====================
 
-window.resetSurvey = function () {
-  if (confirm("¿Estás seguro de que quieres reiniciar el cuestionario?")) {
-    answers = {};
-    currentQuestionIndex = 0;
-    showPage('survey-page');
-    renderQuestion();
+function updateProgress() {
+  let visibleCount = 0;
+  for (let i = 0; i <= currentQuestionIndex; i++) {
+    const q = getQuestionById(questionOrder[i]);
+    if (isQuestionVisible(q, answers)) visibleCount++;
   }
-};
+  const totalVisible = questionOrder.filter(qId => isQuestionVisible(getQuestionById(qId), answers)).length;
+  const progress = ((visibleCount) / totalVisible) * 100;
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  if (progressBar) progressBar.style.width = `${progress}%`;
+  if (progressText) progressText.textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
+}
 
-console.log("✅ app.js loaded and ready - USING YOUR CSS CLASSES + COMPOUND SUPPORT!");
+// ==================== NAVIGATION LOGIC (CRITICAL) ====================
+
+window.updateNavigation = function() {
+    const qId = questionOrder[currentQuestionIndex];
+    const question = getQuestionById(qId);
+    let hasAnswer = false;
+
+    if (!question) return;
+
+    if (question.type === 'multiselect') {
+        const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
+        const minSelected = question.validation?.minselected ?? 1;
+        hasAnswer = minSelected === 0 || selected.length >= minSelected;
+    } else if (question.type === 'single_choice' || question.type === 'singlechoice') {
+        hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
+    } else if (question.type === 'slider') {
+        hasAnswer = typeof answers[qId] === 'number';
+    } else if (question.type === 'compound' && Array.isArray(question.items)) {
+        hasAnswer = question.items.every(item => {
+            if (item.type === 'multiselect') {
+                const selected = Array.isArray(answers[item.id]) ? answers[item.id] : [];
+                const minSelected = item.validation?.minselected ?? 1;
+                return minSelected === 0 || selected.length >= minSelected;
+            } else if (item.type === 'single_choice' || item.type === 'singlechoice') {
+                return answers[item.id] !== undefined && answers[item.id] !== null && answers[item.id] !== '';
+            } else if (item.type === 'slider') {
+                return typeof answers[item.id] === 'number';
+            } else {
+                return true; // If unknown, skip validation
+            }
+        });
+    } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
+        hasAnswer = question.questions.every(group => {
+            if (group.type === 'multiselect') {
+                const selected = Array.isArray(answers[group.id]) ? answers[group.id] : [];
+                const minSelected = group.validation?.minselected ?? 1;
+                return minSelected === 0 || selected.length >= minSelected;
+            } else if (group.type === 'single_choice' || group.type === 'singlechoice') {
+                return answers[group.id] !== undefined && answers[group.id] !== null && answers[group.id] !== '';
+            } else if (group.type === 'slider') {
+                return typeof answers[group.id] === 'number';
+            } else {
+                return true;
+            }
+        });
+    } else {
+        hasAnswer = !!answers[qId];
+    }
+
+    const nextBtn = document.getElementById('next-btn');
+    if (nextBtn) {
+        nextBtn.disabled = !hasAnswer;
+    }
+    const backBtn = document.getElementById('back-btn');
+    if (backBtn) {
+        backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
+    }
+};
