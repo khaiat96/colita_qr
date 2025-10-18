@@ -77,6 +77,7 @@
             "id": "P0_nombre",
             "type": "text",
             "title": "¿Cuál es tu nombre?",
+            "help_text": "Lo usaremos para personalizar tus recomendaciones.",
             "required": true,
             "prompt": "Question P0_nombre"
         },
@@ -84,7 +85,7 @@
             "id": "P0_contraception",
             "type": "single",
             "title": "¿Usas anticoncepción actualmente? 🛡️",
-            "help_text": "Nos ayuda a interpretar mejor tu sangrado.",
+            "help_text": "Nos ayuda a interpretar mejor tus señales.",
             "options": [
                 {
                     "label": "Píldora/anillo/parche",
@@ -131,6 +132,7 @@
             "id": "P1_no_cycle_desde_cuando",
             "type": "single",
             "title": "¿Desde cuándo no hay sangrado? 📆",
+            "help_text": "Aporta contexto sobre tu caso.",
             "visible_if": {
                 "question_id": "P1_regularity",
                 "equals": "No tengo sangrado actualmente"
@@ -256,6 +258,7 @@
             "id": "P2_spotting_frecuencia",
             "type": "single",
             "title": "¿Con qué frecuencia tuviste manchado entre reglas? (si aplica)",
+            "help_text": "Ayuda a precisar el patrón de manchado.",
             "visible_if": {
                 "question_id": "P2_sintomas",
                 "includes": [
@@ -490,52 +493,40 @@
                             "value": "fluido"
                         },
                         {
-                             "label": "Espeso o pegajoso",
-                             "value": "espeso"
+                            "label": "Espeso o pegajoso",
+                            "value": "espeso"
                         }
                     ],
                     "validation": {
                         "minselected": 1,
                         "maxselected": 2
                     }
-                }
-            ]
-        },
-        {
-           "id": "P2_coagulo_tamano",
-           "type": "single_choice",
-           "title": "Si hay coágulos, ¿qué tamaño? 🧈",
-            "visible_if": {
-                "question_id": "P2_textura",
-                "includes": [
-                    "coagulos"
-                ]
-            },          
-           "help_text": "Aproximado.",
-           "options": [
-               {
-                   "label": "No hay coágulos",
-                   "value": "<0cm"
-               },
-               {
-                   "label": "Pequeños (<1 cm)",
-                   "value": "<1cm"
-               },
-               {
-                   "label": "Medianos (1–2.4 cm)",
-                   "value": "1–2.4cm"
-               },
-               {
-                   "label": "Grandes (>2.4 cm)",
-                   "value": ">2.4cm"
-               }
-           ],
-           "validation": {
-               "minselected": 1,
-               "maxselected": 1
-           }
-        },
-        {
+                },
+                {
+                    "id": "P2_coagulo_tamano",
+                    "type": "single_choice",
+                    "title": "Si hay coágulos, ¿qué tamaño? 🧈",
+                    "help_text": "Aproximado.",
+                    "options": [
+                        {
+                            "label": "No hay coágulos",
+                            "value": "<0cm"
+                        },
+                        {
+                            "label": "Pequeños (<1 cm)",
+                            "value": "<1cm"
+                        },
+                        {
+                            "label": "Medianos (1–2.4 cm)",
+                            "value": "1–2.4cm"
+                        },
+                        {
+                            "label": "Grandes (>2.4 cm)",
+                            "value": ">2.4cm"
+                        }
+                    ]
+                },
+                {
                     "id": "P2_patron_flujo",
                     "type": "single_choice",
                     "title": "Patrón del flujo en días intensos 🔎",
@@ -559,6 +550,8 @@
                             "value": "intermitente"
                         }
                     ]
+                }
+            ]
         },
         {
             "id": "P2c_dolor_bloque",
@@ -655,45 +648,54 @@
             },
             "prompt": "Question P3_cuerpo"
         },
-        { 
-        "id": "P2b_sintomas_premenstruales",
-        "type": "multiselect",
-        "title": "¿Qué síntomas tienes ANTES de tu periodo (días previos)? 📅",
-        "options": [
         {
-          "label": "Irritabilidad o enojo",
-          "value": "irritabilidad",
-          "scores": { "calor": 3, "tension": 2 } 
-        },
-        {
-          "label": "Tristeza o llanto fácil",
-          "value": "tristeza",
-          "scores": { "frio": 3 }  
-        },
-        {
-          "label": "Antojos intensos de comida",
-          "value": "antojos",
-          "scores": { "humedad": 2 }  
-        },
-        {
-          "label": "Insomnio o sueño inquieto",
-          "value": "insomnio",
-          "scores": { "tension": 3, "calor": 2 }  
-        },
-        {
-          "label": "Ninguno en particular",
-          "value": "ninguno",
-          "scores": {}
-        }
-       ],
-        "validation": {
-         "minselected": 1,
-        "maxselected": 3
-        },
+            "id": "P2b_sintomas_premenstruales",
+            "type": "multiselect",
+            "title": "¿Qué síntomas tienes ANTES de tu periodo (días previos)? 📅",
+            "options": [
+                {
+                    "label": "Irritabilidad o enojo",
+                    "value": "irritabilidad",
+                    "scores": {
+                        "calor": 3,
+                        "tension": 2
+                    }
+                },
+                {
+                    "label": "Tristeza o llanto fácil",
+                    "value": "tristeza",
+                    "scores": {
+                        "frio": 3
+                    }
+                },
+                {
+                    "label": "Antojos intensos de comida",
+                    "value": "antojos",
+                    "scores": {
+                        "humedad": 2
+                    }
+                },
+                {
+                    "label": "Insomnio o sueño inquieto",
+                    "value": "insomnio",
+                    "scores": {
+                        "tension": 3,
+                        "calor": 2
+                    }
+                },
+                {
+                    "label": "Ninguno en particular",
+                    "value": "ninguno",
+                    "scores": {}
+                }
+            ],
+            "validation": {
+                "maxselected": 3
+            }
         },
         {
             "id": "P6_energia",
-            "type": "multiselect",
+            "type": "single",
             "title": "Tu patrón de energía general ⚡",
             "help_text": "Selecciona hasta 2.",
             "options": [
@@ -723,6 +725,89 @@
                 "maxselected": 2
             },
             "prompt": "Question P6_energia"
+        },
+        {
+            "id": "P4_emocional",
+            "type": "multiselect",
+            "title": "Estado emocional durante tu período 💭",
+            "help_text": "Selecciona las que apliquen.",
+            "options": [
+                {
+                    "label": "Más sensible/emocional",
+                    "value": "sensible"
+                },
+                {
+                    "label": "Irritable/malhumorada",
+                    "value": "irritable"
+                },
+                {
+                    "label": "Triste/melancólica",
+                    "value": "triste"
+                },
+                {
+                    "label": "Ansiosa/inquieta",
+                    "value": "ansiosa"
+                },
+                {
+                    "label": "Normal/sin cambios",
+                    "value": "normal"
+                }
+            ],
+            "validation": {
+                "minselected": 1,
+                "maxselected": 3
+            },
+            "prompt": "Question P4_emocional"
+        },
+        {
+            "id": "P4_timing_emocional",
+            "type": "single",
+            "title": "¿Cuándo sientes más cambios emocionales? ⏰",
+            "help_text": "En relación a tu ciclo.",
+            "options": [
+                {
+                    "label": "Antes del período",
+                    "value": "antes"
+                },
+                {
+                    "label": "Durante el período",
+                    "value": "durante"
+                },
+                {
+                    "label": "Después del período",
+                    "value": "despues"
+                },
+                {
+                    "label": "No hay patrón claro",
+                    "value": "sin_patron"
+                }
+            ],
+            "prompt": "Question P4_timing_emocional"
+        },
+        {
+            "id": "P5_sed",
+            "type": "single",
+            "title": "Preferencias de temperatura en bebidas 🥤",
+            "help_text": "¿Qué prefieres naturalmente?",
+            "options": [
+                {
+                    "label": "Bebidas frías/heladas",
+                    "value": "bebidas_frias"
+                },
+                {
+                    "label": "Bebidas calientes/tibias",
+                    "value": "bebidas_calientes"
+                },
+                {
+                    "label": "Temperatura ambiente",
+                    "value": "temperatura_ambiente"
+                },
+                {
+                    "label": "No tengo preferencia",
+                    "value": "sin_preferencia"
+                }
+            ],
+            "prompt": "Question P5_sed"
         },
         {
             "id": "P7_signos_corporales",
@@ -843,6 +928,39 @@
             "prompt": "Question P7b_sequedad_detalle"
         },
         {
+            "id": "P7c_sensibilidad_clima",
+            "type": "multiselect",
+            "title": "Sensibilidad al clima 🌤️",
+            "help_text": "¿Cómo te afectan los cambios climáticos?",
+            "options": [
+                {
+                    "label": "Me afecta mucho el frío",
+                    "value": "sensible_frio"
+                },
+                {
+                    "label": "Me afecta mucho el calor",
+                    "value": "sensible_calor"
+                },
+                {
+                    "label": "Me afecta la humedad",
+                    "value": "sensible_humedad"
+                },
+                {
+                    "label": "Me afecta el aire seco",
+                    "value": "sensible_sequedad"
+                },
+                {
+                    "label": "No soy muy sensible al clima",
+                    "value": "no_sensible"
+                }
+            ],
+            "validation": {
+                "minselected": 1,
+                "maxselected": 3
+            },
+            "prompt": "Question P7c_sensibilidad_clima"
+        },
+        {
             "id": "P8_sueno_calidad",
             "type": "slider",
             "title": "Calidad de sueño (últimos 7 días) 😴",
@@ -934,33 +1052,33 @@
             ],
             "prompt": "Question P8c_cafeina"
         }
-      ],
+    ],
     "question_order": [
-    "P0_nombre",
-    "P0_contraception",
-    "P1_regularity",
-    "P1_no_cycle_desde_cuando",
-    "P1_amenorrea_contexto",
-    "P2_sintomas",
-    "P2_spotting_frecuencia",
-    "P2_hinchazon_severidad",
-    "P2_fatiga_severidad",
-    "P2_animo_severidad",
-    "P2_acne",
-    "P2_periodo_calidad",
-    "P2c_dolor_bloque",
-    "P3_cuerpo",
-    "P2b_sintomas_premenstruales",
-    "P6_energia",
-    "P4_emocional",
-    "P4_timing_emocional",
-    "P5_sed",
-    "P7_signos_corporales",
-    "P7b_sequedad_detalle",
-    "P7c_sensibilidad_clima",
-    "P8_sueno_calidad",
-    "P8a_estres",
-    "P8b_ejercicio",
-    "P8c_cafeina"
-]
+        "P0_nombre",
+        "P0_contraception",
+        "P1_regularity",
+        "P1_no_cycle_desde_cuando",
+        "P1_amenorrea_contexto",
+        "P2_sintomas",
+        "P2_spotting_frecuencia",
+        "P2_hinchazon_severidad",
+        "P2_fatiga_severidad",
+        "P2_animo_severidad",
+        "P2_acne",
+        "P2_periodo_calidad",
+        "P2c_dolor_bloque",
+        "P3_cuerpo",
+        "P2b_sintomas_premenstruales",
+        "P6_energia",
+        "P4_emocional",
+        "P4_timing_emocional",
+        "P5_sed",
+        "P7_signos_corporales",
+        "P7b_sequedad_detalle",
+        "P7c_sensibilidad_clima",
+        "P8_sueno_calidad",
+        "P8a_estres",
+        "P8b_ejercicio",
+        "P8c_cafeina"
+    ]
 }
