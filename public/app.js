@@ -145,7 +145,7 @@ if (mappingList) {
   if (q.type === "compound" && Array.isArray(q.items)) {
     q.items.forEach(item => {
       if (Array.isArray(item.options)) {
-      const mappingList = decisionMapping?.decision_map?.[q.id][item.id];
+const mappingList = decisionMapping?.decision_map?.[item.id];
         if (mappingList) {
           item.options.forEach(opt => {
         const mapping = mappingList[opt.value];            
