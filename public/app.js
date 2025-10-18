@@ -102,6 +102,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
+    console.log("✅ surveyData loaded", surveyData); // ADD THIS
+
+
     // Load decision mapping
     const mappingResp = await fetch('decision_mapping.json');
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
