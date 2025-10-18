@@ -13,7 +13,7 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - FIXED VERSION WITH WAITLIST HANDLING');
+console.log('🚀 APP.JS LOADED - MERGED CLEAN VERSION');
 
 // ==================== HELPER FUNCTIONS ====================
 
@@ -34,124 +34,6 @@ function isQuestionVisible(question, currentAnswers) {
   }
   
   return cond.values.includes(parentAnswer);
-}
-
-// ==================== WAITLIST HANDLING ====================
-
-async function handleWaitlistSubmission(formData) {
-  try {
-    console.log('📝 Submitting to waitlist:', formData);
-    
-    const response = await fetch(WAITLIST_WEBHOOK, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        timestamp: new Date().toISOString(),
-        source: formData.source || 'landing_page'
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    console.log('✅ Waitlist submission successful');
-    
-    // Show success message
-    alert('¡Gracias! Te has unido exitosamente a la lista de espera. Te notificaremos cuando estemos listos para el lanzamiento.');
-    
-    return true;
-  } catch (error) {
-    console.error('❌ Waitlist submission failed:', error);
-    alert('Hubo un error al unirte a la lista de espera. Por favor intenta de nuevo.');
-    return false;
-  }
-}
-
-function setupWaitlistForms() {
-  // Main waitlist form on landing page
-  const mainWaitlistForm = document.getElementById('main-waitlist-form');
-  if (mainWaitlistForm) {
-    mainWaitlistForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = document.getElementById('main-waitlist-name').value.trim();
-      const email = document.getElementById('main-waitlist-email').value.trim();
-      
-      if (!name || !email) {
-        alert('Por favor completa todos los campos.');
-        return;
-      }
-      
-      const success = await handleWaitlistSubmission({
-        name,
-        email,
-        source: 'landing_page'
-      });
-      
-      if (success) {
-        mainWaitlistForm.reset();
-      }
-    });
-  }
-
-  // Results page waitlist form
-  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
-  if (resultsWaitlistForm) {
-    resultsWaitlistForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = document.getElementById('results-waitlist-name').value.trim();
-      const email = document.getElementById('results-waitlist-email').value.trim();
-      
-      if (!name || !email) {
-        alert('Por favor completa todos los campos.');
-        return;
-      }
-      
-      const success = await handleWaitlistSubmission({
-        name,
-        email,
-        source: 'results_page'
-      });
-      
-      if (success) {
-        resultsWaitlistForm.reset();
-      }
-    });
-  }
-
-  // Standalone waitlist page form
-  const waitlistForm = document.getElementById('waitlist-form');
-  if (waitlistForm) {
-    waitlistForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const name = document.getElementById('waitlist-name').value.trim();
-      const email = document.getElementById('waitlist-email').value.trim();
-      
-      if (!name || !email) {
-        alert('Por favor completa todos los campos.');
-        return;
-      }
-      
-      const success = await handleWaitlistSubmission({
-        name,
-        email,
-        source: 'waitlist_page'
-      });
-      
-      if (success) {
-        waitlistForm.reset();
-        // Optionally redirect to landing page
-        showPage('landing-page');
-      }
-    });
-  }
 }
 
 // ==================== PAGE NAVIGATION ====================
@@ -236,7 +118,7 @@ function renderQuestion() {
       html += `
         <label class="option-label ${checked}">
           <input type="radio" name="${qId}" value="${opt.value}" 
-            onchange="answers['${qId}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
+            onchange="answers['${qId}'] = this.value; window.updateNavigation();" ${checked}>
           <span>${opt.label}</span>
         </label>`;
     });
@@ -260,7 +142,6 @@ function renderQuestion() {
                 answers['${qId}'] = answers['${qId}'].filter(v => v !== this.value);
               }
               window.updateNavigation();
-              updateOptionSelection(this);
             " ${checked}>
           <span>${opt.label}</span>
         </label>`;
@@ -299,7 +180,7 @@ function renderQuestion() {
           html += `
             <label class="option-label ${checked}">
               <input type="radio" name="${item.id}" value="${opt.value}" 
-                onchange="answers['${item.id}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
+                onchange="answers['${item.id}'] = this.value; window.updateNavigation();" ${checked}>
               <span>${opt.label}</span>
             </label>`;
         });
@@ -320,7 +201,7 @@ function renderQuestion() {
           html += `
             <label class="option-label ${checked}">
               <input type="radio" name="${grp.id}" value="${opt.value}" 
-                onchange="answers['${grp.id}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
+                onchange="answers['${grp.id}'] = this.value; window.updateNavigation();" ${checked}>
               <span>${opt.label}</span>
             </label>`;
         });
@@ -335,27 +216,6 @@ function renderQuestion() {
 
   updateProgress();
   window.updateNavigation();
-}
-
-// Helper function to update option selection visual state
-function updateOptionSelection(inputElement) {
-  const label = inputElement.closest('.option-label');
-  if (!label) return;
-  
-  if (inputElement.type === 'radio') {
-    // Remove checked class from all radio options in the same group
-    const container = label.closest('.options-container');
-    if (container) {
-      container.querySelectorAll('.option-label').forEach(l => l.classList.remove('checked'));
-    }
-  }
-  
-  // Add or remove checked class based on input state
-  if (inputElement.checked) {
-    label.classList.add('checked');
-  } else {
-    label.classList.remove('checked');
-  }
 }
 
 window.handleTextInput = function(qId, value) {
@@ -395,9 +255,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   showPage('landing-page');
   const quizBtn = document.getElementById('take-quiz-btn');
   if (quizBtn) quizBtn.disabled = true;
-
-  // Set up waitlist forms
-  setupWaitlistForms();
 
   try {
     const surveyResp = await fetch('survey_questions.json');
@@ -746,4 +603,4 @@ window.resetSurvey = function () {
   }
 };
 
-console.log("✅ app.js loaded and ready with fixed waitlist handling.");
+console.log("✅ app.js loaded and ready.");
