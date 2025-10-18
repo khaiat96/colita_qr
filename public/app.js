@@ -665,11 +665,11 @@ function calculateResults() {
   return dominantPattern;
 }
 
-// ==================== COMPREHENSIVE RESULTS DISPLAY ====================
+// ==================== RESULTS DISPLAY ====================
 
 function showResults(patternKey) {
   if (!resultsTemplate) {
-    console.error('⚠️ Results template not loaded');
+    console.error('Results template not loaded');
     return;
   }
 
@@ -677,172 +677,124 @@ function showResults(patternKey) {
   let html = '';
 
   // HEADER
-  html += `<div style="text-align: center; margin-bottom: 30px;">
-    <h1 style="color: #00D4AA; margin-bottom: 10px;">${resultsTemplate.header?.title || 'Tu Perfil Energético'}</h1>
-  </div>`;
-
-  // ELEMENT & SUMMARY
-  const elementTitle = resultsTemplate.element?.by_pattern?.[patternKey]?.[0] || label;
-  const summary = resultsTemplate.summary?.single?.replace('{{label_top}}', label) || `Tu tipo de ciclo: ${label}`;
+  html += `<h2>${resultsTemplate.element?.by_pattern?.[patternKey]?.[0] || label}</h2>`;
   
-  html += `<div style="background: linear-gradient(135deg, #00D4AA 0%, #00A67F 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 30px; text-align: center;">
-    <h2 style="font-size: 1.8em; margin: 0 0 10px 0;">${elementTitle}</h2>
-    <h3 style="font-size: 1.2em; margin: 0; opacity: 0.9;">${summary}</h3>
-  </div>`;
+  // SUMMARY
+  const summary = resultsTemplate.summary?.single
+    ? resultsTemplate.summary.single.replace('{{label_top}}', label)
+    : `Tu tipo de ciclo: ${label}`;
+  html += `<h3>${summary}</h3>`;
 
   // ELEMENT EXPLAINER
-  const explainer = resultsTemplate.element_explainer?.by_pattern?.[patternKey]?.[0];
-  if (explainer) {
-    html += `<div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #00D4AA;">
-      <p style="margin: 0; line-height: 1.6; color: #333;">${explainer}</p>
-    </div>`;
+  if (resultsTemplate.element_explainer?.by_pattern?.[patternKey]) {
+    html += `<div class="pattern-description">${resultsTemplate.element_explainer.by_pattern[patternKey][0]}</div>`;
   }
 
-  // PATTERN CHARACTERISTICS
-  const patternCard = resultsTemplate.pattern_card?.single?.[patternKey];
-  if (patternCard) {
-    html += `<div style="margin-bottom: 30px;">
-      <h3 style="color: #333; margin-bottom: 15px;">📋 Características de tu patrón</h3>
-      <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;">
-        <p style="font-style: italic; margin-bottom: 15px; color: #666;">${patternCard.pattern_explainer}</p>
-        <ul style="margin: 0; padding-left: 20px;">`;
-    
-    patternCard.characteristics?.forEach(char => {
-      html += `<li style="margin: 8px 0; line-height: 1.5;">${char}</li>`;
-    });
-    
-    html += `</ul></div></div>`;
-  }
-
-  // WHY SYMPTOMS CLUSTER
-  const whyCluster = resultsTemplate.why_cluster?.by_pattern?.[patternKey]?.[0];
-  if (whyCluster) {
-    html += `<div style="margin-bottom: 30px;">
-      <h3 style="color: #333; margin-bottom: 15px;">🧩 ¿Por qué se agrupan tus síntomas?</h3>
-      <div style="background: #f0f8ff; border: 1px solid #b3d9ff; border-radius: 10px; padding: 20px;">
-        <p style="margin: 0; line-height: 1.6; color: #333;">${whyCluster}</p>
-      </div>
-    </div>`;
-  }
-
-  // CARE TIPS
-  const careTips = resultsTemplate.care_tips?.by_pattern?.[patternKey];
-  if (careTips && careTips.length > 0) {
-    html += `<div style="margin-bottom: 30px;">
-      <h3 style="color: #333; margin-bottom: 15px;">🌿 Mini-hábitos recomendados</h3>
-      <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px;">
-        <ul style="margin: 0; padding-left: 20px;">`;
-    
-    careTips.forEach(tip => {
-      html += `<li style="margin: 10px 0; line-height: 1.5;">${tip}</li>`;
-    });
-    
-    html += `</ul></div></div>`;
-  }
-
-  // HOW HERBS WORK
-  const herbsInfo = resultsTemplate.how_herbs_work?.by_pattern?.[patternKey];
-  if (herbsInfo) {
-    html += `<div style="margin-bottom: 30px;">
-      <h3 style="color: #333; margin-bottom: 15px;">🌱 Tu medicina personalizada incluiría</h3>
-      <div style="background: #f0f8f0; border: 1px solid #c0e0c0; border-radius: 10px; padding: 20px;">`;
-    
-    if (herbsInfo.mechanism) {
-      html += `<ul style="margin: 0 0 15px 0; padding-left: 20px;">`;
-      herbsInfo.mechanism.forEach(mech => {
-        html += `<li style="margin: 8px 0; line-height: 1.5;">${mech}</li>`;
+  // PATTERN CARD - Characteristics
+  if (resultsTemplate.pattern_card?.single?.[patternKey]) {
+    const pattern = resultsTemplate.pattern_card.single[patternKey];
+    html += `
+      <div class="pattern-characteristics">
+        <h4>Características principales:</h4>
+        <ul>
+    `;
+    if (pattern.characteristics) {
+      pattern.characteristics.forEach(char => {
+        html += `<li>${char}</li>`;
       });
-      html += `</ul>`;
     }
-    
-    if (herbsInfo.combo_logic) {
-      html += `<p style="margin: 0; font-style: italic; color: #666;"><strong>Lógica:</strong> ${herbsInfo.combo_logic}</p>`;
-    }
-    
-    html += `</div></div>`;
+    html += `</ul></div>`;
   }
 
-  // CYCLE PHASE TIPS
-  const phaseGeneric = resultsTemplate.phase?.generic;
-  if (phaseGeneric) {
-    html += `<div style="margin-bottom: 30px;">
-      <h3 style="color: #333; margin-bottom: 20px;">🌙 Cuidado por fase del ciclo</h3>`;
-    
-    Object.entries(phaseGeneric).forEach(([phase, phaseData]) => {
-      html += `<div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 15px;">
-        <h4 style="color: #00D4AA; margin: 0 0 10px 0;">${phaseData.label}</h4>
-        <p style="color: #666; margin-bottom: 15px; font-style: italic;">${phaseData.about}</p>`;
-      
-      // Foods
-      if (phaseData.foods && phaseData.foods.length > 0) {
-        html += `<div style="margin-bottom: 15px;">
-          <strong style="color: #333;">Alimentos recomendados:</strong>
-          <ul style="margin: 5px 0 0 0; padding-left: 20px;">`;
-        phaseData.foods.slice(0, 3).forEach(food => {
-          html += `<li style="margin: 5px 0; line-height: 1.4; font-size: 14px;">${food}</li>`;
-        });
-        html += `</ul></div>`;
-      }
-      
-      // Movement
-      if (phaseData.movement && phaseData.movement.length > 0) {
-        html += `<div style="margin-bottom: 15px;">
-          <strong style="color: #333;">Movimiento:</strong>
-          <ul style="margin: 5px 0 0 0; padding-left: 20px;">`;
-        phaseData.movement.forEach(mov => {
-          html += `<li style="margin: 5px 0; line-height: 1.4; font-size: 14px;">${mov}</li>`;
-        });
-        html += `</ul></div>`;
-      }
-      
-      html += `</div>`;
-    });
-    
-    html += `</div>`;
+  // WHY CLUSTER
+  if (resultsTemplate.why_cluster?.by_pattern?.[patternKey]) {
+    html += `
+      <div class="pattern-explanation">
+        <h4>¿Por qué se agrupan tus síntomas?</h4>
+        <p>${resultsTemplate.why_cluster.by_pattern[patternKey][0]}</p>
+      </div>
+    `;
   }
 
-  // SUPPORT SIGNALS
-  const supportSignals = resultsTemplate.support_signals?.items;
-  if (supportSignals && supportSignals.length > 0) {
-    html += `<div style="margin-bottom: 30px;">
-      <h3 style="color: #333; margin-bottom: 15px;">👁️ Señales útiles a observar</h3>
-      <div style="background: #fff9e6; border: 1px solid #ffe066; border-radius: 10px; padding: 20px;">
-        <ul style="margin: 0; padding-left: 20px;">`;
-    
-    supportSignals.forEach(signal => {
-      html += `<li style="margin: 8px 0; line-height: 1.5;">${signal}</li>`;
+  // PHASE TIPS SECTION
+  if (resultsTemplate.phase?.generic) {
+    html += `
+      <div class="tips-phase-section">
+        <h3 class="tips-main-title">Tips por fase del ciclo</h3>
+        <div class="phases-container">
+    `;
+
+    // Get phases from common.phase_labels
+    const phaseLabels = resultsTemplate.common?.phase_labels || {
+      'antes': 'Antes del periodo (PMS)',
+      'durante': 'Durante', 
+      'despues': 'Después',
+      'entre': 'Entre periodos'
+    };
+
+    Object.keys(phaseLabels).forEach(phaseKey => {
+      const phaseData = resultsTemplate.phase.generic[phaseKey];
+      if (phaseData) {
+        html += `
+          <div class="phase-block">
+            <div class="phase-header">
+              <h4 class="phase-title">${phaseLabels[phaseKey]}</h4>
+              <p class="phase-description">${phaseData.que_significa || ''}</p>
+            </div>
+            <div class="phase-content">
+        `;
+
+        // Add subsections (alimentos, haz, evita)
+        if (phaseData.alimentos) {
+          html += `
+            <div class="phase-subsection">
+              <div class="subsection-label">Alimentos:</div>
+              <ul class="subsection-list">
+          `;
+          phaseData.alimentos.forEach(item => {
+            html += `<li>${item}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (phaseData.haz) {
+          html += `
+            <div class="phase-subsection">
+              <div class="subsection-label">Haz:</div>
+              <ul class="subsection-list">
+          `;
+          phaseData.haz.forEach(item => {
+            html += `<li>${item}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        if (phaseData.evita) {
+          html += `
+            <div class="phase-subsection">
+              <div class="subsection-label">Evita:</div>
+              <ul class="subsection-list">
+          `;
+          phaseData.evita.forEach(item => {
+            html += `<li>${item}</li>`;
+          });
+          html += `</ul></div>`;
+        }
+
+        html += `</div></div>`; // Close phase-content and phase-block
+      }
     });
-    
-    html += `</ul></div></div>`;
+
+    html += `</div></div>`; // Close phases-container and tips-phase-section
   }
 
   // DISCLAIMER
-  html += `<div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; margin-bottom: 30px;">
-    <h4 style="color: #856404; margin: 0 0 10px 0;">⚠️ Nota importante</h4>
-    <p style="margin: 0; color: #856404; line-height: 1.6;">${resultsTemplate.meta?.disclaimer || 'Esta evaluación es orientativa y no sustituye consejo médico. Si tus síntomas te preocupan, consulta a un profesional.'}</p>
-  </div>`;
-
-  // FOOTER CTA
-  const footer = resultsTemplate.footer;
-  if (footer) {
-    html += `<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; text-align: center;">
-      <h3 style="margin: 0 0 15px 0;">${footer.title}</h3>
-      <p style="margin: 0 0 20px 0; opacity: 0.9;">${footer.description}</p>`;
-    
-    if (footer.benefits) {
-      html += `<div style="text-align: left; margin: 20px 0;">`;
-      footer.benefits.forEach(benefit => {
-        html += `<div style="margin: 8px 0;">${benefit}</div>`;
-      });
-      html += `</div>`;
-    }
-    
-    if (footer.launch_date) {
-      html += `<p style="margin: 15px 0 0 0; font-size: 0.9em; opacity: 0.8;">${footer.launch_date}</p>`;
-    }
-    
-    html += `</div>`;
-  }
+  html += `
+    <div class="disclaimer">
+      <strong>Nota importante:</strong>
+      ${resultsTemplate.meta?.disclaimer || 'Esta evaluación es orientativa y no sustituye consejo médico.'}
+    </div>
+  `;
 
   document.getElementById('results-card').innerHTML = html;
   showPage('results-page');
@@ -863,4 +815,4 @@ window.resetSurvey = function () {
   }
 };
 
-console.log("✅ app.js loaded and ready - COMPREHENSIVE RESULTS IMPLEMENTED!");
+console.log("✅ app.js loaded and ready - USING YOUR CSS CLASSES + COMPOUND SUPPORT!");
