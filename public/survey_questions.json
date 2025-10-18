@@ -77,7 +77,6 @@
             "id": "P0_nombre",
             "type": "text",
             "title": "¿Cuál es tu nombre?",
-            "help_text": "Lo usaremos para personalizar tus recomendaciones.",
             "required": true,
             "prompt": "Question P0_nombre"
         },
@@ -85,7 +84,7 @@
             "id": "P0_contraception",
             "type": "single",
             "title": "¿Usas anticoncepción actualmente? 🛡️",
-            "help_text": "Nos ayuda a interpretar mejor tus señales.",
+            "help_text": "Nos ayuda a interpretar mejor tu sangrado.",
             "options": [
                 {
                     "label": "Píldora/anillo/parche",
@@ -132,7 +131,6 @@
             "id": "P1_no_cycle_desde_cuando",
             "type": "single",
             "title": "¿Desde cuándo no hay sangrado? 📆",
-            "help_text": "Aporta contexto sobre tu caso.",
             "visible_if": {
                 "question_id": "P1_regularity",
                 "equals": "No tengo sangrado actualmente"
@@ -258,7 +256,6 @@
             "id": "P2_spotting_frecuencia",
             "type": "single",
             "title": "¿Con qué frecuencia tuviste manchado entre reglas? (si aplica)",
-            "help_text": "Ayuda a precisar el patrón de manchado.",
             "visible_if": {
                 "question_id": "P2_sintomas",
                 "includes": [
@@ -502,35 +499,41 @@
                         "maxselected": 2
                     }
                 }
-  ]
+            ]
         },
         {
-                    "id": "P2_coagulo_tamano",
-                    "type": "single_choice",
-                    "title": "Si hay coágulos, ¿qué tamaño? 🧈",
-                    "help_text": "Aproximado.",
-                    "options": [
-                        {
-                            "label": "No hay coágulos",
-                            "value": "<0cm"
-                        },
-                        {
-                            "label": "Pequeños (<1 cm)",
-                            "value": "<1cm"
-                        },
-                        {
-                            "label": "Medianos (1–2.4 cm)",
-                            "value": "1–2.4cm"
-                        },
-                        {
-                            "label": "Grandes (>2.4 cm)",
-                            "value": ">2.4cm"
-                        }
-                    ],
-                    "validation": {
-                        "minselected": 0,
-                        "maxselected": 1
-                    }
+           "id": "P2_coagulo_tamano",
+           "type": "single_choice",
+           "title": "Si hay coágulos, ¿qué tamaño? 🧈",
+            "visible_if": {
+                "question_id": "P2_textura",
+                "includes": [
+                    "coagulos"
+                ]
+            },          
+           "help_text": "Aproximado.",
+           "options": [
+               {
+                   "label": "No hay coágulos",
+                   "value": "<0cm"
+               },
+               {
+                   "label": "Pequeños (<1 cm)",
+                   "value": "<1cm"
+               },
+               {
+                   "label": "Medianos (1–2.4 cm)",
+                   "value": "1–2.4cm"
+               },
+               {
+                   "label": "Grandes (>2.4 cm)",
+                   "value": ">2.4cm"
+               }
+           ],
+           "validation": {
+               "minselected": 1,
+               "maxselected": 1
+           }
         },
         {
                     "id": "P2_patron_flujo",
@@ -652,42 +655,45 @@
             },
             "prompt": "Question P3_cuerpo"
         },
+        { 
+        "id": "P2b_sintomas_premenstruales",
+        "type": "multiselect",
+        "title": "¿Qué síntomas tienes ANTES de tu periodo (días previos)? 📅",
+        "options": [
         {
-  "id": "P2b_sintomas_premenstruales",
-  "type": "multiselect",
-  "title": "¿Qué síntomas tienes ANTES de tu periodo (días previos)? 📅",
-  "options": [
-    {
-      "label": "Irritabilidad o enojo",
-      "value": "irritabilidad",
-      "scores": { "calor": 3, "tension": 2 } 
-    },
-    {
-      "label": "Tristeza o llanto fácil",
-      "value": "tristeza",
-      "scores": { "frio": 3 }  
-    },
-    {
-      "label": "Antojos intensos de comida",
-      "value": "antojos",
-      "scores": { "humedad": 2 }  
-    },
-    {
-      "label": "Insomnio o sueño inquieto",
-      "value": "insomnio",
-      "scores": { "tension": 3, "calor": 2 }  
-    },
-    {
-      "label": "Ninguno en particular",
-      "value": "ninguno",
-      "scores": {}
-    }
-  ],
-  "maxselected": 3
+          "label": "Irritabilidad o enojo",
+          "value": "irritabilidad",
+          "scores": { "calor": 3, "tension": 2 } 
+        },
+        {
+          "label": "Tristeza o llanto fácil",
+          "value": "tristeza",
+          "scores": { "frio": 3 }  
+        },
+        {
+          "label": "Antojos intensos de comida",
+          "value": "antojos",
+          "scores": { "humedad": 2 }  
+        },
+        {
+          "label": "Insomnio o sueño inquieto",
+          "value": "insomnio",
+          "scores": { "tension": 3, "calor": 2 }  
+        },
+        {
+          "label": "Ninguno en particular",
+          "value": "ninguno",
+          "scores": {}
+        }
+       ],
+        "validation": {
+         "minselected": 1,
+        "maxselected": 3
+        },
         },
         {
             "id": "P6_energia",
-            "type": "single",
+            "type": "multiselect",
             "title": "Tu patrón de energía general ⚡",
             "help_text": "Selecciona hasta 2.",
             "options": [
