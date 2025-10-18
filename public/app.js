@@ -129,30 +129,34 @@ surveyQuestions.forEach(q => {
   }
 });
 
-// --- THEN process the decision mapping logic ---
+// --- Process the decision mapping logic ---
 surveyQuestions.forEach(q => {
-  // 1. Top-level options
+  // 1. Top-level questions
   if (Array.isArray(q.options)) {
-    const mappingList = decisionMapping.scoring[q.id];
-    if (mappingList) {
+    const mappingList = decisionMapping?.scoring?.[q.id];
+    if (!mappingList) {
+      console.warn(`⚠️ No scoring found for top-level question: ${q.id}`);
+    } else {
       q.options.forEach(opt => {
         const mapping = mappingList.find(m => m.value === opt.value);
-        if (mapping && mapping.scores) {
+        if (mapping?.scores) {
           opt.scores = mapping.scores;
         }
       });
     }
   }
 
-  // 2. Compound questions (items)
+  // 2. Compound question items
   if (q.type === "compound" && Array.isArray(q.items)) {
     q.items.forEach(item => {
       if (Array.isArray(item.options)) {
-        const mappingList = decisionMapping.scoring[item.id];
-        if (mappingList) {
+        const mappingList = decisionMapping?.scoring?.[item.id];
+        if (!mappingList) {
+          console.warn(`⚠️ No scoring found for compound item: ${item.id}`);
+        } else {
           item.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
+            if (mapping?.scores) {
               opt.scores = mapping.scores;
             }
           });
@@ -161,32 +165,23 @@ surveyQuestions.forEach(q => {
     });
   }
 
-  // 3. Grouped questions (questions)
+  // 3. Grouped question sub-questions
   if (q.type === "grouped" && Array.isArray(q.questions)) {
     q.questions.forEach(group => {
       if (Array.isArray(group.options)) {
-        const mappingList = decisionMapping.scoring[group.id];
-        if (mappingList) {
+        const mappingList = decisionMapping?.scoring?.[group.id];
+        if (!mappingList) {
+          console.warn(`⚠️ No scoring found for grouped question: ${group.id}`);
+        } else {
           group.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
+            if (mapping?.scores) {
               opt.scores = mapping.scores;
             }
           });
         }
       }
     });
-  }
-});
-
-    window.surveyLoaded = true;
-    console.log('✅ Loaded', surveyQuestions.length, 'questions');
-
-    if (quizBtn) quizBtn.disabled = false;
-  } catch (err) {
-    console.error('❌ Error:', err);
-    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
-    if (quizBtn) quizBtn.disabled = true;
   }
 });
 
