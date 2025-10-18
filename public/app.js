@@ -28,7 +28,7 @@ async function sendResponsesToGoogleSheet() {
       answers: answers
     };
 
-    const resp = await fetch(WAITLIST_WEBHOOK, {
+    const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
