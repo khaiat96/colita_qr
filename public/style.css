@@ -3435,3 +3435,75 @@ html {
 .input-text::placeholder {
     color: #b0b0b0;
 }
+
+/* --- Style Overrides to Match Nice Version --- */
+
+.question {
+  margin-bottom: 40px;
+}
+
+.question h3 {
+  font-size: 1.8rem;
+  margin-bottom: 30px;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.option:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #00D4AA;
+  box-shadow: 0 4px 15px rgba(0, 212, 170, 0.2);
+}
+
+.option.selected {
+  background: linear-gradient(135deg, rgba(0, 212, 170, 0.2) 0%, rgba(107, 115, 255, 0.1) 100%);
+  border-color: #00D4AA;
+  color: #00D4AA;
+  box-shadow: 0 4px 20px rgba(0, 212, 170, 0.3);
+}
+
+.btn-next, .btn-back {
+  padding: 16px 32px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 0 16px 0 rgba(107,115,255,0.18), 0 2px 8px rgba(40,216,182,0.10);
+  transition: background 0.4s, box-shadow 0.3s, transform 0.15s;
+  color: #fff;
+}
+
+.btn-back {
+  background: linear-gradient(90deg, #6b73ff 0%, #28d8b6 100%);
+}
+
+.btn-back:hover {
+  background: linear-gradient(90deg, #9C44DC 0%, #28d8b6 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.btn-next {
+  background: linear-gradient(90deg, #28d8b6 0%, #6b73ff 60%, #9C44DC 100%);
+}
+
+.btn-next:hover {
+  background: linear-gradient(90deg, #20b8a0 0%, #6b73ff 60%, #FF6B9D 100%);
+  transform: translateY(-2px) scale(1.03);
+}
