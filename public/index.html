@@ -182,7 +182,18 @@
                 ✨ Versión PRO - Evaluación Avanzada
             </div>
             <div class="survey-content" id="survey-content">
-                <!-- Survey questions and navigation buttons will be rendered here by JS -->
+                <!-- Question container where questions will be rendered -->
+                <div id="question-container"></div>
+
+                <!-- Navigation buttons -->
+                <div class="survey-navigation">
+                    <button id="back-btn" class="btn-secondary" onclick="previousQuestion()" style="display: none;">
+                        ← Anterior
+                    </button>
+                    <button id="next-btn" class="btn-primary" onclick="nextQuestion()" disabled>
+                        Siguiente →
+                    </button>
+                </div>
             </div>
         </div>
     </div>

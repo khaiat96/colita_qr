@@ -1,4 +1,3 @@
-
 // Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
@@ -24,16 +23,16 @@ function getQuestionById(qId) {
 
 function isQuestionVisible(question, currentAnswers) {
   if (!question || !question.conditional_display) return true;
-
+  
   const cond = question.conditional_display;
   const parentAnswer = currentAnswers[cond.question_id];
-
+  
   if (!parentAnswer) return false;
-
+  
   if (Array.isArray(parentAnswer)) {
     return cond.values.some(v => parentAnswer.includes(v));
   }
-
+  
   return cond.values.includes(parentAnswer);
 }
 
@@ -75,7 +74,7 @@ window.startSurvey = function () {
     alert('Las preguntas no se han cargado correctamente.');
     return;
   }
-
+  
   currentQuestionIndex = 0;
   answers = {};
   showPage('survey-page');
@@ -394,7 +393,7 @@ window.updateNavigation = function() {
 
   } else if (question.type === 'slider') {
     hasAnswer = typeof answers[qId] === 'number';
-
+    
   } else if (question.type === 'compound' && Array.isArray(question.items)) {
     hasAnswer = question.items.every(item => {
       if (item.type === 'multiselect') {
@@ -542,7 +541,7 @@ function renderCareTips(patternKey) {
 function renderPhaseAdvice(patternKey) {
   const phaseSections = resultsTemplate?.phase?.generic || {};
   if (!Object.keys(phaseSections).length) return '';
-
+  
   let html = `<div class="tips-phase-section">
     <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
     <div class="phases-container">`;
