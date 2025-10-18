@@ -13,7 +13,7 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - FIXED VERSION WITH WAITLIST HANDLING');
+console.log('🚀 APP.JS LOADED - FIXED VERSION WITH COMPOUND QUESTION SUPPORT');
 
 // ==================== HELPER FUNCTIONS ====================
 
@@ -199,6 +199,78 @@ window.startSurvey = function () {
   renderQuestion();
 };
 
+// ==================== RENDER ITEM (HELPER FOR COMPOUND/GROUPED) ====================
+
+function renderQuestionItem(item, isCompound = false) {
+  let html = '';
+  const containerClass = isCompound ? 'compound-item' : 'grouped-question';
+  
+  html += `<div class="${containerClass}"><h4>${item.label}</h4>`;
+  
+  // Single choice
+  if (item.type === 'single_choice') {
+    html += '<div class="options-container">';
+    item.options.forEach(opt => {
+      const checked = answers[item.id] === opt.value ? 'checked' : '';
+      html += `
+        <label class="option-label ${checked}">
+          <input type="radio" name="${item.id}" value="${opt.value}" 
+            onchange="answers['${item.id}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
+          <span>${opt.label}</span>
+        </label>`;
+    });
+    html += '</div>';
+  }
+  
+  // Multiselect
+  else if (item.type === 'multiselect') {
+    html += '<div class="options-container multiselect">';
+    const currentAnswers = answers[item.id] || [];
+    item.options.forEach(opt => {
+      const checked = currentAnswers.includes(opt.value) ? 'checked' : '';
+      html += `
+        <label class="option-label ${checked}">
+          <input type="checkbox" value="${opt.value}" 
+            onchange="
+              if (!Array.isArray(answers['${item.id}'])) answers['${item.id}'] = [];
+              if (this.checked) {
+                if (!answers['${item.id}'].includes(this.value)) answers['${item.id}'].push(this.value);
+              } else {
+                answers['${item.id}'] = answers['${item.id}'].filter(v => v !== this.value);
+              }
+              window.updateNavigation();
+              updateOptionSelection(this);
+            " ${checked}>
+          <span>${opt.label}</span>
+        </label>`;
+    });
+    html += '</div>';
+  }
+  
+  // Text input
+  else if (item.type === 'text') {
+    const currentValue = answers[item.id] || '';
+    html += `<input type="text" class="text-input" 
+      value="${currentValue}" 
+      oninput="window.handleTextInput('${item.id}', this.value)" 
+      placeholder="${item.placeholder || ''}">`;
+  }
+  
+  // Slider
+  else if (item.type === 'slider') {
+    const val = answers[item.id] || item.default || 5;
+    html += `<div class="slider-container">
+      <input type="range" min="${item.min || 1}" max="${item.max || 10}" 
+        value="${val}" class="slider"
+        oninput="answers['${item.id}'] = parseInt(this.value); this.nextElementSibling.textContent = this.value; window.updateNavigation();">
+      <span class="slider-value">${val}</span>
+    </div>`;
+  }
+  
+  html += '</div>';
+  return html;
+}
+
 // ==================== RENDER QUESTION ====================
 
 function renderQuestion() {
@@ -288,45 +360,17 @@ function renderQuestion() {
     </div>`;
   }
 
-  // Compound
+  // Compound - FIXED TO HANDLE ALL ITEM TYPES
   else if (question.type === 'compound' && Array.isArray(question.items)) {
     question.items.forEach(item => {
-      html += `<div class="compound-item"><h4>${item.label}</h4>`;
-      if (item.type === 'single_choice') {
-        html += '<div class="options-container">';
-        item.options.forEach(opt => {
-          const checked = answers[item.id] === opt.value ? 'checked' : '';
-          html += `
-            <label class="option-label ${checked}">
-              <input type="radio" name="${item.id}" value="${opt.value}" 
-                onchange="answers['${item.id}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
-              <span>${opt.label}</span>
-            </label>`;
-        });
-        html += '</div>';
-      }
-      html += '</div>';
+      html += renderQuestionItem(item, true);
     });
   }
 
-  // Grouped
+  // Grouped - ALSO IMPROVED TO HANDLE ALL QUESTION TYPES
   else if (question.type === 'grouped' && Array.isArray(question.questions)) {
     question.questions.forEach(grp => {
-      html += `<div class="grouped-question"><h4>${grp.label}</h4>`;
-      if (grp.type === 'single_choice') {
-        html += '<div class="options-container">';
-        grp.options.forEach(opt => {
-          const checked = answers[grp.id] === opt.value ? 'checked' : '';
-          html += `
-            <label class="option-label ${checked}">
-              <input type="radio" name="${grp.id}" value="${opt.value}" 
-                onchange="answers['${grp.id}'] = this.value; window.updateNavigation(); updateOptionSelection(this);" ${checked}>
-              <span>${opt.label}</span>
-            </label>`;
-        });
-        html += '</div>';
-      }
-      html += '</div>';
+      html += renderQuestionItem(grp, false);
     });
   }
 
@@ -418,6 +462,23 @@ document.addEventListener('DOMContentLoaded', async function () {
     surveyQuestions.forEach(q => {
       if (q.type === 'singlechoice' || q.type === 'single') {
         q.type = 'single_choice';
+      }
+      
+      // Also normalize types within compound and grouped questions
+      if (q.type === 'compound' && Array.isArray(q.items)) {
+        q.items.forEach(item => {
+          if (item.type === 'singlechoice' || item.type === 'single') {
+            item.type = 'single_choice';
+          }
+        });
+      }
+      
+      if (q.type === 'grouped' && Array.isArray(q.questions)) {
+        q.questions.forEach(group => {
+          if (group.type === 'singlechoice' || group.type === 'single') {
+            group.type = 'single_choice';
+          }
+        });
       }
     });
 
@@ -517,6 +578,28 @@ function updateProgress() {
   if (progressText) progressText.textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
 }
 
+// ==================== VALIDATION HELPER ====================
+
+function validateItem(item) {
+  if (item.type === 'multiselect') {
+    const selected = Array.isArray(answers[item.id]) ? answers[item.id] : [];
+    const minSelected = item.validation?.minselected ?? 1;
+    return minSelected === 0 || selected.length >= minSelected;
+  } else if (item.type === 'single_choice') {
+    return answers[item.id] !== undefined && answers[item.id] !== null && answers[item.id] !== '';
+  } else if (item.type === 'slider') {
+    return typeof answers[item.id] === 'number';
+  } else if (item.type === 'text') {
+    const value = answers[item.id];
+    if (item.validation?.required) {
+      return value !== undefined && value !== null && value.trim() !== '';
+    }
+    return true; // Text input is optional by default
+  } else {
+    return true;
+  }
+}
+
 // ==================== UPDATE NAVIGATION ====================
 
 window.updateNavigation = function() {
@@ -537,35 +620,19 @@ window.updateNavigation = function() {
   } else if (question.type === 'slider') {
     hasAnswer = typeof answers[qId] === 'number';
     
+  } else if (question.type === 'text') {
+    const value = answers[qId];
+    if (question.validation?.required) {
+      hasAnswer = value !== undefined && value !== null && value.trim() !== '';
+    } else {
+      hasAnswer = true; // Text input is optional by default
+    }
+    
   } else if (question.type === 'compound' && Array.isArray(question.items)) {
-    hasAnswer = question.items.every(item => {
-      if (item.type === 'multiselect') {
-        const selected = Array.isArray(answers[item.id]) ? answers[item.id] : [];
-        const minSelected = item.validation?.minselected ?? 1;
-        return minSelected === 0 || selected.length >= minSelected;
-      } else if (item.type === 'single_choice') {
-        return answers[item.id] !== undefined && answers[item.id] !== '';
-      } else if (item.type === 'slider') {
-        return typeof answers[item.id] === 'number';
-      } else {
-        return true;
-      }
-    });
+    hasAnswer = question.items.every(item => validateItem(item));
 
   } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
-    hasAnswer = question.questions.every(group => {
-      if (group.type === 'multiselect') {
-        const selected = Array.isArray(answers[group.id]) ? answers[group.id] : [];
-        const minSelected = group.validation?.minselected ?? 1;
-        return minSelected === 0 || selected.length >= minSelected;
-      } else if (group.type === 'single_choice') {
-        return answers[group.id] !== undefined && answers[group.id] !== '';
-      } else if (group.type === 'slider') {
-        return typeof answers[group.id] === 'number';
-      } else {
-        return true;
-      }
-    });
+    hasAnswer = question.questions.every(group => validateItem(group));
 
   } else {
     hasAnswer = !!answers[qId];
@@ -600,16 +667,51 @@ function calculateResults() {
   };
 
   surveyQuestions.forEach(question => {
+    // Handle direct question answers
     const answer = answers[question.id];
-    if (!answer) return;
-
-    const answerArray = Array.isArray(answer) ? answer : [answer];
-    if (question.options) {
+    if (answer && question.options) {
+      const answerArray = Array.isArray(answer) ? answer : [answer];
       answerArray.forEach(value => {
         const option = question.options.find(opt => opt.value === value);
         if (option && option.scores) {
           Object.entries(option.scores).forEach(([key, val]) => {
             scores[key] += val;
+          });
+        }
+      });
+    }
+    
+    // Handle compound question items
+    if (question.type === 'compound' && Array.isArray(question.items)) {
+      question.items.forEach(item => {
+        const itemAnswer = answers[item.id];
+        if (itemAnswer && Array.isArray(item.options)) {
+          const answerArray = Array.isArray(itemAnswer) ? itemAnswer : [itemAnswer];
+          answerArray.forEach(value => {
+            const option = item.options.find(opt => opt.value === value);
+            if (option && option.scores) {
+              Object.entries(option.scores).forEach(([key, val]) => {
+                scores[key] += val;
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    // Handle grouped question items
+    if (question.type === 'grouped' && Array.isArray(question.questions)) {
+      question.questions.forEach(group => {
+        const groupAnswer = answers[group.id];
+        if (groupAnswer && Array.isArray(group.options)) {
+          const answerArray = Array.isArray(groupAnswer) ? groupAnswer : [groupAnswer];
+          answerArray.forEach(value => {
+            const option = group.options.find(opt => opt.value === value);
+            if (option && option.scores) {
+              Object.entries(option.scores).forEach(([key, val]) => {
+                scores[key] += val;
+              });
+            }
           });
         }
       });
@@ -746,4 +848,4 @@ window.resetSurvey = function () {
   }
 };
 
-console.log("✅ app.js loaded and ready with fixed waitlist handling.");
+console.log("✅ app.js loaded and ready with COMPOUND QUESTION FIXES.");
