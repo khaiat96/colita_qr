@@ -128,7 +128,7 @@
   "pattern_card": {
     "single": {
       "tension": {
-        "pattern_explainer": "Exceso de Viento con espasmo uterino y nervioso; síntomas que ‘se mueven’.",
+        "pattern_explainer": "Exceso de Viento con espasmo uterino y nervioso; síntomas que 'se mueven'.",
         "characteristics": [
           "Dolor cólico o punzante (espasmos)",
           "Síntomas irregulares/cambiantes",
@@ -763,7 +763,7 @@
           "Hierbas Enfriantes/Antiinflamatorias → moderan calor tisular",
           "Hierbas Astringentes → fortalecen tono vascular"
         ],
-        "combo_logic": "Enfriar + tonificar vasculatura, estabiliza la intensidad; amargos ligeros ayudan a ‘liberar’ calor."
+        "combo_logic": "Enfriar + tonificar vasculatura, estabiliza la intensidad; amargos ligeros ayudan a 'liberar' calor."
       },
       "frio": {
         "mechanism": [
@@ -782,7 +782,7 @@
       "sequedad": {
         "mechanism": [
           "Hierbas Demulcentes → hidratan mucosas",
-          "Hierbas Nutritivas → reponen ‘jugos’ tisulares"
+          "Hierbas Nutritivas → reponen 'jugos' tisulares"
         ],
         "combo_logic": "Humectar + nutrir, restaura reservas y regulariza el flujo."
       },
@@ -800,7 +800,7 @@
           "Hierbas Drenantes/Linfáticas → movilizan líquidos estancados",
           "Amargos suaves → estimulan bilis sin enfriar en exceso"
         ],
-        "combo_logic": "Templar + drenar + mover; resuelve ‘frío‑húmedo’ con estasis y pesadez."
+        "combo_logic": "Templar + drenar + mover; resuelve 'frío‑húmedo' con estasis y pesadez."
       },
       "calor_sequedad": {
         "mechanism": [
@@ -816,7 +816,7 @@
           "Hierbas Calentadoras y Circulatorias → llevan fluido y calor a periferia",
           "Hierbas Adaptógenas Nutritivas (opcional) → sostienen energía sin sobrecalentar"
         ],
-        "combo_logic": "Humectar + templar + mover; útil en dolor por contracción ‘seca’ y baja vitalidad."
+        "combo_logic": "Humectar + templar + mover; útil en dolor por contracción 'seca' y baja vitalidad."
       },
       "tension_calor": {
         "mechanism": [
@@ -828,7 +828,7 @@
       },
       "tension_humedad": {
         "mechanism": [
-          "Hierbas Antiespasmódicas → aflojan el ‘nudo’ pélvico",
+          "Hierbas Antiespasmódicas → aflojan el 'nudo' pélvico",
           "Hierbas Aromáticas Carminativas → reducen gas y estasis digestiva",
           "Hierbas Linfáticas/Astringentes suaves → drenan y ordenan el flujo",
           "Amargos suaves → mejoran manejo de grasas y residuos"

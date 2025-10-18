@@ -1,6 +1,6 @@
-// Configuration  
+// Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/er23s3ieomte4jue36f4v4o0g3mrtsdl';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -13,13 +13,25 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
+console.log('🚀 APP.JS LOADED - VERSION 2.1');
 
-window.handleTextInput = function(qId, value) {
-    answers[qId] = value;
-    window.updateNavigation();
+// Waitlist scroll
+window.scrollToWaitlist = function () {
+  const waitlistSection = document.getElementById('waitlist-section');
+  if (waitlistSection) {
+    waitlistSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 };
 
+// Start survey
+window.startSurvey = function () {
+  currentQuestionIndex = 0;
+  answers = {};
+  showPage('survey-page');
+  renderQuestion();
+};
+
+// Submit survey to Make.com webhook
 async function sendResponsesToGoogleSheet() {
   try {
     const payload = {
@@ -44,6 +56,146 @@ async function sendResponsesToGoogleSheet() {
   }
 }
 
+// --- MAIN LOADER ---
+document.addEventListener('DOMContentLoaded', async function () {
+  showPage('landing-page');
+  const quizBtn = document.getElementById('take-quiz-btn');
+  if (quizBtn) quizBtn.disabled = true;
+
+  try {
+    const surveyResp = await fetch('survey_questions.json');
+    if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
+    const surveyData = await surveyResp.json();
+    surveyQuestions = surveyData.questions;
+    questionOrder = surveyData.question_order;
+    console.log("✅ surveyData loaded", surveyData);
+
+    const mappingResp = await fetch('decision_mapping.json');
+    if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
+    const decisionMapping = await mappingResp.json();
+
+    try {
+      const resultsResp = await fetch('results_template.json');
+      if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
+      resultsTemplate = await resultsResp.json();
+      console.log('✅ Loaded results_template.json');
+    } catch (err) {
+      resultsTemplate = null;
+      console.error('❌ Failed to load results_template.json:', err);
+    }
+
+    // Normalize question types
+    surveyQuestions.forEach(q => {
+      if (q.type === 'singlechoice' || q.type === 'single') {
+        q.type = 'single_choice';
+      }
+    });
+
+    // --- Process decision mapping ---
+    surveyQuestions.forEach(q => {
+      if (Array.isArray(q.options)) {
+        const mappingList = decisionMapping?.scoring?.[q.id];
+        if (!mappingList) {
+          console.warn(`⚠️ No scoring found for top-level question: ${q.id}`);
+        } else {
+          q.options.forEach(opt => {
+            const mapping = mappingList.find(m => m.value === opt.value);
+            if (mapping?.scores) {
+              opt.scores = mapping.scores;
+            }
+          });
+        }
+      }
+
+      if (q.type === "compound" && Array.isArray(q.items)) {
+        q.items.forEach(item => {
+          if (Array.isArray(item.options)) {
+            const mappingList = decisionMapping?.scoring?.[item.id];
+            if (!mappingList) {
+              console.warn(`⚠️ No scoring found for compound item: ${item.id}`);
+            } else {
+              item.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping?.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
+            }
+          }
+        });
+      }
+
+      if (q.type === "grouped" && Array.isArray(q.questions)) {
+        q.questions.forEach(group => {
+          if (Array.isArray(group.options)) {
+            const mappingList = decisionMapping?.scoring?.[group.id];
+            if (!mappingList) {
+              console.warn(`⚠️ No scoring found for grouped question: ${group.id}`);
+            } else {
+              group.options.forEach(opt => {
+                const mapping = mappingList.find(m => m.value === opt.value);
+                if (mapping?.scores) {
+                  opt.scores = mapping.scores;
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+
+    window.surveyLoaded = true;
+    console.log('✅ Loaded', surveyQuestions.length, 'questions');
+    if (quizBtn) quizBtn.disabled = false;
+  } catch (err) {
+    console.error('❌ Error:', err);
+    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
+    if (quizBtn) quizBtn.disabled = true;
+  }
+
+  // WAITLIST FORM SUBMISSION HANDLING
+  const mainForm = document.getElementById('main-waitlist-form');
+  if (mainForm) {
+    mainForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const name = document.getElementById('main-waitlist-name').value;
+      const email = document.getElementById('main-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'landing_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        mainForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
+
+  const resultsForm = document.getElementById('results-waitlist-form');
+  if (resultsForm) {
+    resultsForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const name = document.getElementById('results-waitlist-name').value;
+      const email = document.getElementById('results-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'results_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        resultsForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
+});
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -102,6 +254,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
+    console.log("✅ surveyData loaded", surveyData); // ADD THIS
+
+
     // Load decision mapping
     const mappingResp = await fetch('decision_mapping.json');
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
@@ -126,30 +281,34 @@ surveyQuestions.forEach(q => {
   }
 });
 
-// --- THEN process the decision mapping logic ---
+// --- Process the decision mapping logic ---
 surveyQuestions.forEach(q => {
-  // 1. Top-level options
+  // 1. Top-level questions
   if (Array.isArray(q.options)) {
-    const mappingList = decisionMapping.scoring[q.id];
-    if (mappingList) {
+    const mappingList = decisionMapping?.scoring?.[q.id];
+    if (!mappingList) {
+      console.warn(`⚠️ No scoring found for top-level question: ${q.id}`);
+    } else {
       q.options.forEach(opt => {
         const mapping = mappingList.find(m => m.value === opt.value);
-        if (mapping && mapping.scores) {
+        if (mapping?.scores) {
           opt.scores = mapping.scores;
         }
       });
     }
   }
 
-  // 2. Compound questions (items)
+  // 2. Compound question items
   if (q.type === "compound" && Array.isArray(q.items)) {
     q.items.forEach(item => {
       if (Array.isArray(item.options)) {
-        const mappingList = decisionMapping.scoring[item.id];
-        if (mappingList) {
+        const mappingList = decisionMapping?.scoring?.[item.id];
+        if (!mappingList) {
+          console.warn(`⚠️ No scoring found for compound item: ${item.id}`);
+        } else {
           item.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
+            if (mapping?.scores) {
               opt.scores = mapping.scores;
             }
           });
@@ -158,32 +317,23 @@ surveyQuestions.forEach(q => {
     });
   }
 
-  // 3. Grouped questions (questions)
+  // 3. Grouped question sub-questions
   if (q.type === "grouped" && Array.isArray(q.questions)) {
     q.questions.forEach(group => {
       if (Array.isArray(group.options)) {
-        const mappingList = decisionMapping.scoring[group.id];
-        if (mappingList) {
+        const mappingList = decisionMapping?.scoring?.[group.id];
+        if (!mappingList) {
+          console.warn(`⚠️ No scoring found for grouped question: ${group.id}`);
+        } else {
           group.options.forEach(opt => {
             const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
+            if (mapping?.scores) {
               opt.scores = mapping.scores;
             }
           });
         }
       }
     });
-  }
-});
-
-    window.surveyLoaded = true;
-    console.log('✅ Loaded', surveyQuestions.length, 'questions');
-
-    if (quizBtn) quizBtn.disabled = false;
-  } catch (err) {
-    console.error('❌ Error:', err);
-    alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
-    if (quizBtn) quizBtn.disabled = true;
   }
 });
 
@@ -237,8 +387,25 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==================== UTILITY FUNCTIONS ====================
 
 function getQuestionById(qId) {
-  return surveyQuestions.find(q => q.id === qId);
+  for (const q of surveyQuestions) {
+    if (q.id === qId) return q;
+
+    // Check compound items
+    if (q.type === 'compound' && Array.isArray(q.items)) {
+      const match = q.items.find(item => item.id === qId);
+      if (match) return match;
+    }
+
+    // Check grouped questions
+    if (q.type === 'grouped' && Array.isArray(q.questions)) {
+      const match = q.questions.find(item => item.id === qId);
+      if (match) return match;
+    }
+  }
+
+  return null; // Not found
 }
+
 
 function isQuestionVisible(question, answers) {
   if (!question) return false;
@@ -813,3 +980,4 @@ window.updateNavigation = function() {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
 };
+
