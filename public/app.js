@@ -1007,47 +1007,57 @@ function showResults(patternType) {
     card.appendChild(phaseSection);
   }
 
-  // Colita de Rana section
-  const colitaSection = document.createElement('div');
-  colitaSection.className = 'cdr-intro';
-  colitaSection.innerHTML = `
-    <h4>Colita de Rana Club</h4>
-    <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>`;
-  card.appendChild(colitaSection);
+  // --- Colita de Rana Club Section ---
+const cdrContainer = document.createElement('section');
+cdrContainer.className = 'cdr-section';
 
-  // Unique system differentiators
-  const diff = result.unique_system?.differentiators || [];
-  if (diff.length) {
-    const uniqueGrid = document.createElement('div');
-    uniqueGrid.className = 'unique-system';
-    uniqueGrid.innerHTML = `
-      <h4>${result.unique_system.title}</h4>
-      <div class="unique-grid">
-        ${diff
-          .map(
-            (d) => `
-          <div class="unique-item">
-            <h5>${d.title}</h5>
-            <p>${d.description}</p>
-          </div>`
-          )
-          .join('')}
-      </div>`;
-    card.appendChild(uniqueGrid);
-  }
+// Header + intro paragraph
+cdrContainer.innerHTML = `
+  <div class="cdr-header">
+    <h3>🌿 Colita de Rana Club</h3>
+    <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
+  </div>
+`;
 
-  // Herbal mechanisms
-  const herbs = result.how_herbs_work?.by_pattern?.[patternType];
-  if (herbs) {
-    const herbSection = document.createElement('div');
-    herbSection.className = 'herbs-section';
-    herbSection.innerHTML = `
-      <h4>🌿 Cómo trabajaríamos tu patrón</h4>
-      <ul class="herb-mechanisms">
-        ${herbs.mechanism.map((m) => `<li>${m}</li>`).join('')}
-      </ul>
-      <p class="herb-logic">${herbs.combo_logic}</p>`;
-    card.appendChild(herbSection);
+// Unique system differentiators
+const diff = result.unique_system?.differentiators || [];
+if (diff.length) {
+  const uniqueGrid = document.createElement('div');
+  uniqueGrid.className = 'unique-system';
+  uniqueGrid.innerHTML = `
+    <h4>${result.unique_system.title}</h4>
+    <div class="unique-grid">
+      ${diff
+        .map(
+          (d) => `
+        <div class="unique-item">
+          <h5>${d.title}</h5>
+          <p>${d.description}</p>
+        </div>`
+        )
+        .join('')}
+    </div>`;
+  cdrContainer.appendChild(uniqueGrid);
+}
+
+// Herbal mechanisms
+const herbs = result.how_herbs_work?.by_pattern?.[patternType];
+if (herbs) {
+  const herbSection = document.createElement('div');
+  herbSection.className = 'herbs-section';
+  herbSection.innerHTML = `
+    <h4>Cómo trabajaríamos tu patrón</h4>
+    <ul class="herb-mechanisms">
+      ${herbs.mechanism.map((m) => `<li>${m}</li>`).join('')}
+    </ul>
+    <p class="herb-logic">${herbs.combo_logic}</p>`;
+  cdrContainer.appendChild(herbSection);
+}
+
+// Append full subsection
+card.appendChild(cdrContainer);
+
+  
   }
 
 // Disclaimer — subtle inline note at bottom
