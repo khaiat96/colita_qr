@@ -51,6 +51,12 @@ async function sendResponsesToGoogleSheet() {
   }
 }
 
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+  window.scrollTo(0, 0);
+}
 
 // ==================== WAITLIST FUNCTIONS ====================
 

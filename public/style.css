@@ -2437,3 +2437,5 @@ body {
 .page:not(#landing-page) .medical-disclaimer {
   display: none !important;
 }
+
+#results-card #energetic-terrain ~ #energetic-terrain { display: none !important; }
