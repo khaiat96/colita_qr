@@ -736,6 +736,30 @@ function showResults(patternKey) {
   showPage('results-page');
 }
 
+// === DEBUG TOOL: preview results page manually ===
+// Muestra resultados de cualquier patrón sin pasar por el quiz
+// Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
+
+window.debugShow = function(patternKey = 'agua') {
+  // Fake answers para secciones dependientes
+  window.answers = {
+    P1: "Regular (cada 26–32 días)",
+    P2: "Sangrado normal",
+    P3: "No hay síntomas graves"
+  };
+
+  // Muestra resultados directamente
+  console.log(`🧪 Rendering debug results for pattern: ${patternKey}`);
+  showResults(patternKey);
+  document.getElementById('landing-page').classList.remove('active');
+  document.getElementById('survey-page').classList.remove('active');
+  document.getElementById('results-page').classList.add('active');
+};
+
+// Opcional: carga automática al abrir para revisar diseño
+// window.addEventListener('load', () => debugShow('humedad'));
+
+
 // ==================== EMAIL RESULTS FORM (REMOVED/DEPRECATED) ====================
 // (No longer active; form is hidden by showResults)
 
