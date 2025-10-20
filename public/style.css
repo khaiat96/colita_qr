@@ -1943,3 +1943,81 @@ body {
         font-size: 1.5rem;
     }
 }
+
+/* Result header */
+.result-head { text-align:center; margin-bottom: 10px; }
+.element-badge {
+  display:inline-block; padding:8px 14px; border-radius: 9999px;
+  border:1px solid rgba(255,255,255,.18);
+  background: linear-gradient(135deg, rgba(0,212,170,.12), rgba(107,115,255,.10));
+  font-weight:600;
+  margin-bottom:10px;
+}
+.result-summary { color:#fff; opacity:.95; margin-top:6px; }
+
+/* Explainer & Why cluster */
+.pattern-explainer {
+  background: rgba(255,255,255,0.05);
+  border-left: 4px solid; border-image: linear-gradient(135deg,#00D4AA 0%,#6B73FF 100%) 1;
+  padding: 18px; border-radius: 10px; text-align: left; color:#b0b0b0; margin: 18px 0;
+}
+.why-cluster { text-align: left; margin: 24px 0; }
+.why-cluster h4 {
+  background: linear-gradient(135deg,#00D4AA 0%,#00A8CC 80%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 10px;
+}
+.why-cluster p { color:#b0b0b0; }
+
+/* Ritmo del ciclo block */
+.ritmo-block { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px; text-align:left; margin: 22px 0; }
+.ritmo-block h4 { margin-bottom: 6px; background: linear-gradient(135deg,#00D4AA 0%,#6B73FF 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.ritmo-sub { color:#b0b0b0; margin-bottom: 6px; }
+.ritmo-why { color:#b0b0b0; }
+.ritmo-tips { margin:12px 0 0; padding-left: 18px; }
+.ritmo-tips li { margin: 6px 0; }
+
+/* Colita de rana intro */
+.cdr-intro { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px; text-align:left; margin: 26px 0; }
+.cdr-intro h4 {
+  text-transform: lowercase; letter-spacing: .3px;
+  background: linear-gradient(135deg,#00D4AA 0%,#00A8CC 80%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom: 8px;
+}
+.cdr-intro p { color:#b0b0b0; }
+
+/* Unique system grid */
+.unique-system { margin: 28px 0; text-align:left; }
+.unique-system h4 {
+  background: linear-gradient(135deg,#00D4AA 0%,#00A8CC 80%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom: 12px;
+}
+.unique-grid {
+  display:grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 12px;
+}
+.unique-item { background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 14px; }
+.unique-item h5 { margin-bottom: 6px; }
+.unique-item p { color:#b0b0b0; }
+
+/* Herbs section */
+.herbs-section { text-align:left; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 18px; margin: 24px 0; }
+.herbs-section h4 {
+  background: linear-gradient(135deg,#00D4AA 0%,#6B73FF 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom: 10px;
+}
+.herb-mechanisms { margin: 0; padding-left: 18px; }
+.herb-mechanisms li { margin: 6px 0; color:#fff; }
+.herb-logic { color:#b0b0b0; margin-top: 8px; }
+
+/* Support signals + Advisories */
+.support-signals, .advisories { text-align:left; margin: 24px 0; }
+.support-signals h4, .advisories h4 {
+  background: linear-gradient(135deg,#00D4AA 0%,#00A8CC 80%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom: 10px;
+}
+.support-signals ul, .advisories ul { padding-left: 18px; }
+.support-signals li, .advisories li { margin: 6px 0; }
