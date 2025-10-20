@@ -898,6 +898,9 @@ function showResults(patternType) {
     return;
   }
 
+  window.showResults = showResults;
+
+
   const result = resultsTemplate;
   const card = document.getElementById("results-card");
   if (!card) return;
