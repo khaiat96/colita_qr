@@ -936,14 +936,15 @@ function showResults(patternType) {
   subtitle.textContent = subtitleText;
   card.appendChild(subtitle);
 
+//coment out element explainer
   // Element Explainer (optional short paragraph)
-  const explainer = result.element_explainer?.by_pattern?.[patternType]?.[0];
-  if (explainer) {
-    const explainerEl = document.createElement('p');
-    explainerEl.className = 'element-explainer';
-    explainerEl.textContent = explainer;
-    card.appendChild(explainerEl);
-  }
+  //const explainer = result.element_explainer?.by_pattern?.[patternType]?.[0];
+  //if (explainer) {
+  //  const explainerEl = document.createElement('p');
+  //  explainerEl.className = 'element-explainer';
+  ///  explainerEl.textContent = explainer;
+  //  card.appendChild(explainerEl);
+ // }
 
   // Pattern card (characteristics)
   const patternData = result.pattern_card?.single?.[patternType];
@@ -1010,7 +1011,7 @@ function showResults(patternType) {
   const colitaSection = document.createElement('div');
   colitaSection.className = 'cdr-intro';
   colitaSection.innerHTML = `
-    <h4>colita de rana</h4>
+    <h4>Colita de Rana Club</h4>
     <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>`;
   card.appendChild(colitaSection);
 
@@ -1049,14 +1050,14 @@ function showResults(patternType) {
     card.appendChild(herbSection);
   }
 
-  // Disclaimer
-  const disclaimer = document.createElement('div');
-  disclaimer.className = 'disclaimer';
-  disclaimer.innerHTML = `<strong>Nota:</strong> ${
-    result.meta?.disclaimer ||
-    'Esta información es educativa y no sustituye atención médica.'
-  }`;
-  card.appendChild(disclaimer);
+// Disclaimer — subtle inline note at bottom
+const disclaimer = document.createElement('p');
+disclaimer.className = 'results-disclaimer';
+disclaimer.textContent =
+  result.meta?.disclaimer ||
+  'Esta información es educativa y no sustituye atención médica.';
+card.appendChild(disclaimer);
+
 
   showPage('results-page');
 }
