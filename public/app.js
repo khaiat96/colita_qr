@@ -818,7 +818,6 @@ function showResults(patternType) {
   // --- Add Energetic Terrain dynamically ---
 const terrainSection = createEnergeticTerrainSection(patternType);
 card.appendChild(terrainSection);
-createEnergeticTerrainSection({ label_top: patternType });
 
 //coment out element explainer
   // Element Explainer (optional short paragraph)
