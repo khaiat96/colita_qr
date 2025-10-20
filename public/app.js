@@ -1039,6 +1039,11 @@ function showResults(patternType) {
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
 
+  // render radar after content loaded
+setTimeout(() => {
+  renderRadarChart();
+}, 100);
+
   showPage("results-page");
 }
 
