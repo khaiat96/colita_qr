@@ -609,59 +609,47 @@ function renderCareTips(patternKey) {
   `;
 }
 
-// ENHANCED renderPhaseAdvice function for beautiful phase cards
-function renderPhaseAdvice(patternKey) {
-  const phaseSections = resultsTemplate?.phase?.generic || {};
-  if (!Object.keys(phaseSections).length) return '';
-  
-  let html = `<div class="tips-phase-section">
-    <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
-    <div class="phases-container">`;
-  
-  Object.keys(phaseSections).forEach(phaseKey => {
-    const phase = phaseSections[phaseKey];
-    html += `<div class="phase-block">
-      <div class="phase-header">
-        <h5 class="phase-title">${phase.label}</h5>
-        <div class="phase-description">${phase.about}</div>
-      </div>
-      <div class="phase-content">`;
-    
-    // Foods section
-    if (phase.foods && phase.foods.length > 0) {
-      html += `<div class="phase-subsection">
-        <div class="subsection-label">Alimentos</div>
-        <ul class="subsection-list">
-          ${phase.foods.map(food => `<li>${food}</li>`).join('')}
-        </ul>
-      </div>`;
+function renderPhase(result) {
+  const phaseTemplate = resultsTemplate.phase;
+  const primaryPattern = result.label_top;
+
+  let html = `<h2>${phaseTemplate.title}</h2>`;
+  const genericPhases = phaseTemplate.generic;
+
+  for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
+    let about = phaseInfo.about;
+    let foods = [...(phaseInfo.foods || [])];
+    let doList = [...(phaseInfo.do || [])];
+    let avoid = [...(phaseInfo.avoid || [])];
+    let movement = [...(phaseInfo.movement || [])];
+    let vibe = phaseInfo.vibe;
+
+    // Apply pattern-specific overrides if available
+    const patternOverrides =
+      phaseTemplate.overrides_by_pattern?.[primaryPattern]?.[phaseKey];
+
+    if (patternOverrides) {
+      if (patternOverrides.about_add)
+        about += " " + patternOverrides.about_add;
+      if (patternOverrides.foods_add)
+        foods.push(...patternOverrides.foods_add);
+      if (patternOverrides.do_add)
+        doList.push(...patternOverrides.do_add);
+      if (patternOverrides.avoid_add)
+        avoid.push(...patternOverrides.avoid_add);
+      if (patternOverrides.movement_add)
+        movement.push(...patternOverrides.movement_add);
     }
-    
-    // Do section  
-    if (phase.do && phase.do.length > 0) {
-      html += `<div class="phase-subsection">
-        <div class="subsection-label">Haz</div>
-        <ul class="subsection-list">
-          ${phase.do.map(item => `<li>${item}</li>`).join('')}
-        </ul>
+
+    html += `
+      <div class="phase-card">
+        <h3>${phaseInfo.label}</h3>
+        <p>${about}</p>
+        <ul>${doList.map(i => `<li>${i}</li>`).join("")}</ul>
       </div>`;
-    }
-    
-    // Avoid section
-    if (phase.avoid && phase.avoid.length > 0) {
-      html += `<div class="phase-subsection">
-        <div class="subsection-label">Evita</div>
-        <ul class="subsection-list">
-          ${phase.avoid.map(item => `<li>${item}</li>`).join('')}
-        </ul>
-      </div>`;
-    }
-    
-    html += `</div></div>`; // Close phase-content and phase-block
-  });
-  
-  html += `</div></div>`; // Close phases-container and tips-phase-section
-  return html;
+  }
+
+  document.getElementById("phase-section").innerHTML = html;
 }
 
 // --- Helpers for rendering the enhanced Results Page ---
