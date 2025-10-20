@@ -2462,7 +2462,7 @@ body {
 .page { display: none !important; }
 .page.active { display: block !important; }
 
-/* === Hide the waitlist when not on landing === */
+/* ====== FIX: Hide waitlist on non-landing pages ====== */
 #results-page #waitlist-section,
 #survey-page #waitlist-section,
 #waitlist-page #waitlist-section {
