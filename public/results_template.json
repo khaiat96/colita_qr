@@ -26,6 +26,23 @@
       ]
     }
   },
+    "layout": {
+
+"sections_order": [
+  "header",
+  "summary",
+  "energetic_state",   // new tri-axis visualization
+  "pattern_card",
+  "why_cluster",
+  "phase",
+  "care_tips",
+  "how_herbs_work",
+  "unique_system",
+  "footer",
+  "disclaimer"
+]
+  },
+
   "summary": {
     "single": "Tu tipo de ciclo: {{label_top}}",
     "mixed": "Tu tipo de ciclo: {{label_top_1}} + {{label_top_2}}",
@@ -45,17 +62,7 @@
     "deficiency": "Deficiencia"
   }
 },
-"element_explainer": {
-  "title": "Cómo entendemos los elementos en tu ciclo",
-  "body": [
-    "Cada cuerpo se mueve entre tres ejes: temperatura, humedad y tono. Estos ejes se expresan a través de los elementos naturales que representan procesos del cuerpo.",
-    "🔥 **Fuego** muestra el grado de calor y vitalidad. Cuando está equilibrado, impulsa la digestión y la energía; en exceso causa inflamación o irritabilidad; en deficiencia, frío y lentitud.",
-    "💧 **Agua** representa la lubricación y fluidez. En equilibrio mantiene la hidratación y la sangre en movimiento; en exceso genera pesadez; en deficiencia, sequedad y rigidez.",
-    "🌬️ **Aire** refleja el tono y la movilidad de los tejidos. En equilibrio da claridad y ligereza; en exceso produce tensión; en deficiencia, laxitud o fatiga.",
-    "🌍 **Tierra** integra y da estructura. Es la base que sostiene a los demás elementos, aportando estabilidad, nutrición y contención."
-  ],
-  "note": "No son categorías rígidas, sino formas en que tu cuerpo equilibra calor, humedad y tono para funcionar con armonía."
-},
+
 "element": {
   "title": "Elemento predominante:",
   "by_pattern": {
@@ -67,6 +74,7 @@
     "relajacion": ["🌾 Agua — tono bajo, laxitud y fatiga general"]
   }
 },
+
 "pattern_card": {
   "single": {
     "tension": {
@@ -190,6 +198,7 @@
     }
   }
 },
+
 "why_cluster": {
   "title": "¿Por qué se agrupan tus síntomas?",
   "by_pattern": {
@@ -231,7 +240,8 @@
     ]
   }
 },
-"phase": {
+  
+  "phase": {
     "title": "Tips de cuidado por fase del ciclo",
     "render_rules": {
       "merge_strategy": "generic_plus_primary_pattern",
@@ -858,27 +868,27 @@
       }
     ]
   },
-"unique_system": {
-  "title": "🧬 ¿Qué hace único nuestro sistema?",
-  "differentiators": [
-    {
-      "title": "Basado en ejes elementales del cuerpo",
-      "description": "Nuestro modelo integra temperatura, humedad y tono para entender cómo se comportan los elementos dentro de ti."
-    },
-    {
-      "title": "Inspirado en herbología tradicional",
-      "description": "Unimos la lectura vitalista de los elementos con el conocimiento botánico moderno para crear un lenguaje corporal claro."
-    },
-    {
-      "title": "Personalización energética real",
-      "description": "No te clasificamos en categorías fijas: tu patrón refleja un equilibrio dinámico entre Fuego, Agua, Aire y Tierra."
-    },
-    {
-      "title": "Evolución mensual",
-      "description": "Tu plan se ajusta según tus síntomas y las estaciones, acompañando los cambios naturales de tu ciclo."
-    }
-  ]
-},
+  "unique_system": {
+    "title": "🧬 ¿Qué hace único nuestro sistema?",
+    "differentiators": [
+      {
+        "title": "Basado en herbología tradicional",
+        "description": "Integramos energética vitalista con lectura de cómo los elementos se manifiestan en tu cuerpo."
+      },
+      {
+        "title": "Personalización elemental",
+        "description": "Ajustamos las hierbas medicinales al patrón exacto de cada persona."
+      },
+      {
+        "title": "Sinergias transparentes",
+        "description": "Explicamos la lógica de nuestra evaluación y formulaciones."
+      },
+      {
+        "title": "Ajustes mensuales",
+        "description": "Tu plan evoluciona contigo según estaciones y cambios."
+      }
+    ]
+  },
   "footer": {
     "title": "🌟 Únete a la lista de espera",
     "description": "Recibe acceso temprano al primer sistema personalizado de medicina herbal, para la salud menstrual.",
