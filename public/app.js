@@ -926,15 +926,6 @@ function showResults(patternType) {
     card.appendChild(patternSection);
   }
 
-  const phaseHTML = renderPhase(result);
-if (phaseHTML) {
-  const phaseContainer = document.getElementById('phase-section');
-  if (phaseContainer) {
-    phaseContainer.innerHTML = phaseHTML;
-  }
-}
-
-
   // --- Why Cluster ---
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
   if (why) {
