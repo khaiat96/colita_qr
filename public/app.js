@@ -897,9 +897,6 @@ card.appendChild(energeticSection);
     card.appendChild(patternSection);
   }
 
-    // --- Add Energetic Terrain dynamically ---
-const terrainSection = createEnergeticTerrainSection(patternType);
-card.appendChild(terrainSection);
 
 // Wait for DOM to paint, then move the dot
 setTimeout(() => {
@@ -964,6 +961,20 @@ cdrContainer.innerHTML = `
   </div>
 `;
 
+// Herbal mechanisms
+const herbs = result.how_herbs_work?.by_pattern?.[patternType];
+if (herbs) {
+  const herbSection = document.createElement('div');
+  herbSection.className = 'herbs-section';
+  herbSection.innerHTML = `
+    <h4>Cómo trabajaríamos tu patrón</h4>
+    <ul class="herb-mechanisms">
+      ${herbs.mechanism.map((m) => `<li>${m}</li>`).join('')}
+    </ul>
+    <p class="herb-logic">${herbs.combo_logic}</p>`;
+  cdrContainer.appendChild(herbSection);
+}
+
 // Unique system differentiators
 const diff = result.unique_system?.differentiators || [];
 if (diff.length) {
@@ -985,19 +996,6 @@ if (diff.length) {
   cdrContainer.appendChild(uniqueGrid);
 }
 
-// Herbal mechanisms
-const herbs = result.how_herbs_work?.by_pattern?.[patternType];
-if (herbs) {
-  const herbSection = document.createElement('div');
-  herbSection.className = 'herbs-section';
-  herbSection.innerHTML = `
-    <h4>Cómo trabajaríamos tu patrón</h4>
-    <ul class="herb-mechanisms">
-      ${herbs.mechanism.map((m) => `<li>${m}</li>`).join('')}
-    </ul>
-    <p class="herb-logic">${herbs.combo_logic}</p>`;
-  cdrContainer.appendChild(herbSection);
-}
 
 // Append full subsection
 card.appendChild(cdrContainer);
