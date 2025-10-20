@@ -6,6 +6,8 @@
   <title>Colita de Rana - Tu medicina personalizada</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
   <!-- === Landing Page === -->
@@ -152,8 +154,19 @@
     </header>
 
     <div class="results-container">
+         <div class="results-card" id="results-card"></div>
+        <!-- NEW: Radar container lives INSIDE results-card -->
+        <section class="energetic-section">
+          <h3 class="energetic-title">Mapa energético (balance relativo)</h3>
+          <p class="energetic-intro">
+            Visualiza el equilibrio entre calor, frío, humedad, sequedad, tensión y relajación.
+          </p>
+          <div class="radar-wrap">
+            <canvas id="radarChart" width="320" height="320"></canvas>
+          </div>
+        </section>
       <!-- JS dynamically injects result content here -->
-      <div class="results-card" id="results-card"></div>
+
 
       <div class="results-actions-stack">
         <button class="btn-primary btn-block volver-btn" onclick="showPage('landing-page')">
@@ -178,14 +191,6 @@
           <button type="submit" class="btn-primary">Unirme a la lista de espera</button>
         </form>
       </div>
-    </div>
-  </div>
-
-  <!-- === Loading Modal === -->
-  <div id="loading-modal" class="modal">
-    <div class="modal-content">
-      <div class="spinner"></div>
-      <p>Procesando tu evaluación...</p>
     </div>
   </div>
 

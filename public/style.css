@@ -2230,226 +2230,43 @@ body {
   line-height: 1.5;
 }
 
-/* === Energetic Terrain Diagram === */
+/* Radar block */
 .energetic-section {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  padding: 30px 20px;
-  margin: 40px 0;
+  padding: 24px 18px;
+  margin: 28px 0;
   text-align: center;
 }
 
 .energetic-title {
-  font-size: 1.6rem;
-  background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .energetic-intro {
   font-size: 0.95rem;
   color: #b0b0b0;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
-#energetic-terrain {
-  position: relative;
-  width: 280px;
-  height: 280px;
-  margin: 30px auto;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, #fafafa 70%, #e7f0ea 100%);
-  border: 1px solid rgba(180, 180, 180, 0.4);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.1) inset, 0 0 30px rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-  font-size: 12px;
-  color: #666;
-}
-
-#terrain-dot {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 0.5s ease-out;
-}
-
-
-#energetic-terrain .axis {
-  position: absolute;
-  font-size: 0.8rem;
-  color: #ccc;
-  pointer-events: none;
-}
-
-.axis-x { top: -1.5rem; width: 100%; text-align: center; }
-.axis-y { bottom: -1.5rem; width: 100%; text-align: center; }
-.axis-z { right: -5.5rem; top: 50%; transform: translateY(-50%) rotate(90deg); }
-
-/* === Energetic Terrain (Dark UI Version) === */
-#energetic-terrain {
-  position: relative;
-  width: 280px;
-  height: 280px;
-  margin: 30px auto;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 55%, rgba(30,40,50,1) 0%, rgba(10,20,25,1) 90%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 25px rgba(255, 255, 255, 0.05),
-              0 0 20px rgba(0, 212, 170, 0.05);
-  overflow: hidden;
-}
-
-#terrain-dot {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 0.6s ease-out;
-  mix-blend-mode: lighten;
-  box-shadow: 0 0 30px currentColor, 0 0 60px currentColor;
-}
-
-#energetic-terrain .axis {
-  position: absolute;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.75);
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
-  pointer-events: none;
-}
-
-.axis-x {
-  top: -1.8rem;
+.radar-wrap {
   width: 100%;
-  text-align: center;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 8px 4px;
 }
 
-.axis-y {
-  bottom: -1.8rem;
-  width: 100%;
-  text-align: center;
+canvas#radarChart {
+  display: block;
+  margin: 0 auto;
 }
 
-.axis-z {
-  right: -5.8rem;
-  top: 50%;
-  transform: translateY(-50%) rotate(90deg);
-  font-style: italic;
-  opacity: 0.85;
-}
 
-@media (prefers-color-scheme: light) {
-  #energetic-terrain {
-    background: radial-gradient(circle at center, #fafafa 70%, #e7f0ea 100%);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05),
-                0 0 15px rgba(255, 255, 255, 0.3);
-  }
-  #energetic-terrain .axis {
-    color: #333;
-    text-shadow: none;
-  }
-}
-/* === Energetic Terrain Visualization === */
-#energetic-terrain {
-  position: relative;
-  width: 260px;
-  height: 260px;
-  margin: 2rem auto;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, #0b0b0b 60%, #000);
-  box-shadow: 0 0 60px rgba(0, 0, 0, 0.6) inset;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: visible;
-  font-size: 0.85rem;
-  color: #ccc;
-}
-
-/* Dot */
-#terrain-dot {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ff6b6b;
-  box-shadow: 0 0 25px #ff6b6baa;
-  transition: all 0.4s ease-in-out;
-}
-
-/* Axes text placement */
-.axis {
-  position: absolute;
-  color: #a6b5c0;
-  font-weight: 500;
-  text-shadow: 0 0 5px #000;
-  white-space: nowrap;
-}
-
-.axis-x {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.axis-x::before {
-  content: "🔥 Calor";
-  position: absolute;
-  left: -110px;
-  top: -10px;
-}
-.axis-x::after {
-  content: "❄️ Frío";
-  position: absolute;
-  right: -110px;
-  top: -10px;
-}
-
-.axis-y {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(90deg);
-}
-.axis-y::before {
-  content: "💧 Humedad";
-  position: absolute;
-  left: -100px;
-  top: -10px;
-}
-.axis-y::after {
-  content: "🌵 Sequedad";
-  position: absolute;
-  right: -100px;
-  top: -10px;
-}
-
-.axis-z {
-  position: absolute;
-  bottom: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  content: "🌪️ Tensión ↔ 🌾 Relajación";
-  font-style: italic;
-  opacity: 0.8;
-}
-
-/* The moving dot */
-#terrain-dot {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ff6b6b;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
-  transition: all 0.8s ease-out;
-}
 
 /* Show waitlist & disclaimer only on the landing page */
 .page:not(#landing-page) #waitlist-section,
