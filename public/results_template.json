@@ -552,7 +552,66 @@
             "Rutina pre-sueño consistente (luces tenues, lectura)"
           ]
         }
-      }
+      },
+      "relajacion": {
+  "menstruacion": {
+    "about_add": "Activar suavemente el tono y la circulación sin agotar el cuerpo.",
+    "foods_add": [
+      "Caldos tibios con jengibre o cúrcuma para estimular suavemente",
+      "Proteínas ligeras (pescado, huevo, legumbres suaves)",
+      "Verduras cocidas con un toque de especias aromáticas (romero, cardamomo)"
+    ],
+    "do_add": [
+      "Caminar o estirarse 10–15 min al día para mover energía",
+      "Usar compresas tibias si hay sensación de pesadez"
+    ],
+    "avoid_add": [
+      "Permanecer inmóvil o acostada demasiado tiempo",
+      "Comidas muy pesadas o exceso de dulces"
+    ]
+  },
+  "folicular": {
+    "about_add": "Recuperar tono y energía de forma gradual.",
+    "foods_add": [
+      "Desayunos tibios que den energía sostenida (avena, amaranto, frutas cocidas)",
+      "Infusiones tónicas suaves (romero, ortiga, albahaca)"
+    ],
+    "do_add": [
+      "Ejercicio ligero constante (caminatas, yoga suave)",
+      "Exposición diaria a luz natural matutina para activar el metabolismo"
+    ]
+  },
+  "ovulacion": {
+    "about_add": "Mantener estabilidad energética y circulación activa.",
+    "foods_add": [
+      "Comidas equilibradas con buena proporción de proteína y vegetales coloridos"
+    ],
+    "do_add": [
+      "Caminar después de comer para activar digestión",
+      "Respirar profundo entre actividades para sostener vitalidad"
+    ],
+    "avoid_add": [
+      "Usar estimulantes (café, azúcar) para compensar el cansancio",
+      "Saltarse comidas largas o cenas muy tardías"
+    ]
+  },
+  "lutea": {
+    "about_add": "Conservar energía y tono interno mientras el cuerpo se prepara para descansar.",
+    "foods_add": [
+      "Cenas tibias y ligeras (sopas con verduras y granos suaves)",
+      "Fuentes naturales de magnesio y B6 (plátano, semillas, hojas verdes)"
+    ],
+    "do_add": [
+      "Rutina tranquila antes de dormir para mejorar descanso",
+      "Cepillado corporal o masaje seco para estimular circulación"
+    ],
+    "avoid_add": [
+      "Dormir en exceso durante el día",
+      "Cenas muy pesadas que dificulten digestión y sueño"
+    ]
+  }
+}
+
     }
   },
   "care_tips": {
@@ -770,17 +829,6 @@
         "description": "Tu plan evoluciona contigo según estaciones y cambios."
       }
     ]
-  },
-  "footer": {
-    "title": "🌟 Únete a la lista de espera",
-    "description": "Recibe acceso temprano al primer sistema personalizado de medicina herbal, para la salud menstrual.",
-    "benefits": [
-      "💰 Descuento de miembra fundadora",
-      "🔔 Notificaciones de lanzamiento",
-      "🎯 Acceso prioritario a tu kit personalizado",
-      "📚 Guías gratuitas de salud menstrual"
-    ],
-    "launch_date": "Lanzamiento previsto: Primavera 2026"
   },
   "labels": {
     "tension": "Tensión",
