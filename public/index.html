@@ -3,125 +3,194 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Colita de Rana 🌿</title>
+  <title>Colita de Rana - Tu medicina personalizada</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/png" href="favicon.png" />
-
-  <!-- Chart.js still loaded for other visualizations -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- ✅ New: Plotly for 3D Mapa energético -->
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+
 </head>
 <body>
-  <!-- ============ LANDING PAGE ============ -->
+  <!-- === Landing Page === -->
   <div id="landing-page" class="page active">
-    <div class="container">
-      <header class="app-header">
-        <h1 class="brand-name">🌿 Colita de Rana</h1>
-      </header>
-
-      <section class="hero">
-        <h2 class="hero-title">
-          Tu ciclo es único.<br />
-          Tu medicina también.
-        </h2>
-        <p class="hero-subtitle">
-          Estamos desarrollando el primer sistema personalizado de medicina herbal para la salud menstrual.  
-          Cada cuerpo tiene un patrón único que merece un cuidado único.
-        </p>
-        <button id="take-quiz-btn" class="btn btn--primary" onclick="startSurvey()">Tomar el quiz</button>
-      </section>
-
-      <section class="elements-grid">
-        <div class="element-card">
-          <h3>Aire 🌬️</h3>
-          <p class="element-pattern">Tono y Movimiento</p>
-          <ul>
-            <li>En equilibrio aporta claridad y flexibilidad</li>
-            <li>En exceso produce tensión</li>
-            <li>En deficiencia, produce laxitud o fatiga</li>
-          </ul>
-        </div>
-        <div class="element-card">
-          <h3>Fuego 🔥</h3>
-          <p class="element-pattern">Temperatura y Vitalidad</p>
-          <ul>
-            <li>En equilibrio impulsa energía y digestión</li>
-            <li>En exceso causa inflamación</li>
-            <li>En deficiencia, lentitud y frío</li>
-          </ul>
-        </div>
-        <div class="element-card">
-          <h3>Agua 💧</h3>
-          <p class="element-pattern">Fluidos y Nutrición</p>
-          <ul>
-            <li>En equilibrio brinda elasticidad y suavidad</li>
-            <li>En exceso causa pesadez o estancamiento</li>
-            <li>En deficiencia, resequedad o rigidez</li>
-          </ul>
-        </div>
-        <div class="element-card">
-          <h3>Tierra ⛰️</h3>
-          <p class="element-pattern">Estructura y Sostén</p>
-          <ul>
-            <li>En equilibrio aporta estabilidad y arraigo</li>
-            <li>En exceso causa rigidez y lentitud</li>
-            <li>En deficiencia, sensación de dispersión o debilidad</li>
-          </ul>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- ============ SURVEY PAGE ============ -->
-  <div id="survey-page" class="page">
-    <div class="container">
-      <div id="survey-content"></div>
-      <div class="progress-bar-container">
-        <div id="progress-bar"></div>
-        <div id="progress-text"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============ RESULTS PAGE ============ -->
-  <div id="results-page" class="page">
     <header class="app-header">
       <h1 class="brand-name">🌿 Colita de Rana</h1>
     </header>
 
-    <div class="results-container">
-      <div class="results-card" id="results-card">
-        <!-- Results will be dynamically injected here -->
+    <main class="container">
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1 class="hero-title">
+          <span>Tu ciclo es único.</span>
+          <span>Tu medicina también.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México.
+          Cada mujer tiene un patrón único de síntomas que merece una medicina única.
+        </p>
+        <button class="btn-primary" onclick="scrollToWaitlist()">Llévame a la lista de espera!</button>
+      </section>
 
-        <!-- ✅ 3D Mapa energético replaces the old radar chart -->
-        <section id="energy-map-section">
-          <h3 class="energy-title">Mapa energético (balance relativo)</h3>
-          <div id="energyMap3D" class="energy-map"></div>
-          <p class="energy-caption">
-            Spatial map of six classical tissue states along temperature, moisture, and tone polarities.
+      <!-- LOGO BETWEEN SECTIONS -->
+      <div class="logo-between-sections">
+        <img src="assets/logo.png" alt="Colita de Rana Logo" />
+      </div>
+
+      <!-- Secondary Section -->
+      <section class="secondary-section">
+        <h2>Descubre consejos adaptados a tu patrón menstrual:</h2>
+        <p class="section-subtitle">
+          Aprende sobre tus patrones energéticos (aire, fuego, tierra y agua) y descubre qué los equilibra.
+        </p>
+        <button class="btn-primary" id="take-quiz-btn" onclick="startSurvey()">Toma el quiz</button>
+      </section>
+
+      <!-- Elements Section -->
+      <section class="elements-section">
+        <h2>Los elementos en tu ciclo</h2>
+        <p class="section-subtitle">
+          Tu cuerpo se mueve entre tres ejes: <strong>temperatura</strong>, <strong>humedad</strong> y
+          <strong>tono</strong>. Estos ejes se expresan a través de los elementos naturales que describen cómo fluye tu energía interna.
+        </p>
+
+        <div class="elements-grid">
+          <div class="element-card">
+            <h3>Aire 🌬️</h3>
+            <p class="element-pattern">Tono y Movimiento</p>
+            <ul>
+              <li>En equilibrio aporta claridad y flexibilidad</li>
+              <li>En exceso produce tensión</li>
+              <li>En deficiencia, produce laxitud o fatiga</li>
+            </ul>
+          </div>
+
+          <div class="element-card">
+            <h3>Fuego 🔥</h3>
+            <p class="element-pattern">Temperatura y Vitalidad</p>
+            <ul>
+              <li>En equilibrio impulsa energía y digestión</li>
+              <li>En exceso causa inflamación</li>
+              <li>En deficiencia, lentitud y frío</li>
+            </ul>
+          </div>
+
+          <div class="element-card">
+            <h3>Agua 💧</h3>
+            <p class="element-pattern">Humedad y Fluidez</p>
+            <ul>
+              <li>En equilibrio hidrata y nutre</li>
+              <li>En exceso genera pesadez</li>
+              <li>En deficiencia genera resequedad</li>
+            </ul>
+          </div>
+
+          <div class="element-card">
+            <h3>Tierra ⛰️</h3>
+            <p class="element-pattern">Estructura</p>
+            <ul>
+              <li>En equilibrio aporta estabilidad y fuerza</li>
+              <li>En exceso causa pesadez o lentitud</li>
+              <li>En deficiencia causa debilidad o falta de estabilidad</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Waitlist Section -->
+      <section id="waitlist-section" class="waitlist-section">
+        <div class="waitlist-content">
+          <h2>🌟 Únete a la lista de espera</h2>
+          <p class="waitlist-description">
+            Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
           </p>
-        </section>
 
+          <div class="benefits-grid">
+            <div class="benefit-item">💰 Descuento de miembro fundador</div>
+            <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
+            <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
+            <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
+          </div>
+
+          <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+
+          <!-- Waitlist Form -->
+          <form id="main-waitlist-form" class="main-waitlist-form">
+            <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required />
+            <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required />
+            <button type="submit" class="btn-primary">Unirme a la lista de espera</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- === Survey Page === -->
+  <div id="survey-page" class="page">
+    <header class="app-header">
+      <h1 class="brand-name">🌿 Colita de Rana</h1>
+    </header>
+
+    <div class="survey-container">
+      <div class="survey-header">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-bar"></div>
+        </div>
+        <p class="progress-text" id="progress-text">Pregunta 1 de 8</p>
+      </div>
+
+      <div id="pro-mode-indicator" class="pro-mode-indicator" style="display: none;">
+        ✨ Versión PRO - Evaluación Avanzada
+      </div>
+
+      <div class="survey-content" id="survey-content">
+        <!-- Survey questions rendered dynamically -->
       </div>
     </div>
   </div>
 
-  <!-- ============ WAITLIST SECTION ============ -->
-  <footer id="waitlist-section" class="waitlist-footer">
-    <div class="container">
-      <h2>🌸 Únete a la lista de espera</h2>
-      <p>Recibe acceso anticipado a tu plan herbal personalizado cuando lancemos.</p>
-      <form id="main-waitlist-form">
-        <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required />
-        <input type="email" id="main-waitlist-email" placeholder="Tu correo electrónico" required />
-        <button type="submit" class="btn btn--primary">Unirme</button>
-      </form>
-    </div>
-  </footer>
+<!-- === Results Page === -->
+<div id="results-page" class="page">
+  <header class="app-header">
+    <h1 class="brand-name">🌿 Colita de Rana</h1>
+  </header>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <main class="results-container">
+    <!-- JS writes all results into this: -->
+    <div id="results-card" class="results-card"></div>
+
+    <!-- you can keep this static radar block if you want it always visible -->
+    <section class="energetic-section">
+      <h3 class="energetic-title">Mapa energético (balance relativo)</h3>
+      <p class="energetic-intro">
+        Visualiza el equilibrio entre calor, frío, humedad, sequedad, tensión y relajación.
+      </p>
+      <div class="radar-wrap">
+        <canvas id="radarChart" width="320" height="320"></canvas>
+      </div>
+    </section>
+  </main>
+</div>
+
+  <!-- === Waitlist Page (Dedicated standalone) === -->
+  <div id="waitlist-page" class="page">
+    <header class="app-header">
+      <h1 class="brand-name">🌿 Colita de Rana</h1>
+    </header>
+
+    <div class="waitlist-container">
+      <div class="waitlist-content">
+        <h2>🌟 Únete a la lista de espera</h2>
+        <form id="waitlist-form" class="waitlist-form">
+          <input type="text" id="waitlist-name" placeholder="Tu nombre" required />
+          <input type="email" id="waitlist-email" placeholder="tu@email.com" required />
+          <button type="submit" class="btn-primary">Unirme a la lista de espera</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="app.js"></script>
 </body>
 </html>
