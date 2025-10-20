@@ -15,6 +15,13 @@ window.surveyLoaded = false;
 
 console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
 
+function scrollToWaitlist() {
+  const waitlistSection = document.getElementById('waitlist-section');
+  if (waitlistSection) {
+    waitlistSection.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
 window.handleTextInput = function(qId, value) {
     answers[qId] = value;
     window.updateNavigation();
@@ -1153,4 +1160,4 @@ window.updateNavigation = function() {
     if (backBtn) {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
-};
+}
