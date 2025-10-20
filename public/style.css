@@ -2304,3 +2304,22 @@ canvas#radarChart {
   margin-bottom: 0.5rem;
   color: #2b6c4f;
 }
+
+
+.energy-map {
+  width: 100%;
+  height: 350px;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%);
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.energy-caption {
+  font-size: 0.9rem;
+  color: #bbb;
+  text-align: center;
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}

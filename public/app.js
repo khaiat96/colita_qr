@@ -815,78 +815,66 @@ function normalizeRelative(obj) {
   return out;
 }
 
-function renderRadarChart() {
-  const ctx = document.getElementById('radarChart');
-  if (!ctx) return;
+// === 3D ENERGY MAP (Mapa energético) ===
+function renderEnergyMap3D() {
+  const container = document.getElementById('energyMap3D');
+  if (!container) return;
 
-  // Destroy previous chart if present (prevents duplicates)
-  if (radarInstance) {
-    radarInstance.destroy();
-    radarInstance = null;
-  }
+  const data = [{
+    type: 'scatter3d',
+    mode: 'markers+text',
+    textposition: 'top center',
+    textfont: { size: 12, color: '#eee' },
+    marker: { size: 7, color: 'rgb(102,200,150)', line: { width: 1, color: '#fff' } },
+    x: [1, -1, 0.8, -0.9, -0.6, 0.6],  // Moisture (Moist↔Dry)
+    y: [1, -1, 0.4, -0.4, 0.9, 0.2],  // Tone (Tense↔Relaxed)
+    z: [1, -1, 0.6, -0.8, 0.3, -0.2], // Temperature (Hot↔Cold)
+    text: [
+      'Heat Excitation',
+      'Cold Depression',
+      'Damp Stagnation',
+      'Dry Atrophy',
+      'Wind Tension',
+      'Damp Relaxation'
+    ]
+  }];
 
-  const raw = getRawAxisScores();
-  const norm = normalizeRelative(raw);
-
-  const labels = Object.keys(norm);
-  const data = labels.map(k => norm[k]);
-
-  radarInstance = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Balance relativo',
-          data,
-          fill: true,
-          backgroundColor: 'rgba(0, 168, 204, 0.18)',
-          borderColor: 'rgba(0, 168, 204, 0.9)',
-          pointBackgroundColor: 'rgba(0, 212, 170, 1)',
-          pointBorderColor: '#fff',
-          pointHoverRadius: 5,
-          tension: 0.2
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      scales: {
-        r: {
-          suggestedMin: 0,
-          suggestedMax: 1,
-          ticks: {
-            display: false // clean look
-          },
-          grid: {
-            color: 'rgba(255,255,255,0.15)'
-          },
-          angleLines: {
-            color: 'rgba(255,255,255,0.15)'
-          },
-          pointLabels: {
-            color: '#ddd',
-            font: { size: 12 }
-          }
-        }
+  const layout = {
+    scene: {
+      xaxis: {
+        title: 'Moisture (Moist ↔ Dry)',
+        titlefont: { color: '#55c4b5' },
+        tickfont: { color: '#aaa' },
+        color: '#55c4b5',
+        backgroundcolor: 'rgba(0,0,0,0)',
+        showspikes: false
       },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => {
-              const key = labels[ctx.dataIndex];
-              const rel = data[ctx.dataIndex];
-              const abs = getRawAxisScores()[key]; // show raw too
-              return `${key}: ${(rel * 100).toFixed(0)}% (abs ${abs})`;
-            }
-          }
-        }
-      }
-    }
-  });
+      yaxis: {
+        title: 'Tone (Tense ↔ Relaxed)',
+        titlefont: { color: '#3f8bd4' },
+        tickfont: { color: '#aaa' },
+        color: '#3f8bd4',
+        showspikes: false
+      },
+      zaxis: {
+        title: 'Temperature (Hot ↔ Cold)',
+        titlefont: { color: '#e88030' },
+        tickfont: { color: '#aaa' },
+        color: '#e88030',
+        showspikes: false
+      },
+      bgcolor: 'rgba(0,0,0,0)',
+      camera: { eye: { x: 1.5, y: 1.5, z: 1.2 } },
+      aspectratio: { x: 1, y: 1, z: 1 }
+    },
+    margin: { l: 0, r: 0, b: 0, t: 20 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent'
+  };
+
+  Plotly.newPlot(container, data, layout, { displayModeBar: false });
 }
+
 
 
 
@@ -1062,7 +1050,7 @@ if (Object.keys(genericPhases).length) {
 
   // render radar after content loaded
 setTimeout(() => {
-  renderRadarChart();
+  renderEnergyMap3D();
 }, 100);
 
   showPage("results-page");
