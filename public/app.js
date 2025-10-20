@@ -22,6 +22,47 @@ function scrollToWaitlist() {
   }
 }
 
+function EnergeticTerrain({ patternScores, primaryPattern }) {
+  // Normalize each axis 0–1 from backend scores
+  const temp = (patternScores.calor - patternScores.frio + 5) / 10;
+  const moist = (patternScores.humedad - patternScores.sequedad + 5) / 10;
+  const tone = (patternScores.tension - (patternScores.relajacion || 0) + 5) / 10;
+
+  const dotX = moist * 100;   // x-axis: moisture
+  const dotY = (1 - temp) * 100; // y-axis: temperature
+  const dotZ = tone;          // for 3-D shading or animation
+
+  return (
+    <div className="terrain-block">
+      <h3>Tu estado energético</h3>
+      <p className="terrain-intro">
+        Tu cuerpo se equilibra entre tres ejes: temperatura, humedad y tono.
+      </p>
+      <div className="terrain-grid">
+        <svg viewBox="0 0 100 100" className="terrain-svg" aria-label="Mapa energético">
+          <rect x="0" y="0" width="100" height="100" className="terrain-bg" />
+          {/* axis labels */}
+          <text x="50" y="5" textAnchor="middle" className="axis-label">🔥 Calor</text>
+          <text x="50" y="98" textAnchor="middle" className="axis-label">❄️ Frío</text>
+          <text x="5" y="50" textAnchor="start" className="axis-label">💧 Humedad</text>
+          <text x="95" y="50" textAnchor="end" className="axis-label">🌵 Sequedad</text>
+          {/* user dot */}
+          <circle cx={dotX} cy={dotY} r="3.5" className="user-dot" />
+        </svg>
+      </div>
+      <p className="terrain-caption">
+        Tu punto refleja tendencia {primaryPattern === "calor" ? "al calor" :
+          primaryPattern === "frio" ? "al frío" :
+          primaryPattern === "humedad" ? "a la humedad" :
+          primaryPattern === "sequedad" ? "a la sequedad" :
+          primaryPattern === "tension" ? "a la tensión" :
+          "a la relajación"}.
+      </p>
+    </div>
+  );
+}
+
+
 window.handleTextInput = function(qId, value) {
     answers[qId] = value;
     window.updateNavigation();
