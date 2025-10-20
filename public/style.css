@@ -2354,68 +2354,87 @@ body {
     text-shadow: none;
   }
 }
-/* ==========================================================
-   🔧 PAGE VISIBILITY FIXES
-   Ensures only the active page is visible (landing, survey, or results)
-   ========================================================== */
-.page {
-  display: none;
-}
-.page.active {
-  display: block;
-}
-
-/* ==========================================================
-   🧭 ENERGETIC TERRAIN VISUALIZATION FIX
-   Ensure only one clean circular graph displays correctly
-   ========================================================== */
-#energetic-terrain-section {
-  margin: 2rem auto;
-  text-align: center;
-  position: relative;
-  z-index: 2;
-}
-
+/* === Energetic Terrain Visualization === */
 #energetic-terrain {
   position: relative;
-  width: 240px;
-  height: 240px;
+  width: 260px;
+  height: 260px;
+  margin: 2rem auto;
   border-radius: 50%;
-  margin: 1.5rem auto;
-  background: radial-gradient(circle at center, #0e0e0e 40%, #000 100%);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6) inset, 0 0 15px rgba(0, 0, 0, 0.5);
-  overflow: hidden;
+  background: radial-gradient(circle at center, #0b0b0b 60%, #000);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.6) inset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  font-size: 0.85rem;
+  color: #ccc;
 }
 
-/* Hide any duplicate terrain accidentally rendered */
-#results-card #energetic-terrain:nth-of-type(n + 2) {
-  display: none;
+/* Dot */
+#terrain-dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ff6b6b;
+  box-shadow: 0 0 25px #ff6b6baa;
+  transition: all 0.4s ease-in-out;
 }
 
-/* Axes labels */
+/* Axes text placement */
 .axis {
   position: absolute;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.8rem;
-  font-weight: 400;
+  color: #a6b5c0;
+  font-weight: 500;
+  text-shadow: 0 0 5px #000;
+  white-space: nowrap;
 }
-.axis.axis-x {
+
+.axis-x {
   top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-}
-.axis.axis-y {
   left: 50%;
-  top: 0;
-  bottom: 0;
-  transform: translateX(-50%) rotate(-90deg);
+  transform: translate(-50%, -50%);
 }
-.axis.axis-z {
-  bottom: 10%;
+.axis-x::before {
+  content: "🔥 Calor";
+  position: absolute;
+  left: -110px;
+  top: -10px;
+}
+.axis-x::after {
+  content: "❄️ Frío";
+  position: absolute;
+  right: -110px;
+  top: -10px;
+}
+
+.axis-y {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.axis-y::before {
+  content: "💧 Humedad";
+  position: absolute;
+  left: -100px;
+  top: -10px;
+}
+.axis-y::after {
+  content: "🌵 Sequedad";
+  position: absolute;
+  right: -100px;
+  top: -10px;
+}
+
+.axis-z {
+  position: absolute;
+  bottom: -40px;
   left: 50%;
   transform: translateX(-50%);
+  content: "🌪️ Tensión ↔ 🌾 Relajación";
   font-style: italic;
+  opacity: 0.8;
 }
 
 /* The moving dot */
