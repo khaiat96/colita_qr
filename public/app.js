@@ -834,6 +834,26 @@ function showResults(patternType) {
   if (!card) return;
    card.innerHTML = '';
 
+   // === Energetic Terrain Visualization ===
+const energeticSection = document.createElement('section');
+energeticSection.id = 'energetic-terrain-section';
+energeticSection.className = 'energetic-section';
+energeticSection.innerHTML = `
+  <h3 class="energetic-title">Estado energético del ciclo</h3>
+  <p class="energetic-intro">
+    Tu cuerpo se mueve entre tres ejes: temperatura, humedad y tono.
+    Este punto muestra hacia dónde tiende tu equilibrio actual.
+  </p>
+  <div id="energetic-terrain">
+    <div class="axis axis-x"></div>
+    <div class="axis axis-y"></div>
+    <div class="axis axis-z"></div>
+    <div id="terrain-dot"></div>
+  </div>
+`;
+card.appendChild(energeticSection);
+
+
   // Element Header (Main title)
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
   const title = document.createElement('h2');
