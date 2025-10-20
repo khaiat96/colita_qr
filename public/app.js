@@ -1079,22 +1079,8 @@ window.showResults = showResults;
 // Muestra resultados de cualquier patrón sin pasar por el quiz
 // Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
 
-window.debugShow = async function(patternKey = 'calor') {
-  console.log(`🧪 Debug render triggered for pattern: ${patternKey}`);
-
-  // Ensure results template is loaded
-  if (!resultsTemplate) {
-    try {
-      const resp = await fetch('results_template.json');
-      resultsTemplate = await resp.json();
-      console.log('✅ Loaded results_template.json for debug.');
-    } catch (err) {
-      console.error('❌ Failed to load results_template.json in debug mode:', err);
-      return;
-    }
-  }
-
-  // Fake answers (so dependent sections don't break)
+window.debugShow = function(patternKey = 'calor') {
+  // Fake answers para secciones dependientes
   window.answers = {
     P1: "Regular (cada 26–32 días)",
     P2: "Sangrado normal",
