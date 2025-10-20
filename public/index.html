@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colita de Rana - Tu medicina personalizada</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -49,58 +48,82 @@
 
             </section>
 
-<!-- Elements Section -->
-<section class="elements-section">
-  <h2>Cómo entendemos los elementos en tu ciclo</h2>
-  <p class="section-subtitle">
-    Tu cuerpo se equilibra a través de tres ejes naturales — <strong>temperatura</strong>, 
-    <strong>humedad</strong> y <strong>tono</strong> — que se expresan mediante los elementos
-    Fuego, Agua, Aire y Tierra. Juntos muestran cómo fluye tu energía y qué ayuda a restaurar tu balance.
-  </p>
-
-  <div class="elements-grid">
-    <div class="element-card">
-      <h3>🔥 Fuego</h3>
-      <p class="element-pattern">Temperatura</p>
-      <ul>
-        <li>En equilibrio impulsa energía, digestión y vitalidad.</li>
-        <li>En exceso provoca inflamación, irritabilidad o calor.</li>
-        <li>En deficiencia aparece frío, lentitud o falta de motivación.</li>
-      </ul>
+            <!-- Elements Section -->
+            <section class="elements-section">
+                <h2>Los 4 elementos en tu ciclo</h2>
+                <p class="section-subtitle">
+                    Nuestro sistema de elementos te ayuda a entender por qué tus síntomas se agrupan y qué los equilibra.
+                </p>
+                <div class="elements-grid">
+                    <div class="element-card">
+                        <h3>Aire 🌬️</h3>
+                        <p class="element-pattern">Tensión</p>
+                        <ul>
+                            <li>Nervio alto y espasmos</li>
+                            <li>Síntomas cambiantes</li>
+                            <li>Mejora con respiración y estiramientos</li>
+                        </ul>
+                    </div>
+                    <div class="element-card">
+                        <h3>Fuego 🔥</h3>
+                        <p class="element-pattern">Calor</p>
+                        <ul>
+                            <li>Rojo brillante/abundante</li>
+                            <li>Irritabilidad, calor/sed</li>
+                            <li>Mejora con frescor e hidratación</li>
+                        </ul>
+                    </div>
+                    <div class="element-card">
+                        <h3>Tierra ⛰️</h3>
+                        <p class="element-pattern">Retención (humedad)</p>
+                        <ul>
+                            <li>Pesadez/hinchazón</li>
+                            <li>Coágulos o espesor</li>
+                            <li>Mejora con movimiento y ligereza</li>
+                        </ul>
+                    </div>
+                    <div class="element-card">
+                        <h3>Agua 💧</h3>
+                        <p class="element-pattern">Sequedad</p>
+                        <ul>
+                            <li>Flujo escaso</li>
+                            <li>Sed/sequedad</li>
+                            <li>Mejora con hidratación y grasas buenas</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!-- Waitlist Section -->
+            <section id="waitlist-section" class="waitlist-section">
+                <div class="waitlist-content">
+                    <h2>🌟 Únete a la lista de espera</h2>
+                    <p class="waitlist-description">
+                        Recibe acceso temprano a nuestro lanzamiento y beneficios exclusivos.
+                    </p>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">💰 Descuento de miembro fundador</div>
+                        <div class="benefit-item">🔔 Notificaciones de lanzamiento</div>
+                        <div class="benefit-item">🎯 Acceso prioritario a tu kit personalizado</div>
+                        <div class="benefit-item">📚 Guías gratuitas de salud menstrual</div>
+                    </div>
+                    <p class="launch-date">Lanzamiento previsto: Primavera 2026</p>
+                    <!-- Waitlist Form for landing page -->
+                    <form id="main-waitlist-form" class="main-waitlist-form">
+                        <input type="text" id="main-waitlist-name" placeholder="Tu nombre" required>
+                        <input type="email" id="main-waitlist-email" placeholder="tu@email.com" required>
+                        <button type="submit" class="btn-primary">
+                            Unirme a la lista de espera
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </main>
+        <footer class="medical-disclaimer">
+            <div class="container">
+                <p>Este contenido es informativo y no sustituye atención médica.</p>
+            </div>
+        </footer>
     </div>
-
-    <div class="element-card">
-      <h3>💧 Agua</h3>
-      <p class="element-pattern">Humedad</p>
-      <ul>
-        <li>En equilibrio hidrata y nutre los tejidos.</li>
-        <li>En exceso genera pesadez, retención o estancamiento.</li>
-        <li>En deficiencia causa sequedad, rigidez o flujo escaso.</li>
-      </ul>
-    </div>
-
-    <div class="element-card">
-      <h3>🌬️ Aire</h3>
-      <p class="element-pattern">Tono</p>
-      <ul>
-        <li>En equilibrio da claridad, movilidad y flexibilidad.</li>
-        <li>En exceso produce tensión, espasmos o ansiedad.</li>
-        <li>En deficiencia aparece laxitud, fatiga o debilidad muscular.</li>
-      </ul>
-    </div>
-
-    <div class="element-card">
-      <h3>🌍 Tierra</h3>
-      <p class="element-pattern">Integración</p>
-      <ul>
-        <li>Representa la estructura y nutrición que sostienen el equilibrio.</li>
-        <li>Refleja cómo se combinan los tres ejes para mantener estabilidad.</li>
-        <li>Favorece digestión, enraizamiento y calma emocional.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
 
     <!-- Results Page -->
     <div id="results-page" class="page">
@@ -109,20 +132,6 @@
         </header>
         <div class="results-container">
         <div class="results-card" id="results-card">
-            <!-- Energetic State Visualization -->
-<section id="energetic-state" class="results-section">
-  <h2>Estado energético de tu ciclo:</h2>
-  <p>Tu cuerpo se mueve dentro de tres ejes naturales: temperatura, humedad y tono.
-  El punto que ves muestra hacia dónde tiende tu equilibrio actual.</p>
-
-  <div id="energetic-terrain">
-    <div class="axis temperature">🔥 Calor ↔ ❄️ Frío</div>
-    <div class="axis moisture">💧 Humedad ↔ 🌵 Sequedad</div>
-    <div class="axis tone">🌪️ Tensión ↔ 🌾 Relajación</div>
-    <div id="terrain-dot"></div>
-  </div>
-</section>
-
             <!-- Full detailed results will be populated here by JS -->
         </div>
         <div class="results-actions-stack">
