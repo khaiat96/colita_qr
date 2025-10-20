@@ -13,7 +13,7 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
+console.log('🚀 APP.JS LOADED - VERSION 5.0 - CACHE BUSTED');
 
 function scrollToWaitlist() {
   const waitlistSection = document.getElementById('waitlist-section');
