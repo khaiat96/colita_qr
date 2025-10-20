@@ -821,7 +821,7 @@ function positionEnergeticDot(patternType) {
 }
 
 
-// Main function to show results with full template
+// === MAIN RESULTS RENDERING ===
 function showResults(patternType) {
   if (!resultsTemplate) {
     console.error("❌ resultsTemplate is null — failed to load results_template.json");
@@ -830,105 +830,75 @@ function showResults(patternType) {
   }
 
   const result = resultsTemplate;
-  const card = document.getElementById('results-card');
+  const card = document.getElementById("results-card");
   if (!card) return;
-   card.innerHTML = '';
+  card.innerHTML = ""; // clear previous results
 
-   // === Energetic Terrain Visualization ===
-const energeticSection = document.createElement('section');
-energeticSection.id = 'energetic-terrain-section';
-energeticSection.className = 'energetic-section';
-energeticSection.innerHTML = `
-  <h3 class="energetic-title">Estado energético del ciclo</h3>
-  <p class="energetic-intro">
-    Tu cuerpo se mueve entre tres ejes: temperatura, humedad y tono.
-    Este punto muestra hacia dónde tiende tu equilibrio actual.
-  </p>
-  <div id="energetic-terrain">
-    <div class="axis axis-x"></div>
-    <div class="axis axis-y"></div>
-    <div class="axis axis-z"></div>
-    <div id="terrain-dot"></div>
-  </div>
-`;
-card.appendChild(energeticSection);
+  // --- Energetic Terrain Section (created dynamically, no duplicates) ---
+  const terrainSection = createEnergeticTerrainSection(patternType);
+  card.appendChild(terrainSection);
+  // Wait for DOM paint before placing the dot
+  setTimeout(() => positionEnergeticDot(patternType), 120);
 
-
-  // Element Header (Main title)
+  // --- Element Header ---
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
-  const title = document.createElement('h2');
-  title.className = 'results-main-title';
+  const title = document.createElement("h2");
+  title.className = "results-main-title";
   title.textContent = elementTitle;
   card.appendChild(title);
 
-  // Subtitle — uses summary.single
+  // --- Subtitle ---
   const subtitleText =
-    (result.summary?.single || 'Tu tipo de ciclo: {{label_top}}').replace(
-      '{{label_top}}',
+    (result.summary?.single || "Tu tipo de ciclo: {{label_top}}").replace(
+      "{{label_top}}",
       result.labels?.[patternType] || patternType
     );
-  const subtitle = document.createElement('h3');
-  subtitle.className = 'results-subtitle';
+  const subtitle = document.createElement("h3");
+  subtitle.className = "results-subtitle";
   subtitle.textContent = subtitleText;
   card.appendChild(subtitle);
 
-//coment out element explainer
-  // Element Explainer (optional short paragraph)
-  //const explainer = result.element_explainer?.by_pattern?.[patternType]?.[0];
-  //if (explainer) {
-  //  const explainerEl = document.createElement('p');
-  //  explainerEl.className = 'element-explainer';
-  ///  explainerEl.textContent = explainer;
-  //  card.appendChild(explainerEl);
- // }
-
-  // Pattern card (characteristics)
+  // --- Pattern Card ---
   const patternData = result.pattern_card?.single?.[patternType];
   if (patternData) {
-    const patternSection = document.createElement('div');
-    patternSection.className = 'pattern-description';
-    const expl = patternData.pattern_explainer || '';
+    const patternSection = document.createElement("div");
+    patternSection.className = "pattern-description";
+    const expl = patternData.pattern_explainer || "";
     const bullets = (patternData.characteristics || [])
       .map((c) => `<li>${c}</li>`)
-      .join('');
+      .join("");
     patternSection.innerHTML = `
       <p class="pattern-explainer">${expl}</p>
       <ul class="characteristics">${bullets}</ul>`;
     card.appendChild(patternSection);
   }
 
-
-// Wait for DOM to paint, then move the dot
-setTimeout(() => {
-  positionEnergeticDot(patternType);
-}, 100);
-
-  // Why cluster
+  // --- Why Cluster ---
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
   if (why) {
-    const whySection = document.createElement('div');
-    whySection.className = 'why-cluster';
+    const whySection = document.createElement("div");
+    whySection.className = "why-cluster";
     whySection.innerHTML = `<h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p>`;
     card.appendChild(whySection);
   }
 
-  // Care tips (mini-hábitos)
+  // --- Care Tips ---
   const habits = result.care_tips?.by_pattern?.[patternType] || [];
   if (habits.length) {
-    const habitsSection = document.createElement('div');
-    habitsSection.className = 'recommendations';
-    const items = habits.map((h) => `<li>${h}</li>`).join('');
+    const habitsSection = document.createElement("div");
+    habitsSection.className = "recommendations";
+    const items = habits.map((h) => `<li>${h}</li>`).join("");
     habitsSection.innerHTML = `
       <h4>🌸 Mini-hábitos para tu patrón</h4>
       <ul class="recommendations-list">${items}</ul>`;
     card.appendChild(habitsSection);
   }
 
-  // Tips por fase del ciclo
+  // --- Tips por fase del ciclo ---
   const phases = result.phase?.generic || {};
   if (Object.keys(phases).length) {
-    const phaseSection = document.createElement('div');
-    phaseSection.className = 'tips-phase-section';
+    const phaseSection = document.createElement("div");
+    phaseSection.className = "tips-phase-section";
     phaseSection.innerHTML = `
       <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
       <div class="phases-container">
@@ -941,75 +911,73 @@ setTimeout(() => {
               <ul>${p.do
                 .slice(0, 3)
                 .map((d) => `<li>${d}</li>`)
-                .join('')}</ul>
+                .join("")}</ul>
             </div>`
           )
-          .join('')}
+          .join("")}
       </div>`;
     card.appendChild(phaseSection);
   }
 
   // --- Colita de Rana Club Section ---
-const cdrContainer = document.createElement('section');
-cdrContainer.className = 'cdr-section';
+  const cdrContainer = document.createElement("section");
+  cdrContainer.className = "cdr-section";
+  cdrContainer.innerHTML = `
+    <div class="cdr-header">
+      <h3>🌿 Colita de Rana Club</h3>
+      <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
+    </div>
+  `;
 
-// Header + intro paragraph
-cdrContainer.innerHTML = `
-  <div class="cdr-header">
-    <h3>🌿 Colita de Rana Club</h3>
-    <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
-  </div>
-`;
+  // Herbal mechanisms
+  const herbs = result.how_herbs_work?.by_pattern?.[patternType];
+  if (herbs) {
+    const herbSection = document.createElement("div");
+    herbSection.className = "herbs-section";
+    herbSection.innerHTML = `
+      <h4>Cómo trabajaríamos tu patrón</h4>
+      <ul class="herb-mechanisms">
+        ${herbs.mechanism.map((m) => `<li>${m}</li>`).join("")}
+      </ul>
+      <p class="herb-logic">${herbs.combo_logic}</p>`;
+    cdrContainer.appendChild(herbSection);
+  }
 
-// Herbal mechanisms
-const herbs = result.how_herbs_work?.by_pattern?.[patternType];
-if (herbs) {
-  const herbSection = document.createElement('div');
-  herbSection.className = 'herbs-section';
-  herbSection.innerHTML = `
-    <h4>Cómo trabajaríamos tu patrón</h4>
-    <ul class="herb-mechanisms">
-      ${herbs.mechanism.map((m) => `<li>${m}</li>`).join('')}
-    </ul>
-    <p class="herb-logic">${herbs.combo_logic}</p>`;
-  cdrContainer.appendChild(herbSection);
+  // Unique system differentiators
+  const diff = result.unique_system?.differentiators || [];
+  if (diff.length) {
+    const uniqueGrid = document.createElement("div");
+    uniqueGrid.className = "unique-system";
+    uniqueGrid.innerHTML = `
+      <h4>${result.unique_system.title}</h4>
+      <div class="unique-grid">
+        ${diff
+          .map(
+            (d) => `
+          <div class="unique-item">
+            <h5>${d.title}</h5>
+            <p>${d.description}</p>
+          </div>`
+          )
+          .join("")}
+      </div>`;
+    cdrContainer.appendChild(uniqueGrid);
+  }
+
+  // Append full subsection
+  card.appendChild(cdrContainer);
+
+  // Disclaimer
+  const disclaimer = document.createElement("p");
+  disclaimer.className = "results-disclaimer";
+  disclaimer.textContent =
+    result.meta?.disclaimer ||
+    "Esta información es educativa y no sustituye atención médica.";
+  card.appendChild(disclaimer);
+
+  showPage("results-page");
 }
 
-// Unique system differentiators
-const diff = result.unique_system?.differentiators || [];
-if (diff.length) {
-  const uniqueGrid = document.createElement('div');
-  uniqueGrid.className = 'unique-system';
-  uniqueGrid.innerHTML = `
-    <h4>${result.unique_system.title}</h4>
-    <div class="unique-grid">
-      ${diff
-        .map(
-          (d) => `
-        <div class="unique-item">
-          <h5>${d.title}</h5>
-          <p>${d.description}</p>
-        </div>`
-        )
-        .join('')}
-    </div>`;
-  cdrContainer.appendChild(uniqueGrid);
-}
-
-
-// Append full subsection
-card.appendChild(cdrContainer);
-
-// Disclaimer — subtle inline note at bottom
-const disclaimer = document.createElement('p');
-disclaimer.className = 'results-disclaimer';
-disclaimer.textContent =
-  result.meta?.disclaimer ||
-  'Esta información es educativa y no sustituye atención médica.';
-card.appendChild(disclaimer);
-
-  showPage('results-page');
-}
 
 window.showResults = showResults;
 
