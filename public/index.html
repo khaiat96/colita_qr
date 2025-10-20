@@ -147,33 +147,31 @@
     </div>
   </div>
 
-  <!-- === Results Page === -->
-  <div id="results-page" class="page">
-    <header class="app-header">
-      <h1 class="brand-name">🌿 Colita de Rana</h1>
-    </header>
+<!-- === Results Page === -->
+<div id="results-page" class="page">
+  <header class="app-header">
+    <h1 class="brand-name">🌿 Colita de Rana</h1>
+  </header>
 
-<section class="energetic-section">
-  <h3 class="energetic-title">Mapa energético (balance relativo)</h3>
-  <p class="energetic-intro">
-    Visualiza el equilibrio entre calor, frío, humedad, sequedad, tensión y relajación.
-  </p>
-  <div class="radar-wrap">
-    <canvas id="radarChart" width="320" height="320"></canvas>
-  </div>
-</section>
+  <main class="results-container">
+    <!-- JS writes all results into this: -->
+    <div id="results-card" class="results-card"></div>
 
-<!-- Add this -->
-<div id="phase-section" class="phase-section"></div>
-  </div>
-      <!-- JS dynamically injects result content here -->
-      <div class="results-actions-stack">
-        <button class="btn-primary btn-block volver-btn" onclick="showPage('landing-page')">
-          Volver al inicio
-        </button>
+    <!-- you can keep this static radar block if you want it always visible -->
+    <section class="energetic-section">
+      <h3 class="energetic-title">Mapa energético (balance relativo)</h3>
+      <p class="energetic-intro">
+        Visualiza el equilibrio entre calor, frío, humedad, sequedad, tensión y relajación.
+      </p>
+      <div class="radar-wrap">
+        <canvas id="radarChart" width="320" height="320"></canvas>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <!-- phase section target for renderPhase() -->
+    <div id="phase-section" class="phase-section"></div>
+  </main>
+</div>
 
   <!-- === Waitlist Page (Dedicated standalone) === -->
   <div id="waitlist-page" class="page">
