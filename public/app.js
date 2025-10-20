@@ -689,16 +689,132 @@ function renderPhaseAdvice(patternKey) {
   return html;
 }
 
-function renderPatternCard(patternKey) {
-  const card = resultsTemplate?.pattern_card?.single?.[patternKey] || {};
-  if (!card.pattern_explainer) return '';
+// --- Helpers for rendering the enhanced Results Page ---
+
+function renderElementHeader(patternKey) {
+  const elementLabel = resultsTemplate?.element?.by_pattern?.[patternKey]?.[0] || patternKey;
+  const summary = resultsTemplate?.summary?.by_pattern?.[patternKey]?.[0] || '';
   return `
-    <div class="pattern-description">${card.pattern_explainer}</div>
-    <ul class="characteristics">
-      ${(card.characteristics || []).map(char => `<li>${char}</li>`).join('')}
-    </ul>
+    <div class="result-head">
+      <div class="element-badge">${elementLabel}</div>
+      <h3 class="result-summary">${summary}</h3>
+    </div>
   `;
 }
+
+function renderElementExplainer(patternKey) {
+  const expl = resultsTemplate?.element_explainer?.by_pattern?.[patternKey]?.[0] || '';
+  return expl ? `<div class="pattern-explainer">${expl}</div>` : '';
+}
+
+function renderPatternCard(patternKey) {
+  const card = resultsTemplate?.pattern_card?.by_pattern?.[patternKey] || [];
+  if (!card.length) return '';
+  const bullets = card.map(p => `<li>${p}</li>`).join('');
+  return `
+    <div class="pattern-card">
+      <h4>Tu patrón menstrual se caracteriza por:</h4>
+      <ul>${bullets}</ul>
+    </div>
+  `;
+}
+
+function renderWhyCluster(patternKey) {
+  const why = resultsTemplate?.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
+  return why
+    ? `<div class="why-cluster"><h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p></div>`
+    : '';
+}
+
+function renderCareTips(patternKey) {
+  const tips = resultsTemplate?.care_tips?.by_pattern?.[patternKey] || [];
+  if (!tips.length) return '';
+  const items = tips.map(t => `<li>${t}</li>`).join('');
+  return `
+    <section class="care-tips">
+      <h4>🌸 Mini-hábitos para tu patrón</h4>
+      <ul>${items}</ul>
+    </section>
+  `;
+}
+
+function renderRitmoCicloBlock(stateKey = 'regular') {
+  const blk = resultsTemplate?.ritmo_ciclo_block?.by_state?.[stateKey];
+  if (!blk) return '';
+  return `
+    <div class="ritmo-block">
+      <h4>Ritmo del ciclo</h4>
+      <p>${blk.que_significa}</p>
+      <p>${blk.por_que_importa}</p>
+      ${blk.tips_suaves?.length ? `<ul>${blk.tips_suaves.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
+    </div>
+  `;
+}
+
+function renderUniqueSystem() {
+  const us = resultsTemplate?.unique_system;
+  if (!us?.differentiators?.length) return '';
+  return `
+    <section class="unique-system">
+      <h4>${us.title}</h4>
+      <div class="unique-grid">
+        ${us.differentiators
+          .map(d => `<div class="unique-item"><h5>${d.title}</h5><p>${d.description}</p></div>`)
+          .join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderHowHerbsWork(patternKey) {
+  const sec = resultsTemplate?.how_herbs_work?.by_pattern?.[patternKey];
+  if (!sec) return '';
+  const mech = (sec.mechanism || []).map(m => `<li>${m}</li>`).join('');
+  const logic = sec.combo_logic ? `<p class="herb-logic">${sec.combo_logic}</p>` : '';
+  return `
+    <section class="herbs-section">
+      <h4>🌿 ¿Qué incluiría tu medicina personalizada?</h4>
+      <ul>${mech}</ul>
+      ${logic}
+    </section>
+  `;
+}
+
+function renderColitaIntro() {
+  return `
+    <section class="cdr-intro">
+      <h4>colita de rana</h4>
+      <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
+    </section>
+  `;
+}
+
+function pickRitmoStateFromAnswers() {
+  const p1 = answers.P1_regularity;
+  if (p1 === "Irregular (varía >7 días entre ciclos)") return "irregular";
+  if (p1 === "No tengo sangrado actualmente") return "no_sangrando";
+  return "regular";
+}
+
+// --- REPLACED showResults() ---
+function showResults(patternKey) {
+  const ritmoKey = pickRitmoStateFromAnswers();
+  const html = `
+    ${renderElementHeader(patternKey)}
+    ${renderElementExplainer(patternKey)}
+    ${renderPatternCard(patternKey)}
+    ${renderWhyCluster(patternKey)}
+    ${renderCareTips(patternKey)}
+    ${renderRitmoCicloBlock(ritmoKey)}
+    ${renderColitaIntro()}
+    ${renderUniqueSystem()}
+    ${renderHowHerbsWork(patternKey)}
+    <div class="disclaimer"><strong>Nota:</strong> ${resultsTemplate.meta?.disclaimer || 'Contenido educativo. No sustituye atención médica.'}</div>
+  `;
+  document.getElementById('results-card').innerHTML = html;
+  showPage('results-page');
+}
+
 
 
 // Main function to show results with full template
