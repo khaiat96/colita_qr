@@ -834,12 +834,6 @@ function showResults(patternType) {
   if (!card) return;
   card.innerHTML = ""; // clear previous results
 
-  // --- Energetic Terrain Section (created dynamically, no duplicates) ---
-  const terrainSection = createEnergeticTerrainSection(patternType);
-  card.appendChild(terrainSection);
-  // Wait for DOM paint before placing the dot
-  setTimeout(() => positionEnergeticDot(patternType), 120);
-
   // --- Element Header ---
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
   const title = document.createElement("h2");
@@ -872,6 +866,12 @@ function showResults(patternType) {
       <ul class="characteristics">${bullets}</ul>`;
     card.appendChild(patternSection);
   }
+
+    // --- Energetic Terrain Section (created dynamically, no duplicates) ---
+  const terrainSection = createEnergeticTerrainSection(patternType);
+  card.appendChild(terrainSection);
+  // Wait for DOM paint before placing the dot
+  setTimeout(() => positionEnergeticDot(patternType), 120);
 
   // --- Why Cluster ---
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
