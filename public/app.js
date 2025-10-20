@@ -650,6 +650,8 @@ for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
 }
 
   document.getElementById("phase-section").innerHTML = html;
+
+return html;
 }
 
 // --- Helpers for rendering the enhanced Results Page ---
@@ -750,6 +752,7 @@ function renderColitaIntro() {
       <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
     </section>
   `;
+  
 }
 
 function pickRitmoStateFromAnswers() {
@@ -815,6 +818,7 @@ function normalizeRelative(obj) {
   return out;
 }
 
+
 // === 3D ENERGY MAP (Mapa energético) ===
 function renderEnergyMap3D() {
   const container = document.getElementById('energyMap3D');
@@ -876,8 +880,6 @@ function renderEnergyMap3D() {
 }
 
 
-
-
 // === MAIN RESULTS RENDERING ===
 function showResults(patternType) {
   if (!resultsTemplate) {
@@ -924,6 +926,14 @@ function showResults(patternType) {
     card.appendChild(patternSection);
   }
 
+  const phaseHTML = renderPhase(result);
+if (phaseHTML) {
+  const phaseContainer = document.getElementById('phase-section');
+  if (phaseContainer) {
+    phaseContainer.innerHTML = phaseHTML;
+  }
+}
+
 
   // --- Why Cluster ---
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
@@ -946,48 +956,16 @@ function showResults(patternType) {
     card.appendChild(habitsSection);
   }
 
-// --- Tips por fase del ciclo (with pattern overrides) ---
-const phaseTemplate = result.phase;
-const patternKey = patternType;
-const genericPhases = phaseTemplate?.generic || {};
-
-if (Object.keys(genericPhases).length) {
-  const phaseSection = document.createElement("div");
-  phaseSection.className = "tips-phase-section";
-
-  let html = `
-    <h4 class="tips-main-title">${phaseTemplate.title}</h4>
-    <div class="phases-container">
-  `;
-
-  for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
-    let about = phaseInfo.about;
-    let doList = [...(phaseInfo.do || [])];
-
-    // Apply pattern-specific overrides
-    const overrides =
-      phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
-    if (overrides) {
-      if (overrides.about_add)
-        about += " " + overrides.about_add;
-      if (overrides.do_add)
-        doList.push(...overrides.do_add);
-    }
-
-    html += `
-      <div class="phase-block">
-        <h5>${phaseInfo.label}</h5>
-        <p>${about}</p>
-        <ul>${doList
-          .slice(0, 4)
-          .map((d) => `<li>${d}</li>`)
-          .join("")}</ul>
-      </div>`;
+const phaseHTML = renderPhase(result);
+if (phaseHTML) {
+  const phaseContainer = document.getElementById('phase-section');
+  if (phaseContainer) {
+    phaseContainer.innerHTML = phaseHTML;
+  } else {
+    const fallback = document.createElement('div');
+    fallback.innerHTML = phaseHTML;
+    card.appendChild(fallback);
   }
-
-  html += `</div>`;
-  phaseSection.innerHTML = html;
-  card.appendChild(phaseSection);
 }
 
 
