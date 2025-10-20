@@ -616,55 +616,38 @@ function renderPhase(result) {
   let html = `<h2>${phaseTemplate.title}</h2>`;
   const genericPhases = phaseTemplate.generic;
 
-  for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
-let about = phaseInfo.about;
-let foods = [...(phaseInfo.foods || [])];
-let doList = [...(phaseInfo.do || [])];
-let avoid = [...(phaseInfo.avoid || [])];
-let movement = [...(phaseInfo.movement || [])];
-let vibe = phaseInfo.vibe || '';
+  
+for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
+  let about = phaseInfo.about || "";
+  let doList = [...(phaseInfo.do || [])];
+  let foods = [...(phaseInfo.foods || [])];
+  let avoid = [...(phaseInfo.avoid || [])];
+  let movement = [...(phaseInfo.movement || [])];
+  let vibe = phaseInfo.vibe || "";
 
-// Apply pattern-specific overrides
-const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
-if (overrides) {
-  if (overrides.about_add) about += " " + overrides.about_add;
-  if (overrides.foods_add) foods.push(...overrides.foods_add);
-  if (overrides.do_add) doList.push(...overrides.do_add);
-  if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
-  if (overrides.movement_add) movement.push(...overrides.movement_add);
+  // Apply pattern-specific overrides
+  const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
+  if (overrides) {
+    if (overrides.about_add) about += " " + overrides.about_add;
+    if (overrides.do_add) doList.push(...overrides.do_add);
+    if (overrides.foods_add) foods.push(...overrides.foods_add);
+    if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
+    if (overrides.movement_add) movement.push(...overrides.movement_add);
+    if (overrides.vibe_add) vibe += " " + overrides.vibe_add;
+  }
+
+  html += `
+    <div class="phase-block">
+      <h5>${phaseInfo.label}</h5>
+      <p>${about}</p>
+
+      ${foods.length ? `<p>🍲 <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
+      ${doList.length ? `<p>✅ <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
+      ${avoid.length ? `<p>🚫 <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
+      ${movement.length ? `<p>🏃‍♀️ <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
+      ${vibe ? `<p>💫 <strong>Vibe:</strong> ${vibe}</p>` : ""}
+    </div>`;
 }
-
-html += `
-  <div class="phase-block">
-    <h5>${phaseInfo.label}</h5>
-    <p>${about}</p>
-
-    ${foods.length ? `
-      <h6>🍲 Alimentos recomendados</h6>
-      <ul>${foods.map(item => `<li>${item}</li>`).join("")}</ul>
-    ` : ''}
-
-    ${doList.length ? `
-      <h6>✅ Qué hacer</h6>
-      <ul>${doList.map(item => `<li>${item}</li>`).join("")}</ul>
-    ` : ''}
-
-    ${avoid.length ? `
-      <h6>🚫 Qué evitar</h6>
-      <ul>${avoid.map(item => `<li>${item}</li>`).join("")}</ul>
-    ` : ''}
-
-    ${movement.length ? `
-      <h6>🏃‍♀️ Movimiento</h6>
-      <ul>${movement.map(item => `<li>${item}</li>`).join("")}</ul>
-    ` : ''}
-
-    ${vibe ? `
-      <h6>💫 Vibe</h6>
-      <p>${vibe}</p>
-    ` : ''}
-  </div>
-`;
   }
 
   document.getElementById("phase-section").innerHTML = html;
