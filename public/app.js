@@ -958,8 +958,6 @@ function showResults(patternType) {
     card.appendChild(habitsSection);
   }
 
-  renderPhase({ label_top: patternType });
-
   // --- Colita de Rana Club Section ---
   const cdrContainer = document.createElement("section");
   cdrContainer.className = "cdr-section";
