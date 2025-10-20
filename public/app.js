@@ -817,13 +817,14 @@ function positionEnergeticDot(patternType) {
 
 // Main function to show results with full template
 function showResults(patternType) {
-  const result = resultsTemplate;
-  const card = document.getElementById('results-card');
-  if (!card) {
-    console.error("❌ Element with id 'results-card' not found in DOM.");
+  if (!resultsTemplate) {
+    console.error("❌ resultsTemplate is null — failed to load results_template.json");
+    alert("No se pudo cargar el archivo de resultados. Revisa results_template.json");
     return;
   }
-  card.innerHTML = ''; // clear old results
+
+  const result = resultsTemplate;
+  const card = document.getElementById('results-card');
 
   // Element Header (Main title)
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
