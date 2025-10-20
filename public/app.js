@@ -759,54 +759,135 @@ function pickRitmoStateFromAnswers() {
   return "regular";
 }
 
+// --- Radar Chart (6 petals, relative scaling) ---
+let radarInstance = null;
 
-// --- Create Energetic Terrain Section dynamically ---
-function createEnergeticTerrainSection(patternType) {
-  const section = document.createElement("section");
-  section.id = "energetic-terrain-section";
-  section.className = "energetic-section";
-  section.innerHTML = `
-    <h3 class="energetic-title">Estado energético del ciclo</h3>
-    <p class="energetic-intro">
-      Tu cuerpo se mueve entre tres ejes: temperatura, humedad y tono.
-      Este punto muestra hacia dónde tiende tu equilibrio actual.
-    </p>
-    <div id="energetic-terrain">
-      <div class="axis axis-x">🔥 Calor ↔ ❄️ Frío</div>
-      <div class="axis axis-y">💧 Humedad ↔ 🌵 Sequedad</div>
-      <div class="axis axis-z">🌪️ Tensión ↔ 🌾 Relajación</div>
-      <div id="terrain-dot"></div>
-    </div>
-  `;
-  return section;
-}
-
-function positionEnergeticDot(patternType) {
-  const dot = document.getElementById("terrain-dot");
-  if (!dot) return;
-
-  const map = {
-    calor: { x: 75, y: 50, color: "#FF6B6B" },
-    frio: { x: 25, y: 50, color: "#4ECDC4" },
-    humedad: { x: 50, y: 75, color: "#00A8CC" },
-    sequedad: { x: 50, y: 25, color: "#F4A261" },
-    tension: { x: 70, y: 30, color: "#9C44DC" },
-    relajacion: { x: 30, y: 70, color: "#90BE6D" },
-    calor_humedad: { x: 70, y: 70, color: "#E76F51" },
-    frio_humedad: { x: 30, y: 70, color: "#457B9D" },
-    calor_sequedad: { x: 70, y: 30, color: "#F4A261" },
-    frio_sequedad: { x: 30, y: 30, color: "#264653" },
-    tension_calor: { x: 80, y: 40, color: "#D62828" },
-    tension_humedad: { x: 65, y: 65, color: "#577590" }
+// Build the 6-axis raw score object your quiz currently yields.
+// We already compute: tension, calor, frio, humedad, sequedad.
+// We derive relajacion as the complement of tensión relative to the max axis.
+function getRawAxisScores() {
+  const base = {
+    Calor: 0,
+    Frío: 0,
+    Humedad: 0,
+    Sequedad: 0,
+    Tensión: 0,
+    Relajación: 0
   };
 
-  const coords = map[patternType] || { x: 50, y: 50, color: "#00D4AA" };
+  // Recompute the same way calculateResults() does, but keep the raw values:
+  const raw = { tension: 0, calor: 0, frio: 0, humedad: 0, sequedad: 0 };
 
-  dot.style.left = `${coords.x}%`;
-  dot.style.top = `${coords.y}%`;
-  dot.style.background = coords.color;
-  dot.style.boxShadow = `0 0 25px ${coords.color}80`;
+  surveyQuestions.forEach(q => {
+    const ans = answers[q.id];
+    if (!ans || !q.options) return;
+    const arr = Array.isArray(ans) ? ans : [ans];
+    arr.forEach(v => {
+      const opt = q.options.find(o => o.value === v);
+      if (opt?.scores) {
+        Object.keys(opt.scores).forEach(k => {
+          if (k in raw) raw[k] += opt.scores[k];
+        });
+      }
+    });
+  });
+
+  // Fill labeled object
+  base.Calor = raw.calor;
+  base.Frío = raw.frio;
+  base.Humedad = raw.humedad;
+  base.Sequedad = raw.sequedad;
+  base.Tensión = raw.tension;
+
+  // Derive Relajación as the complement of Tensión vs. the max of the other axes
+  const maxOther = Math.max(base.Calor, base.Frío, base.Humedad, base.Sequedad, base.Tensión, 1);
+  base.Relajación = Math.max(0, maxOther - base.Tensión);
+
+  return base;
 }
+
+// Normalize to the current max (Option A)
+function normalizeRelative(obj) {
+  const vals = Object.values(obj);
+  const max = Math.max(...vals, 1); // avoid divide-by-zero
+  const out = {};
+  Object.keys(obj).forEach(k => (out[k] = obj[k] / max));
+  return out;
+}
+
+function renderRadarChart() {
+  const ctx = document.getElementById('radarChart');
+  if (!ctx) return;
+
+  // Destroy previous chart if present (prevents duplicates)
+  if (radarInstance) {
+    radarInstance.destroy();
+    radarInstance = null;
+  }
+
+  const raw = getRawAxisScores();
+  const norm = normalizeRelative(raw);
+
+  const labels = Object.keys(norm);
+  const data = labels.map(k => norm[k]);
+
+  radarInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Balance relativo',
+          data,
+          fill: true,
+          backgroundColor: 'rgba(0, 168, 204, 0.18)',
+          borderColor: 'rgba(0, 168, 204, 0.9)',
+          pointBackgroundColor: 'rgba(0, 212, 170, 1)',
+          pointBorderColor: '#fff',
+          pointHoverRadius: 5,
+          tension: 0.2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        r: {
+          suggestedMin: 0,
+          suggestedMax: 1,
+          ticks: {
+            display: false // clean look
+          },
+          grid: {
+            color: 'rgba(255,255,255,0.15)'
+          },
+          angleLines: {
+            color: 'rgba(255,255,255,0.15)'
+          },
+          pointLabels: {
+            color: '#ddd',
+            font: { size: 12 }
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const key = labels[ctx.dataIndex];
+              const rel = data[ctx.dataIndex];
+              const abs = getRawAxisScores()[key]; // show raw too
+              return `${key}: ${(rel * 100).toFixed(0)}% (abs ${abs})`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
 
 
 // === MAIN RESULTS RENDERING ===
@@ -855,11 +936,6 @@ function showResults(patternType) {
     card.appendChild(patternSection);
   }
 
-    // --- Energetic Terrain Section (created dynamically, no duplicates) ---
-  const terrainSection = createEnergeticTerrainSection(patternType);
-  card.appendChild(terrainSection);
-  // Wait for DOM paint before placing the dot
-  setTimeout(() => positionEnergeticDot(patternType), 120);
 
   // --- Why Cluster ---
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
