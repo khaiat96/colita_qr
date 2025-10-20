@@ -2431,3 +2431,9 @@ body {
   box-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
   transition: all 0.8s ease-out;
 }
+
+/* Show waitlist & disclaimer only on the landing page */
+.page:not(#landing-page) #waitlist-section,
+.page:not(#landing-page) .medical-disclaimer {
+  display: none !important;
+}
