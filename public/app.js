@@ -906,39 +906,144 @@ function showResults(patternType) {
 
 
 // Main function to show results with full template
-function showResults(patternKey) {
-  // ─────────── Safe fallback for missing labels/summary ───────────
-  const label = resultsTemplate?.labels?.[patternKey] || patternKey;
-  const summary = resultsTemplate?.summary?.single
-    ? resultsTemplate.summary.single.replace('{{label_top}}', label)
-    : label;
+function showResults(patternType) {
+  const result = resultsTemplate;
+  const card = document.getElementById('results-card');
+  card.innerHTML = ''; // clear old results
 
-  // ─────────── Build your results HTML ───────────
+  // Main Title (Elemento)
+  const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
+  const title = document.createElement('h2');
+  title.className = 'results-main-title';
+  title.textContent = elementTitle;
+  card.appendChild(title);
 
-  let html = `
-    <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || label}</h2>
-    <h3>${summary}</h3>
-    ${renderPatternCard(patternKey)}
-    ${renderCareTips(patternKey)}
-    ${renderPhaseAdvice(patternKey)}
-    <div class="disclaimer">
-      <strong>Nota importante:</strong>
-      ${resultsTemplate?.meta?.disclaimer ||
-        'Esta evaluación es orientativa.'}
-    </div>
-  `;
+  // Subtitle (Resumen / tipo)
+  const subtitleText = result.summary?.by_pattern?.[patternType]?.[0] || '';
+  const subtitle = document.createElement('h3');
+  subtitle.className = 'results-subtitle';
+  subtitle.textContent = subtitleText;
+  card.appendChild(subtitle);
 
-  // Inject into the results-card
-  document.getElementById('results-card').innerHTML = html;
-
-  // HIDE email form (no longer used)
-  const emailFormSection = document.getElementById('email-results-form-section');
-  if (emailFormSection) {
-    emailFormSection.style.display = 'none';
+  // Pattern card (characteristics)
+  const patternCard = result.pattern_card?.by_pattern?.[patternType] || [];
+  if (patternCard.length) {
+    const patternSection = document.createElement('div');
+    patternSection.className = 'pattern-description';
+    const bullets = patternCard.map((c) => `<li>${c}</li>`).join('');
+    patternSection.innerHTML = `<h4>Características de tu patrón</h4><ul class="characteristics">${bullets}</ul>`;
+    card.appendChild(patternSection);
   }
+
+  // Why Cluster (¿Por qué se agrupan los síntomas?)
+  const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
+  if (why) {
+    const whySection = document.createElement('div');
+    whySection.className = 'why-cluster';
+    whySection.innerHTML = `<h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p>`;
+    card.appendChild(whySection);
+  }
+
+  // Mini-hábitos por patrón
+  const habits = result.care_tips?.by_pattern?.[patternType] || [];
+  if (habits.length) {
+    const habitsSection = document.createElement('div');
+    habitsSection.className = 'recommendations';
+    const items = habits.map((h) => `<li>${h}</li>`).join('');
+    habitsSection.innerHTML = `
+      <h4>🌸 Mini-hábitos para tu patrón</h4>
+      <ul class="recommendations-list">${items}</ul>`;
+    card.appendChild(habitsSection);
+  }
+
+  // Tips por fase del ciclo
+  const phases = result.phase?.generic || {};
+  const phaseSection = document.createElement('div');
+  phaseSection.className = 'tips-phase-section';
+  phaseSection.innerHTML = `
+    <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
+    <div class="phases-container">
+      ${Object.values(phases)
+        .map(
+          (p) => `
+          <div class="phase-block">
+            <div class="phase-header">
+              <h5 class="phase-title">${p.label}</h5>
+            </div>
+            <div class="phase-content">
+              <div class="phase-subsection">
+                <div class="subsection-label">En esta fase</div>
+                <p class="phase-description">${p.about}</p>
+              </div>
+              <div class="phase-subsection">
+                <div class="subsection-label">Haz más de:</div>
+                <ul class="subsection-list">${p.do
+                  .slice(0, 3)
+                  .map((d) => `<li>${d}</li>`)
+                  .join('')}</ul>
+              </div>
+            </div>
+          </div>`
+        )
+        .join('')}
+    </div>`;
+  card.appendChild(phaseSection);
+
+  // --- Colita de Rana Section ---
+  const colitaSection = document.createElement('div');
+  colitaSection.className = 'cdr-intro';
+  colitaSection.innerHTML = `
+    <h4>colita de rana</h4>
+    <p>${result.unique_system?.intro_text || 'Nuestra medicina personalizada combina tradición y evidencia. Tu fórmula se ajustaría a tu patrón energético, con plantas seleccionadas por su afinidad.'}</p>`;
+  card.appendChild(colitaSection);
+
+  // Differentiators grid
+  const differentiators = result.unique_system?.differentiators || [];
+  if (differentiators.length) {
+    const uniqueGrid = document.createElement('div');
+    uniqueGrid.className = 'unique-system';
+    uniqueGrid.innerHTML = `
+      <h4>Diferenciadores del sistema</h4>
+      <div class="unique-grid">
+        ${differentiators
+          .map(
+            (d) => `
+          <div class="unique-item">
+            <h5>${d.title}</h5>
+            <p>${d.description}</p>
+          </div>`
+          )
+          .join('')}
+      </div>`;
+    card.appendChild(uniqueGrid);
+  }
+
+  // How herbs work section
+  const herbBlock = result.how_herbs_work?.by_pattern?.[patternType];
+  if (herbBlock) {
+    const herbSection = document.createElement('div');
+    herbSection.className = 'herbs-section';
+    const mechanisms = herbBlock.mechanism
+      .map((m) => `<li>${m}</li>`)
+      .join('');
+    herbSection.innerHTML = `
+      <h4>🌿 Cómo trabajaríamos tu patrón</h4>
+      <ul class="herb-mechanisms">${mechanisms}</ul>
+      <p class="herb-logic">${herbBlock.combo_logic}</p>`;
+    card.appendChild(herbSection);
+  }
+
+  // Disclaimer
+  const disclaimer = document.createElement('div');
+  disclaimer.className = 'disclaimer';
+  disclaimer.innerHTML = `<strong>Nota:</strong> ${
+    result.meta?.disclaimer || 'Contenido educativo. No sustituye atención médica.'
+  }`;
+  card.appendChild(disclaimer);
 
   showPage('results-page');
 }
+
 
 // === DEBUG TOOL: preview results page manually ===
 // Muestra resultados de cualquier patrón sin pasar por el quiz
