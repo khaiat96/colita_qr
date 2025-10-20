@@ -31,7 +31,7 @@
 "sections_order": [
   "header",
   "summary",
-  "energetic_state",   // new tri-axis visualization
+  "energetic_state",
   "pattern_card",
   "why_cluster",
   "phase",
