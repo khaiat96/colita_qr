@@ -2125,3 +2125,107 @@ body {
   text-align: left;
   line-height: 1.4;
 }
+
+/* === Colita de Rana Section === */
+.cdr-section {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px 20px;
+  margin: 40px 0;
+  text-align: left;
+  box-shadow: 0 0 25px rgba(0, 212, 170, 0.05);
+}
+
+.cdr-header h3 {
+  background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+
+.cdr-header p {
+  color: #b0b0b0;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+/* Grid inside the section */
+.unique-system {
+  margin-top: 25px;
+}
+
+.unique-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .unique-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.unique-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.3s ease;
+}
+
+.unique-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+}
+
+.unique-item h5 {
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.unique-item p {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Herbs section inside Colita de Rana */
+.herbs-section {
+  margin-top: 30px;
+}
+
+.herbs-section h4 {
+  background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.herb-mechanisms {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.herb-mechanisms li {
+  margin-bottom: 8px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.herb-logic {
+  color: #b0b0b0;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
