@@ -958,6 +958,8 @@ function showResults(patternType) {
     card.appendChild(habitsSection);
   }
 
+  renderPhase({ label_top: patternType });
+
   // --- Tips por fase del ciclo ---
 // --- Tips por fase del ciclo (with pattern overrides) ---
 const phaseTemplate = result.phase;
