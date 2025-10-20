@@ -2323,3 +2323,22 @@ canvas#radarChart {
   margin-top: 0.5rem;
   line-height: 1.4;
 }
+
+.phase-block {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background-color: var(--color-surface, #fff);
+  box-shadow: var(--shadow-sm);
+}
+
+.phase-block h6 {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--color-primary, #228);
+}
+
+.phase-block ul {
+  margin-top: 0.5rem;
+  padding-left: 1.2rem;
+}

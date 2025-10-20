@@ -617,36 +617,54 @@ function renderPhase(result) {
   const genericPhases = phaseTemplate.generic;
 
   for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
-    let about = phaseInfo.about;
-    let foods = [...(phaseInfo.foods || [])];
-    let doList = [...(phaseInfo.do || [])];
-    let avoid = [...(phaseInfo.avoid || [])];
-    let movement = [...(phaseInfo.movement || [])];
-    let vibe = phaseInfo.vibe;
+let about = phaseInfo.about;
+let foods = [...(phaseInfo.foods || [])];
+let doList = [...(phaseInfo.do || [])];
+let avoid = [...(phaseInfo.avoid || [])];
+let movement = [...(phaseInfo.movement || [])];
+let vibe = phaseInfo.vibe || '';
 
-    // Apply pattern-specific overrides if available
-    const patternOverrides =
-      phaseTemplate.overrides_by_pattern?.[primaryPattern]?.[phaseKey];
+// Apply pattern-specific overrides
+const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
+if (overrides) {
+  if (overrides.about_add) about += " " + overrides.about_add;
+  if (overrides.foods_add) foods.push(...overrides.foods_add);
+  if (overrides.do_add) doList.push(...overrides.do_add);
+  if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
+  if (overrides.movement_add) movement.push(...overrides.movement_add);
+}
 
-    if (patternOverrides) {
-      if (patternOverrides.about_add)
-        about += " " + patternOverrides.about_add;
-      if (patternOverrides.foods_add)
-        foods.push(...patternOverrides.foods_add);
-      if (patternOverrides.do_add)
-        doList.push(...patternOverrides.do_add);
-      if (patternOverrides.avoid_add)
-        avoid.push(...patternOverrides.avoid_add);
-      if (patternOverrides.movement_add)
-        movement.push(...patternOverrides.movement_add);
-    }
+html += `
+  <div class="phase-block">
+    <h5>${phaseInfo.label}</h5>
+    <p>${about}</p>
 
-    html += `
-      <div class="phase-card">
-        <h3>${phaseInfo.label}</h3>
-        <p>${about}</p>
-        <ul>${doList.map(i => `<li>${i}</li>`).join("")}</ul>
-      </div>`;
+    ${foods.length ? `
+      <h6>🍲 Alimentos recomendados</h6>
+      <ul>${foods.map(item => `<li>${item}</li>`).join("")}</ul>
+    ` : ''}
+
+    ${doList.length ? `
+      <h6>✅ Qué hacer</h6>
+      <ul>${doList.map(item => `<li>${item}</li>`).join("")}</ul>
+    ` : ''}
+
+    ${avoid.length ? `
+      <h6>🚫 Qué evitar</h6>
+      <ul>${avoid.map(item => `<li>${item}</li>`).join("")}</ul>
+    ` : ''}
+
+    ${movement.length ? `
+      <h6>🏃‍♀️ Movimiento</h6>
+      <ul>${movement.map(item => `<li>${item}</li>`).join("")}</ul>
+    ` : ''}
+
+    ${vibe ? `
+      <h6>💫 Vibe</h6>
+      <p>${vibe}</p>
+    ` : ''}
+  </div>
+`;
   }
 
   document.getElementById("phase-section").innerHTML = html;
