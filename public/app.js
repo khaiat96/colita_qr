@@ -959,29 +959,50 @@ function showResults(patternType) {
   }
 
   // --- Tips por fase del ciclo ---
-  const phases = result.phase?.generic || {};
-  if (Object.keys(phases).length) {
-    const phaseSection = document.createElement("div");
-    phaseSection.className = "tips-phase-section";
-    phaseSection.innerHTML = `
-      <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
-      <div class="phases-container">
-        ${Object.values(phases)
-          .map(
-            (p) => `
-            <div class="phase-block">
-              <h5>${p.label}</h5>
-              <p>${p.about}</p>
-              <ul>${p.do
-                .slice(0, 3)
-                .map((d) => `<li>${d}</li>`)
-                .join("")}</ul>
-            </div>`
-          )
-          .join("")}
+// --- Tips por fase del ciclo (with pattern overrides) ---
+const phaseTemplate = result.phase;
+const patternKey = patternType;
+const genericPhases = phaseTemplate?.generic || {};
+
+if (Object.keys(genericPhases).length) {
+  const phaseSection = document.createElement("div");
+  phaseSection.className = "tips-phase-section";
+
+  let html = `
+    <h4 class="tips-main-title">${phaseTemplate.title}</h4>
+    <div class="phases-container">
+  `;
+
+  for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
+    let about = phaseInfo.about;
+    let doList = [...(phaseInfo.do || [])];
+
+    // Check for pattern-specific overrides
+    const overrides =
+      phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
+    if (overrides) {
+      if (overrides.about_add)
+        about += " " + overrides.about_add;
+      if (overrides.do_add)
+        doList.push(...overrides.do_add);
+    }
+
+    html += `
+      <div class="phase-block">
+        <h5>${phaseInfo.label}</h5>
+        <p>${about}</p>
+        <ul>${doList
+          .slice(0, 4)
+          .map((d) => `<li>${d}</li>`)
+          .join("")}</ul>
       </div>`;
-    card.appendChild(phaseSection);
   }
+
+  html += `</div>`;
+  phaseSection.innerHTML = html;
+  card.appendChild(phaseSection);
+}
+
 
   // --- Colita de Rana Club Section ---
   const cdrContainer = document.createElement("section");
