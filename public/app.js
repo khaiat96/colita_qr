@@ -787,12 +787,14 @@ function createEnergeticTerrainSection(patternType) {
   return section;
 }
 
-
-
 // Main function to show results with full template
 function showResults(patternType) {
   const result = resultsTemplate;
-  card.innerHTML = ''; // clear old results
+  const card = document.getElementById('results-card');
+  if (!card) {
+    console.error("❌ Element with id 'results-card' not found in DOM.");
+    return;
+  }
   card.innerHTML = ''; // clear old results
 
   // Element Header (Main title)
