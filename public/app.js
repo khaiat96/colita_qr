@@ -911,31 +911,49 @@ function showResults(patternType) {
   const card = document.getElementById('results-card');
   card.innerHTML = ''; // clear old results
 
-  // Main Title (Elemento)
+  // Element Header (Main title)
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
   const title = document.createElement('h2');
   title.className = 'results-main-title';
   title.textContent = elementTitle;
   card.appendChild(title);
 
-  // Subtitle (Resumen / tipo)
-  const subtitleText = result.summary?.by_pattern?.[patternType]?.[0] || '';
+  // Subtitle — uses summary.single
+  const subtitleText =
+    (result.summary?.single || 'Tu tipo de ciclo: {{label_top}}').replace(
+      '{{label_top}}',
+      result.labels?.[patternType] || patternType
+    );
   const subtitle = document.createElement('h3');
   subtitle.className = 'results-subtitle';
   subtitle.textContent = subtitleText;
   card.appendChild(subtitle);
 
+  // Element Explainer (optional short paragraph)
+  const explainer = result.element_explainer?.by_pattern?.[patternType]?.[0];
+  if (explainer) {
+    const explainerEl = document.createElement('p');
+    explainerEl.className = 'element-explainer';
+    explainerEl.textContent = explainer;
+    card.appendChild(explainerEl);
+  }
+
   // Pattern card (characteristics)
-  const patternCard = result.pattern_card?.by_pattern?.[patternType] || [];
-  if (patternCard.length) {
+  const patternData = result.pattern_card?.single?.[patternType];
+  if (patternData) {
     const patternSection = document.createElement('div');
     patternSection.className = 'pattern-description';
-    const bullets = patternCard.map((c) => `<li>${c}</li>`).join('');
-    patternSection.innerHTML = `<h4>Características de tu patrón</h4><ul class="characteristics">${bullets}</ul>`;
+    const expl = patternData.pattern_explainer || '';
+    const bullets = (patternData.characteristics || [])
+      .map((c) => `<li>${c}</li>`)
+      .join('');
+    patternSection.innerHTML = `
+      <p class="pattern-explainer">${expl}</p>
+      <ul class="characteristics">${bullets}</ul>`;
     card.appendChild(patternSection);
   }
 
-  // Why Cluster (¿Por qué se agrupan los síntomas?)
+  // Why cluster
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
   if (why) {
     const whySection = document.createElement('div');
@@ -944,7 +962,7 @@ function showResults(patternType) {
     card.appendChild(whySection);
   }
 
-  // Mini-hábitos por patrón
+  // Care tips (mini-hábitos)
   const habits = result.care_tips?.by_pattern?.[patternType] || [];
   if (habits.length) {
     const habitsSection = document.createElement('div');
@@ -958,54 +976,46 @@ function showResults(patternType) {
 
   // Tips por fase del ciclo
   const phases = result.phase?.generic || {};
-  const phaseSection = document.createElement('div');
-  phaseSection.className = 'tips-phase-section';
-  phaseSection.innerHTML = `
-    <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
-    <div class="phases-container">
-      ${Object.values(phases)
-        .map(
-          (p) => `
-          <div class="phase-block">
-            <div class="phase-header">
-              <h5 class="phase-title">${p.label}</h5>
-            </div>
-            <div class="phase-content">
-              <div class="phase-subsection">
-                <div class="subsection-label">En esta fase</div>
-                <p class="phase-description">${p.about}</p>
-              </div>
-              <div class="phase-subsection">
-                <div class="subsection-label">Haz más de:</div>
-                <ul class="subsection-list">${p.do
-                  .slice(0, 3)
-                  .map((d) => `<li>${d}</li>`)
-                  .join('')}</ul>
-              </div>
-            </div>
-          </div>`
-        )
-        .join('')}
-    </div>`;
-  card.appendChild(phaseSection);
+  if (Object.keys(phases).length) {
+    const phaseSection = document.createElement('div');
+    phaseSection.className = 'tips-phase-section';
+    phaseSection.innerHTML = `
+      <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
+      <div class="phases-container">
+        ${Object.values(phases)
+          .map(
+            (p) => `
+            <div class="phase-block">
+              <h5>${p.label}</h5>
+              <p>${p.about}</p>
+              <ul>${p.do
+                .slice(0, 3)
+                .map((d) => `<li>${d}</li>`)
+                .join('')}</ul>
+            </div>`
+          )
+          .join('')}
+      </div>`;
+    card.appendChild(phaseSection);
+  }
 
-  // --- Colita de Rana Section ---
+  // Colita de Rana section
   const colitaSection = document.createElement('div');
   colitaSection.className = 'cdr-intro';
   colitaSection.innerHTML = `
     <h4>colita de rana</h4>
-    <p>${result.unique_system?.intro_text || 'Nuestra medicina personalizada combina tradición y evidencia. Tu fórmula se ajustaría a tu patrón energético, con plantas seleccionadas por su afinidad.'}</p>`;
+    <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>`;
   card.appendChild(colitaSection);
 
-  // Differentiators grid
-  const differentiators = result.unique_system?.differentiators || [];
-  if (differentiators.length) {
+  // Unique system differentiators
+  const diff = result.unique_system?.differentiators || [];
+  if (diff.length) {
     const uniqueGrid = document.createElement('div');
     uniqueGrid.className = 'unique-system';
     uniqueGrid.innerHTML = `
-      <h4>Diferenciadores del sistema</h4>
+      <h4>${result.unique_system.title}</h4>
       <div class="unique-grid">
-        ${differentiators
+        ${diff
           .map(
             (d) => `
           <div class="unique-item">
@@ -1018,31 +1028,12 @@ function showResults(patternType) {
     card.appendChild(uniqueGrid);
   }
 
-  // How herbs work section
-  const herbBlock = result.how_herbs_work?.by_pattern?.[patternType];
-  if (herbBlock) {
+  // Herbal mechanisms
+  const herbs = result.how_herbs_work?.by_pattern?.[patternType];
+  if (herbs) {
     const herbSection = document.createElement('div');
     herbSection.className = 'herbs-section';
-    const mechanisms = herbBlock.mechanism
-      .map((m) => `<li>${m}</li>`)
-      .join('');
-    herbSection.innerHTML = `
-      <h4>🌿 Cómo trabajaríamos tu patrón</h4>
-      <ul class="herb-mechanisms">${mechanisms}</ul>
-      <p class="herb-logic">${herbBlock.combo_logic}</p>`;
-    card.appendChild(herbSection);
-  }
-
-  // Disclaimer
-  const disclaimer = document.createElement('div');
-  disclaimer.className = 'disclaimer';
-  disclaimer.innerHTML = `<strong>Nota:</strong> ${
-    result.meta?.disclaimer || 'Contenido educativo. No sustituye atención médica.'
-  }`;
-  card.appendChild(disclaimer);
-
-  showPage('results-page');
-}
+    herbSection.innerHTM
 
 
 // === DEBUG TOOL: preview results page manually ===
