@@ -136,7 +136,7 @@
         "Alivio con movimiento suave y ritmo constante"
       ]
     }
-  },
+  }
 },
 "why_cluster": {
   "title": "¿Por qué se agrupan tus síntomas?",
@@ -552,10 +552,7 @@
             "Rutina pre-sueño consistente (luces tenues, lectura)"
           ]
         }
-      },
-
-
-
+      }
     }
   },
   "care_tips": {
