@@ -121,11 +121,6 @@
                 </div>
             </section>
         </main>
-        <footer class="medical-disclaimer">
-            <div class="container">
-                <p>Este contenido es informativo y no sustituye atención médica.</p>
-            </div>
-        </footer>
     </div>
 
 <!-- Results Page -->
@@ -135,25 +130,7 @@
   </header>
 
   <div class="results-container">
-    <div class="results-card" id="results-card">
-      <!-- === Energetic Terrain Visualization === -->
-      <section id="energetic-terrain-section" class="energetic-section">
-        <h3 class="energetic-title">Estado energético del ciclo</h3>
-        <p class="energetic-intro">
-          Tu cuerpo se mueve entre tres ejes: temperatura, humedad y tono. Este punto muestra hacia dónde tiende tu equilibrio actual.
-        </p>
-
-        <div id="energetic-terrain">
-          <div class="axis axis-x">🔥 Calor ↔ ❄️ Frío</div>
-          <div class="axis axis-y">💧 Humedad ↔ 🌵 Sequedad</div>
-          <div class="axis axis-z">🌪️ Tensión ↔ 🌾 Relajación</div>
-          <div id="terrain-dot"></div>
-        </div>
-      </section>
-
-      <!-- Aquí JS inyecta el resto del resultado detallado -->
-    </div>
-
+    <div class="results-card" id="results-card"></div>
     <div class="results-actions-stack">
       <button class="btn-primary btn-block volver-btn" onclick="showPage('landing-page')">
         Volver al inicio

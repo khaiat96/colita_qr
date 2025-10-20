@@ -831,6 +831,8 @@ function showResults(patternType) {
 
   const result = resultsTemplate;
   const card = document.getElementById('results-card');
+  if (!card) return;
+   card.innerHTML = '';
 
   // Element Header (Main title)
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
