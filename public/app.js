@@ -22,8 +22,6 @@ function scrollToWaitlist() {
   }
 }
 
-/* EnergeticTerrain.js — minimalist reusable component */
-
 function EnergeticTerrain({ patternScores, primaryPattern }) {
   // Normalize each axis 0–1 from backend scores
   const temp = (patternScores.calor - patternScores.frio + 5) / 10;
