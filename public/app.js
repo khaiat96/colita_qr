@@ -63,22 +63,17 @@ window.scrollToWaitlist = function() {
 
 // ==================== PAGE NAVIGATION ====================
 function showPage(pageId) {
-  // Hide all pages
   const pages = document.querySelectorAll('.page');
   pages.forEach(page => {
     page.classList.remove('active');
     page.style.display = 'none';
   });
 
-  // Show the requested page
   const targetPage = document.getElementById(pageId);
   if (targetPage) {
     targetPage.classList.add('active');
     targetPage.style.display = 'block';
-
-    // Scroll to top of page
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
     console.log(`✓ Switched to page: ${pageId}`);
   } else {
     console.error(`✗ Page not found: ${pageId}`);
@@ -98,93 +93,62 @@ document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
 
   const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
+  if (quizBtn) quizBtn.disabled = true;
 
   try {
-    // Load survey questions
     const surveyResp = await fetch('survey_questions.json');
     if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
     const surveyData = await surveyResp.json();
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
-    // Load decision mapping
     const mappingResp = await fetch('decision_mapping.json');
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
-  // Load results_template.json (add this after the other fetches)
-  try {
-  const resultsResp = await fetch('results_template.json');
-  if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
-  resultsTemplate = await resultsResp.json();
-  console.log('✅ Loaded results_template.json');
-  } catch (err) {
-  resultsTemplate = null;
-  console.error('❌ Failed to load results_template.json:', err);
-  }
-
-
-// Normalize all question types first
-surveyQuestions.forEach(q => {
-  if (q.type === 'singlechoice' || q.type === 'single') {
-    q.type = 'single_choice';
-  }
-});
-
-// --- THEN process the decision mapping logic ---
-surveyQuestions.forEach(q => {
-  // 1. Top-level options
-  if (Array.isArray(q.options)) {
-const mappingList = decisionMapping?.decision_map?.[q.id];
-if (mappingList) {
-      q.options.forEach(opt => {
-    const mapping = mappingList[opt.value];
-        if (mapping && mapping.scores) {
-          opt.scores = mapping.scores;
-        }
-      });
+    try {
+      const resultsResp = await fetch('results_template.json');
+      if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
+      resultsTemplate = await resultsResp.json();
+      console.log('✅ Loaded results_template.json');
+    } catch (err) {
+      resultsTemplate = null;
+      console.error('❌ Failed to load results_template.json:', err);
     }
-  }
 
-  // 2. Compound questions (items)
-  if (q.type === "compound" && Array.isArray(q.items)) {
-    q.items.forEach(item => {
-      if (Array.isArray(item.options)) {
-const mappingList = decisionMapping?.decision_map?.[item.id];
+    surveyQuestions.forEach(q => {
+      if (q.type === 'singlechoice' || q.type === 'single') {
+        q.type = 'single_choice';
+      }
+    });
+
+    surveyQuestions.forEach(q => {
+      if (Array.isArray(q.options)) {
+        const mappingList = decisionMapping?.decision_map?.[q.id];
         if (mappingList) {
-          item.options.forEach(opt => {
-        const mapping = mappingList[opt.value];            
-if (mapping && mapping.scores) {
-              opt.scores = mapping.scores;
-            }
+          q.options.forEach(opt => {
+            const mapping = mappingList[opt.value];
+            if (mapping && mapping.scores) opt.scores = mapping.scores;
           });
         }
       }
-    });
-  }
-
-  // 3. Grouped questions (questions)
-  if (q.type === "grouped" && Array.isArray(q.questions)) {
-    q.questions.forEach(group => {
-      if (Array.isArray(group.options)) {
-        const mappingList = decisionMapping?.decision_map?.[id][group.id];
-        if (mappingList) {
-          group.options.forEach(opt => {
-            const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
-              opt.scores = mapping.scores;
+      if (q.type === "compound" && Array.isArray(q.items)) {
+        q.items.forEach(item => {
+          if (Array.isArray(item.options)) {
+            const mappingList = decisionMapping?.decision_map?.[item.id];
+            if (mappingList) {
+              item.options.forEach(opt => {
+                const mapping = mappingList[opt.value];
+                if (mapping && mapping.scores) opt.scores = mapping.scores;
+              });
             }
-          });
-        }
+          }
+        });
       }
     });
-  }
-});
 
     window.surveyLoaded = true;
     console.log('✅ Loaded', surveyQuestions.length, 'questions');
-
     if (quizBtn) quizBtn.disabled = false;
   } catch (err) {
     console.error('❌ Error:', err);
@@ -196,7 +160,6 @@ if (mapping && mapping.scores) {
 // ==================== WAITLIST FORM HANDLER ====================
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Landing page waitlist
   const mainWaitlistForm = document.getElementById('main-waitlist-form');
   if (mainWaitlistForm) {
     mainWaitlistForm.addEventListener('submit', async function(e) {
@@ -217,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  // Results page waitlist
+
   const resultsWaitlistForm = document.getElementById('results-waitlist-form');
   if (resultsWaitlistForm) {
     resultsWaitlistForm.addEventListener('submit', async function(e) {
@@ -803,40 +766,33 @@ function pickRitmoStateFromAnswers() {
 }
 
 
-// --- Energetic Terrain Positioning ---
-function updateEnergeticTerrain(result) {
-  const dot = document.getElementById("terrain-dot");
-  if (!dot || !result || !result.label_top) return;
-
-  // Define positions for each energetic pattern
-  const map = {
-    calor: { x: 80, y: 50, color: "#FF6B6B" },        // hot
-    frio: { x: 20, y: 50, color: "#4ECDC4" },         // cold
-    humedad: { x: 50, y: 80, color: "#00A8CC" },      // moist
-    sequedad: { x: 50, y: 20, color: "#F4A261" },     // dry
-    tension: { x: 70, y: 30, color: "#9C44DC" },      // tense
-    relajacion: { x: 30, y: 70, color: "#90BE6D" },   // relaxed
-    calor_humedad: { x: 75, y: 75, color: "#E76F51" },
-    frio_humedad: { x: 25, y: 75, color: "#457B9D" },
-    calor_sequedad: { x: 75, y: 25, color: "#F4A261" },
-    frio_sequedad: { x: 25, y: 25, color: "#264653" },
-    tension_calor: { x: 85, y: 35, color: "#D62828" },
-    tension_humedad: { x: 65, y: 70, color: "#577590" }
-  };
-
-  const pattern = result.label_top;
-  const coords = map[pattern] || { x: 50, y: 50, color: "#00D4AA" };
-
-  dot.style.left = `${coords.x}%`;
-  dot.style.top = `${coords.y}%`;
-  dot.style.background = coords.color;
-  dot.style.boxShadow = `0 0 20px ${coords.color}80`;
+// --- Create Energetic Terrain Section dynamically ---
+function createEnergeticTerrainSection(patternType) {
+  const section = document.createElement("section");
+  section.id = "energetic-terrain-section";
+  section.className = "energetic-section";
+  section.innerHTML = `
+    <h3 class="energetic-title">Estado energético del ciclo</h3>
+    <p class="energetic-intro">
+      Tu cuerpo se mueve entre tres ejes: temperatura, humedad y tono.
+      Este punto muestra hacia dónde tiende tu equilibrio actual.
+    </p>
+    <div id="energetic-terrain">
+      <div class="axis axis-x">🔥 Calor ↔ ❄️ Frío</div>
+      <div class="axis axis-y">💧 Humedad ↔ 🌵 Sequedad</div>
+      <div class="axis axis-z">🌪️ Tensión ↔ 🌾 Relajación</div>
+      <div id="terrain-dot"></div>
+    </div>
+  `;
+  return section;
 }
+
+
 
 // Main function to show results with full template
 function showResults(patternType) {
   const result = resultsTemplate;
-  const card = document.getElementById('results-card');
+  card.innerHTML = ''; // clear old results
   card.innerHTML = ''; // clear old results
 
   // Element Header (Main title)
@@ -856,7 +812,11 @@ function showResults(patternType) {
   subtitle.className = 'results-subtitle';
   subtitle.textContent = subtitleText;
   card.appendChild(subtitle);
-  updateEnergeticTerrain({ label_top: patternType });
+
+  // --- Add Energetic Terrain dynamically ---
+const terrainSection = createEnergeticTerrainSection(patternType);
+card.appendChild(terrainSection);
+updateEnergeticTerrain({ label_top: patternType });
 
 //coment out element explainer
   // Element Explainer (optional short paragraph)
@@ -882,6 +842,7 @@ function showResults(patternType) {
       <ul class="characteristics">${bullets}</ul>`;
     card.appendChild(patternSection);
   }
+
 
   // Why cluster
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
