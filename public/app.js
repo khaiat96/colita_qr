@@ -92,7 +92,6 @@ window.startSurvey = function() {
   renderQuestion();
 };
 
-
 // ==================== MAIN INITIALIZATION ====================
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -948,9 +947,6 @@ if (herbs) {
 // Append full subsection
 card.appendChild(cdrContainer);
 
-  
-  }
-
 // Disclaimer — subtle inline note at bottom
 const disclaimer = document.createElement('p');
 disclaimer.className = 'results-disclaimer';
@@ -959,9 +955,12 @@ disclaimer.textContent =
   'Esta información es educativa y no sustituye atención médica.';
 card.appendChild(disclaimer);
 
-
   showPage('results-page');
 }
+
+window.showResults = showResults;
+
+
 // === DEBUG TOOL: preview results page manually ===
 // Muestra resultados de cualquier patrón sin pasar por el quiz
 // Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
