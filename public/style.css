@@ -1580,18 +1580,6 @@ body {
     line-height: 1.4;
 }
 
-.pattern-description {
-    background: rgba(255, 255, 255, 0.05);
-    border-left: 4px solid;
-    border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
-    padding: 20px;
-    margin: 30px 0;
-    border-radius: 8px;
-    text-align: left;
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: #b0b0b0;
-}
 
 .characteristics {
     list-style: none;
@@ -1600,16 +1588,6 @@ body {
     padding: 0;
 }
 
-.characteristics li {
-    background: rgba(255, 255, 255, 0.05);
-    margin-bottom: 10px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    border-left: 3px solid;
-    border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
-    color: #ffffff;
-    font-size: 0.95rem;
-}
 
 .recommendations {
     background: rgba(255, 255, 255, 0.03);
@@ -2116,4 +2094,33 @@ body {
   color: #b0b0b0;
   margin-bottom: 18px;
   font-style: italic;
+}
+
+.pattern-description {
+    background: rgba(255, 255, 255, 0.05);
+    border: none; /* remove left line */
+    padding: 20px;
+    margin: 30px 0;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #b0b0b0;
+}
+
+.characteristics li {
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: none; /* remove the inner line */
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+.characteristics li:hover {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 212, 170, 0.08);
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
 }

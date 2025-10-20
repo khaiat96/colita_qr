@@ -1064,7 +1064,7 @@ function showResults(patternType) {
 // Muestra resultados de cualquier patrón sin pasar por el quiz
 // Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
 
-window.debugShow = function(patternKey = 'agua') {
+window.debugShow = function(patternKey = 'calor') {
   // Fake answers para secciones dependientes
   window.answers = {
     P1: "Regular (cada 26–32 días)",
