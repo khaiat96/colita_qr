@@ -2461,3 +2461,10 @@ body {
 
 .page { display: none !important; }
 .page.active { display: block !important; }
+
+/* === Hide the waitlist when not on landing === */
+#results-page #waitlist-section,
+#survey-page #waitlist-section,
+#waitlist-page #waitlist-section {
+  display: none !important;
+}
