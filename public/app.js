@@ -616,7 +616,7 @@ function renderPhase(result) {
   let html = `<h2>${phaseTemplate.title}</h2>`;
   const genericPhases = phaseTemplate.generic;
 
-  
+
 for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
   let about = phaseInfo.about || "";
   let doList = [...(phaseInfo.do || [])];
@@ -648,7 +648,6 @@ for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
       ${vibe ? `<p>💫 <strong>Vibe:</strong> ${vibe}</p>` : ""}
     </div>`;
 }
-  }
 
   document.getElementById("phase-section").innerHTML = html;
 }
