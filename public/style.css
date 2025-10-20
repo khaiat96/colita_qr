@@ -2229,3 +2229,61 @@ body {
   font-size: 0.9rem;
   line-height: 1.5;
 }
+
+/* === Energetic Terrain Diagram === */
+.energetic-section {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 30px 20px;
+  margin: 40px 0;
+  text-align: center;
+}
+
+.energetic-title {
+  font-size: 1.6rem;
+  background: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 12px;
+}
+
+.energetic-intro {
+  font-size: 0.95rem;
+  color: #b0b0b0;
+  margin-bottom: 20px;
+}
+
+#energetic-terrain {
+  position: relative;
+  width: 260px;
+  aspect-ratio: 1/1;
+  margin: 0 auto;
+  border: 1.5px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 70%);
+}
+
+#terrain-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #00D4AA;
+  box-shadow: 0 0 10px rgba(0, 212, 170, 0.6);
+  transform: translate(-50%, -50%);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#energetic-terrain .axis {
+  position: absolute;
+  font-size: 0.8rem;
+  color: #ccc;
+  pointer-events: none;
+}
+
+.axis-x { top: -1.5rem; width: 100%; text-align: center; }
+.axis-y { bottom: -1.5rem; width: 100%; text-align: center; }
+.axis-z { right: -5.5rem; top: 50%; transform: translateY(-50%) rotate(90deg); }

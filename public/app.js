@@ -802,6 +802,37 @@ function pickRitmoStateFromAnswers() {
   return "regular";
 }
 
+
+// --- Energetic Terrain Positioning ---
+function updateEnergeticTerrain(result) {
+  const dot = document.getElementById("terrain-dot");
+  if (!dot || !result || !result.label_top) return;
+
+  const pattern = result.label_top;
+  const map = {
+    calor: { x: 80, y: 50, color: "#FF6B6B" },
+    frio: { x: 20, y: 50, color: "#4ECDC4" },
+    humedad: { x: 50, y: 80, color: "#00A8CC" },
+    sequedad: { x: 50, y: 20, color: "#F4A261" },
+    tension: { x: 70, y: 30, color: "#9C44DC" },
+    relajacion: { x: 30, y: 70, color: "#90BE6D" },
+    calor_humedad: { x: 75, y: 75, color: "#E76F51" },
+    frio_humedad: { x: 25, y: 75, color: "#457B9D" },
+    calor_sequedad: { x: 75, y: 25, color: "#F4A261" },
+    frio_sequedad: { x: 25, y: 25, color: "#264653" },
+    tension_calor: { x: 85, y: 35, color: "#D62828" },
+    tension_humedad: { x: 65, y: 70, color: "#577590" }
+  };
+
+  const coords = map[pattern] || { x: 50, y: 50, color: "#00D4AA" };
+
+  dot.style.left = `${coords.x}%`;
+  dot.style.top = `${coords.y}%`;
+  dot.style.background = coords.color;
+  dot.style.boxShadow = `0 0 20px ${coords.color}80`;
+}
+
+
 // Main function to show results with full template
 function showResults(patternType) {
   const result = resultsTemplate;
@@ -850,6 +881,8 @@ function showResults(patternType) {
       <ul class="characteristics">${bullets}</ul>`;
     card.appendChild(patternSection);
   }
+
+    updateEnergeticTerrain(result);
 
   // Why cluster
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
