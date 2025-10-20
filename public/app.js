@@ -787,6 +787,34 @@ function createEnergeticTerrainSection(patternType) {
   return section;
 }
 
+function positionEnergeticDot(patternType) {
+  const dot = document.getElementById("terrain-dot");
+  if (!dot) return;
+
+  const map = {
+    calor: { x: 75, y: 50, color: "#FF6B6B" },
+    frio: { x: 25, y: 50, color: "#4ECDC4" },
+    humedad: { x: 50, y: 75, color: "#00A8CC" },
+    sequedad: { x: 50, y: 25, color: "#F4A261" },
+    tension: { x: 70, y: 30, color: "#9C44DC" },
+    relajacion: { x: 30, y: 70, color: "#90BE6D" },
+    calor_humedad: { x: 70, y: 70, color: "#E76F51" },
+    frio_humedad: { x: 30, y: 70, color: "#457B9D" },
+    calor_sequedad: { x: 70, y: 30, color: "#F4A261" },
+    frio_sequedad: { x: 30, y: 30, color: "#264653" },
+    tension_calor: { x: 80, y: 40, color: "#D62828" },
+    tension_humedad: { x: 65, y: 65, color: "#577590" }
+  };
+
+  const coords = map[patternType] || { x: 50, y: 50, color: "#00D4AA" };
+
+  dot.style.left = `${coords.x}%`;
+  dot.style.top = `${coords.y}%`;
+  dot.style.background = coords.color;
+  dot.style.boxShadow = `0 0 25px ${coords.color}80`;
+}
+
+
 // Main function to show results with full template
 function showResults(patternType) {
   const result = resultsTemplate;
@@ -815,10 +843,6 @@ function showResults(patternType) {
   subtitle.textContent = subtitleText;
   card.appendChild(subtitle);
 
-  // --- Add Energetic Terrain dynamically ---
-const terrainSection = createEnergeticTerrainSection(patternType);
-card.appendChild(terrainSection);
-
 //coment out element explainer
   // Element Explainer (optional short paragraph)
   //const explainer = result.element_explainer?.by_pattern?.[patternType]?.[0];
@@ -844,6 +868,14 @@ card.appendChild(terrainSection);
     card.appendChild(patternSection);
   }
 
+    // --- Add Energetic Terrain dynamically ---
+const terrainSection = createEnergeticTerrainSection(patternType);
+card.appendChild(terrainSection);
+
+// Wait for DOM to paint, then move the dot
+setTimeout(() => {
+  positionEnergeticDot(patternType);
+}, 100);
 
   // Why cluster
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
@@ -953,6 +985,7 @@ card.appendChild(disclaimer);
 }
 
 window.showResults = showResults;
+
 
 
 // === DEBUG TOOL: preview results page manually ===

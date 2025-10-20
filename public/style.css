@@ -2256,26 +2256,24 @@ body {
 
 #energetic-terrain {
   position: relative;
-  width: 260px;
-  aspect-ratio: 1/1;
-  margin: 0 auto;
-  border: 1.5px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 14px;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 70%);
+  width: 280px;
+  height: 280px;
+  margin: 20px auto;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #fff 60%, #f5f5f5 100%);
+  overflow: hidden;
 }
 
 #terrain-dot {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: #00D4AA;
-  box-shadow: 0 0 10px rgba(0, 212, 170, 0.6);
   transform: translate(-50%, -50%);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.5s ease-out;
 }
+
 
 #energetic-terrain .axis {
   position: absolute;
@@ -2287,3 +2285,4 @@ body {
 .axis-x { top: -1.5rem; width: 100%; text-align: center; }
 .axis-y { bottom: -1.5rem; width: 100%; text-align: center; }
 .axis-z { right: -5.5rem; top: 50%; transform: translateY(-50%) rotate(90deg); }
+
