@@ -1033,9 +1033,26 @@ function showResults(patternType) {
   if (herbs) {
     const herbSection = document.createElement('div');
     herbSection.className = 'herbs-section';
-    herbSection.innerHTM
+    herbSection.innerHTML = `
+      <h4>🌿 Cómo trabajaríamos tu patrón</h4>
+      <ul class="herb-mechanisms">
+        ${herbs.mechanism.map((m) => `<li>${m}</li>`).join('')}
+      </ul>
+      <p class="herb-logic">${herbs.combo_logic}</p>`;
+    card.appendChild(herbSection);
+  }
 
+  // Disclaimer
+  const disclaimer = document.createElement('div');
+  disclaimer.className = 'disclaimer';
+  disclaimer.innerHTML = `<strong>Nota:</strong> ${
+    result.meta?.disclaimer ||
+    'Esta información es educativa y no sustituye atención médica.'
+  }`;
+  card.appendChild(disclaimer);
 
+  showPage('results-page');
+}
 // === DEBUG TOOL: preview results page manually ===
 // Muestra resultados de cualquier patrón sin pasar por el quiz
 // Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
