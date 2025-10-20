@@ -796,24 +796,112 @@ function pickRitmoStateFromAnswers() {
   return "regular";
 }
 
-// --- REPLACED showResults() ---
-function showResults(patternKey) {
-  const ritmoKey = pickRitmoStateFromAnswers();
-  const html = `
-    ${renderElementHeader(patternKey)}
-    ${renderElementExplainer(patternKey)}
-    ${renderPatternCard(patternKey)}
-    ${renderWhyCluster(patternKey)}
-    ${renderCareTips(patternKey)}
-    ${renderRitmoCicloBlock(ritmoKey)}
-    ${renderColitaIntro()}
-    ${renderUniqueSystem()}
-    ${renderHowHerbsWork(patternKey)}
-    <div class="disclaimer"><strong>Nota:</strong> ${resultsTemplate.meta?.disclaimer || 'Contenido educativo. No sustituye atención médica.'}</div>
-  `;
-  document.getElementById('results-card').innerHTML = html;
+function showResults(patternType) {
+  const page = document.getElementById('results-page');
+  const card = document.getElementById('results-card');
+  card.innerHTML = ''; // clear old content
+
+  const result = resultsTemplate;
+
+  // Header de resultado
+  const elementTitle = result.element.by_pattern[patternType]?.[0] || patternType;
+  const header = document.createElement('h2');
+  header.className = 'results-main-title';
+  header.textContent = elementTitle;
+  card.appendChild(header);
+
+  // Subtitle de resultado
+  const subtitle = document.createElement('h3');
+  subtitle.className = 'results-subtitle';
+  subtitle.textContent = result.summary.single.replace('{{label_top}}', elementTitle);
+  card.appendChild(subtitle);
+
+  // Pattern Card
+  const pattern = result.pattern_card.single[patternType];
+  if (pattern) {
+    const patternSection = document.createElement('div');
+    patternSection.className = 'pattern-description';
+    patternSection.innerHTML = `<p>${pattern.pattern_explainer}</p>
+    <ul class="characteristics">${pattern.characteristics
+      .map((c) => `<li>${c}</li>`)
+      .join('')}</ul>`;
+    card.appendChild(patternSection);
+  }
+
+  // Why Cluster
+  const why = result.why_cluster.by_pattern[patternType]?.[0];
+  if (why) {
+    const whySection = document.createElement('div');
+    whySection.className = 'recommendations';
+    whySection.innerHTML = `<h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p>`;
+    card.appendChild(whySection);
+  }
+
+  // Mini-hábitos por patrón
+  const habits = result.care_tips.by_pattern[patternType];
+  if (habits) {
+    const habitsSection = document.createElement('div');
+    habitsSection.className = 'recommendations';
+    habitsSection.innerHTML = `<h4>Mini-hábitos por patrón</h4>
+      <ul class="recommendations-list">${habits.map((h) => `<li>${h}</li>`).join('')}</ul>`;
+    card.appendChild(habitsSection);
+  }
+
+  // Tips por fase
+  const phase = result.phase.generic;
+  const phaseSection = document.createElement('div');
+  phaseSection.className = 'tips-phase-section';
+  phaseSection.innerHTML = `<h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
+    <div class="phases-container">
+      ${Object.values(phase)
+        .map(
+          (ph) => `
+        <div class="phase-block">
+          <h5>${ph.label}</h5>
+          <p>${ph.about}</p>
+          <ul>${ph.do
+            .slice(0, 3)
+            .map((d) => `<li>${d}</li>`)
+            .join('')}</ul>
+        </div>`
+        )
+        .join('')}
+    </div>`;
+  card.appendChild(phaseSection);
+
+  // Colita de Rana Section
+  const crSection = document.createElement('div');
+  crSection.className = 'recommendations';
+  crSection.innerHTML = `
+    <h4>🌿 Colita de Rana</h4>
+    <p class="cr-small">Nuestra medicina personalizada combina tradición y evidencia. Tu fórmula se ajustaría a tu patrón energético, con plantas seleccionadas por su afinidad.</p>
+    <div class="unique-system-grid">
+      <h5>Diferenciadores del sistema</h5>
+      <ul>
+        <li>Basado en elementos y tejidos corporales</li>
+        <li>Personalizado por tipo de patrón menstrual</li>
+        <li>Sin enfoque farmacéutico — 100% botánico</li>
+        <li>Desarrollado por herbolarios clínicos</li>
+      </ul>
+    </div>
+    <div class="herbal-mechanisms">
+      <h5>¿Cómo trabajaríamos tu patrón?</h5>
+      <ul>${result.how_herbs_work.by_pattern[patternType].mechanism
+        .map((m) => `<li>${m}</li>`)
+        .join('')}</ul>
+      <p>${result.how_herbs_work.by_pattern[patternType].combo_logic}</p>
+    </div>`;
+  card.appendChild(crSection);
+
+  // Disclaimer
+  const disclaimer = document.createElement('p');
+  disclaimer.className = 'results-disclaimer';
+  disclaimer.textContent = result.meta.disclaimer;
+  card.appendChild(disclaimer);
+
   showPage('results-page');
 }
+
 
 
 

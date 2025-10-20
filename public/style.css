@@ -2021,3 +2021,55 @@ body {
 }
 .support-signals ul, .advisories ul { padding-left: 18px; }
 .support-signals li, .advisories li { margin: 6px 0; }
+
+.results-main-title {
+  font-size: 2.8rem;
+  background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.results-subtitle {
+  font-size: 1.4rem;
+  color: #b0b0b0;
+  margin-bottom: 25px;
+}
+
+.unique-system-grid {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.unique-system-grid ul {
+  list-style: none;
+  padding: 0;
+}
+
+.unique-system-grid li {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  border-left: 3px solid;
+  border-image: linear-gradient(135deg, #00D4AA 0%, #6B73FF 100%) 1;
+  border-radius: 8px;
+}
+
+.herbal-mechanisms ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.herbal-mechanisms li {
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.results-disclaimer {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 40px;
+  font-style: italic;
+  text-align: center;
+}
