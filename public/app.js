@@ -1,8 +1,9 @@
-// Configuration  
+// Configuration
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/er23s3ieomte4jue36f4v4o0g3mrtsdl';
+
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let questionOrder = [];
@@ -11,8 +12,9 @@ let answers = {};
 let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let resultsTemplate = null;
-window.surveyLoaded = false;
+let currentPatternType = null; // ✅ ADDED: Store pattern for PDF generation
 
+window.surveyLoaded = false;
 console.log('🚀 APP.JS LOADED - VERSION 5.0 - CACHE BUSTED');
 
 function scrollToWaitlist() {
@@ -23,8 +25,8 @@ function scrollToWaitlist() {
 }
 
 window.handleTextInput = function(qId, value) {
-    answers[qId] = value;
-    window.updateNavigation();
+  answers[qId] = value;
+  window.updateNavigation();
 };
 
 async function sendResponsesToGoogleSheet() {
@@ -34,17 +36,14 @@ async function sendResponsesToGoogleSheet() {
       timestamp: new Date().toISOString(),
       answers: answers
     };
-
     const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-
     if (!resp.ok) {
       throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
     }
-
     console.log('✅ Survey responses sent to Google Sheets via Make webhook.');
   } catch (err) {
     console.error('❌ Failed to send survey data to Google Sheets:', err);
@@ -59,7 +58,6 @@ function showPage(id) {
 }
 
 // ==================== WAITLIST FUNCTIONS ====================
-
 window.scrollToWaitlist = function() {
   const waitlistSection = document.getElementById('waitlist-section');
   if (waitlistSection) {
@@ -94,7 +92,6 @@ window.startSurvey = function() {
 };
 
 // ==================== MAIN INITIALIZATION ====================
-
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
 
@@ -138,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           });
         }
       }
+
       if (q.type === "compound" && Array.isArray(q.items)) {
         q.items.forEach(item => {
           if (Array.isArray(item.options)) {
@@ -156,6 +154,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.surveyLoaded = true;
     console.log('✅ Loaded', surveyQuestions.length, 'questions');
     if (quizBtn) quizBtn.disabled = false;
+
   } catch (err) {
     console.error('❌ Error:', err);
     alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
@@ -164,7 +163,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // ==================== WAITLIST FORM HANDLER ====================
-
 document.addEventListener('DOMContentLoaded', function() {
   const mainWaitlistForm = document.getElementById('main-waitlist-form');
   if (mainWaitlistForm) {
@@ -172,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const name = document.getElementById('main-waitlist-name').value;
       const email = document.getElementById('main-waitlist-email').value;
+
       try {
         await fetch(WAITLIST_WEBHOOK, {
           method: 'POST',
@@ -193,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const name = document.getElementById('results-waitlist-name').value;
       const email = document.getElementById('results-waitlist-email').value;
+
       try {
         await fetch(WAITLIST_WEBHOOK, {
           method: 'POST',
@@ -210,7 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ==================== UTILITY FUNCTIONS ====================
-
 function getQuestionById(qId) {
   return surveyQuestions.find(q => q.id === qId);
 }
@@ -234,6 +233,7 @@ function isQuestionVisible(question, answers) {
   if (cond.question_id && typeof cond.equals !== 'undefined') {
     return answers[cond.question_id] === cond.equals;
   }
+
   // includes
   if (cond.question_id && cond.includes) {
     const ans = answers[cond.question_id];
@@ -241,15 +241,53 @@ function isQuestionVisible(question, answers) {
     const ansArr = Array.isArray(ans) ? ans : [ans];
     return inclArr.some(v => ansArr.includes(v));
   }
-  // not_includes, includes_any, not_in, not_includes_any, at_least...
-  // (keep your existing blocks here, none of which use question.id)
 
-  // all / any
+  // not_includes
+  if (cond.question_id && cond.not_includes) {
+    const ans = answers[cond.question_id];
+    const notInclArr = Array.isArray(cond.not_includes) ? cond.not_includes : [cond.not_includes];
+    const ansArr = Array.isArray(ans) ? ans : [ans];
+    return !notInclArr.some(v => ansArr.includes(v));
+  }
+
+  // includes_any
+  if (cond.question_id && cond.includes_any) {
+    const ans = answers[cond.question_id];
+    const anyArr = Array.isArray(cond.includes_any) ? cond.includes_any : [cond.includes_any];
+    const ansArr = Array.isArray(ans) ? ans : [ans];
+    return anyArr.some(v => ansArr.includes(v));
+  }
+
+  // not_in
+  if (cond.question_id && cond.not_in) {
+    const ans = answers[cond.question_id];
+    const notInArr = Array.isArray(cond.not_in) ? cond.not_in : [cond.not_in];
+    return !notInArr.includes(ans);
+  }
+
+  // not_includes_any
+  if (cond.question_id && cond.not_includes_any) {
+    const ans = answers[cond.question_id];
+    const notAnyArr = Array.isArray(cond.not_includes_any) ? cond.not_includes_any : [cond.not_includes_any];
+    const ansArr = Array.isArray(ans) ? ans : [ans];
+    return !notAnyArr.some(v => ansArr.includes(v));
+  }
+
+  // at_least
+  if (cond.question_id && typeof cond.at_least === 'number') {
+    const ans = answers[cond.question_id];
+    const ansArr = Array.isArray(ans) ? ans : [ans];
+    return ansArr.length >= cond.at_least;
+  }
+
+  // all
   if (cond.all) {
     return cond.all.every(subCond =>
       isQuestionVisible({ visible_if: subCond, id: '' }, answers)
     );
   }
+
+  // any
   if (cond.any) {
     return cond.any.some(subCond =>
       isQuestionVisible({ visible_if: subCond, id: '' }, answers)
@@ -283,254 +321,182 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 
 window.finishSurvey = function () {
   const patternKey = calculateResults();
+  currentPatternType = patternKey; // ✅ ADDED: Store pattern globally
   showResults(patternKey);
-  sendResponsesToGoogleSheet(); 
+  sendResponsesToGoogleSheet();
 };
-
 
 // ==================== SURVEY RENDERING ====================
-
 function renderQuestion() {
-    let qId = questionOrder[currentQuestionIndex];
-    let question = getQuestionById(qId);
-
-    // Guard for undefined question
-    if (!question) {
-        finishSurvey();
-        return;
-    }
-    console.log('Rendering question:', question.id, 'type:', question.type, 'options:', question.options);
-  
-    // Skip invisible questions
-    while (question && !isQuestionVisible(question, answers)) {
-        const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
-        if (nextIdx > -1) {
-            currentQuestionIndex = nextIdx;
-            qId = questionOrder[currentQuestionIndex];
-            question = getQuestionById(qId);
-        } else {
-            finishSurvey();
-            return;
-        }
-    }
-
-    if (!question) {
-        finishSurvey();
-        return;
-    }
-
-    // Initialize answers for multiselect
-    if (question.type === "multiselect" && !answers[qId]) {
-        answers[qId] = [];
-        console.log(`✅ Initialized ${qId} as empty array`);
-    }
-
-    const surveyContent = document.getElementById('survey-content');
-    if (!surveyContent) return;
-
-    let optionsHtml = '';
-
-    // Handle standard option types
-    if ((question.type === 'multiselect' || question.type === 'single_choice') && Array.isArray(question.options)) {
-        question.options.forEach((option, index) => {
-            const isMultiSelect = question.type === 'multiselect';
-            const optionClass = isMultiSelect ? 'option multi-select' : 'option';
-            const selected = isMultiSelect 
-                ? (answers[qId] && answers[qId].includes(option.value)) 
-                : answers[qId] === option.value;
-            optionsHtml += `
-                <div class="${optionClass}${selected ? " selected":""}" data-value="${option.value}" data-qid="${qId}" onclick="selectOption('${qId}', '${option.value}', ${isMultiSelect})">
-                    ${option.label}
-                </div>
-            `;
-        });
-    } else if (question.type === 'slider') {
-        optionsHtml = `
-            <input type="range" min="${question.min}" max="${question.max}" step="${question.step}" 
-                value="${answers[question.id] || question.min}" id="slider-input"
-                oninput="selectSlider('${question.id}', this.value)">
-            <span id="slider-value">${answers[question.id] || question.min}</span>
-        `;
-    } else if (question.type === 'compound' && Array.isArray(question.items)) {
-        optionsHtml = `<div class="compound-question">
-            <div class="sub-questions">
-                ${question.items.map(item => {
-                    if ((item.type === 'multiselect' || item.type === 'single_choice') && Array.isArray(item.options)) {
-                        return `<div class="sub-question">
-                            <h4>${item.title}</h4>
-                            <div class="sub-options">
-                                ${item.options.map(opt => {
-                                    const isMultiSelect = item.type === 'multiselect';
-                                    const selected = isMultiSelect
-                                        ? (answers[item.id] && answers[item.id].includes(opt.value))
-                                        : answers[item.id] === opt.value;
-                                    return `
-                                        <div class="sub-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${item.id}" onclick="selectOption('${item.id}', '${opt.value}', ${isMultiSelect})">
-                                            ${opt.label}
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>`;
-                    } else if (item.type === 'slider') {
-                        return `<div class="sub-question">
-                            <h4>${item.title}</h4>
-                            <div class="slider-container">
-                                <input type="range" min="${item.min}" max="${item.max}" step="${item.step}" 
-                                    value="${answers[item.id] || item.min}" id="slider-input-${item.id}"
-                                    oninput="selectSlider('${item.id}', this.value)">
-                                <span id="slider-value-${item.id}">${answers[item.id] || item.min}</span>
-                            </div>
-                        </div>`;
-                    } else {
-                        return `<div class="sub-question">${item.title} (Tipo no soportado)</div>`;
-                    }
-                }).join('')}
-            </div>
-        </div>`;
-    } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
-        optionsHtml = `<div class="grouped-question">
-            <div class="question-groups">
-                ${question.questions.map(group => {
-                    if ((group.type === 'multiselect' || group.type === 'single_choice') && Array.isArray(group.options)) {
-                        return `<div class="question-group">
-                            <h4>${group.title}</h4>
-                            <div class="group-options">
-                                ${group.options.map(opt => {
-                                    const isMultiSelect = group.type === 'multiselect';
-                                    const selected = isMultiSelect
-                                        ? (answers[group.id] && answers[group.id].includes(opt.value))
-                                        : answers[group.id] === opt.value;
-                                    return `
-                                        <div class="group-option${selected ? " selected":""}" data-value="${opt.value}" data-qid="${group.id}" onclick="selectOption('${group.id}', '${opt.value}', ${isMultiSelect})">
-                                            ${opt.label}
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>`;
-                    } else if (group.type === 'slider') {
-                        return `<div class="question-group">
-                            <h4>${group.title}</h4>
-                            <div class="slider-container">
-                                <input type="range" min="${group.min}" max="${group.max}" step="${group.step}" 
-                                    value="${answers[group.id] || group.min}" id="slider-input-${group.id}"
-                                    oninput="selectSlider('${group.id}', this.value)">
-                                <span id="slider-value-${group.id}">${answers[group.id] || group.min}</span>
-                            </div>
-                        </div>`;
-                    } else {
-                        return `<div class="question-group">${group.title} (Tipo no soportado)</div>`;
-                    }
-                }).join('')}
-            </div>
-        </div>`;
-    } else if (question.type === 'text') {
-    optionsHtml = `
-        <input type="text"
-            id="input-${qId}"
-            class="input-text"
-            value="${answers[qId] || ''}"
-            placeholder="${question.help_text || ''}"
-            oninput="window.handleTextInput('${qId}', this.value)">
-    `;
-}
-else {
-    optionsHtml = `<div>No options for this question type.</div>`;
-}
-
-    surveyContent.innerHTML = `
-        <div class="question">
-            <h3>${question.title}</h3>
-            ${question.help_text ? `<div class="help-text">${question.help_text}</div>` : ''}
-            <div class="options">
-                ${optionsHtml}
-            </div>
-        </div>
-        <div class="survey-navigation">
-            <button class="btn-back" id="back-btn" onclick="previousQuestion()" style="display:none;">← Anterior</button>
-            <button class="btn-next" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
-        </div>
-    `;
-
-    updateProgress();
-    updateNavigation();
-}
-
-// Updated selectOption function with scoped selection for compound/grouped sub-questions
-window.selectOption = function(qId, value, isMultiSelect) {
-  console.log("Option clicked:", { qId, value, isMultiSelect });
-
-  // Find the question type for this qId (may be item inside compound/grouped)
+  let qId = questionOrder[currentQuestionIndex];
   let question = getQuestionById(qId);
+
+  // Guard for undefined question
   if (!question) {
-    for (const q of surveyQuestions) {
-      if (q.type === 'compound' && Array.isArray(q.items)) {
-        const found = q.items.find(item => item.id === qId);
-        if (found) {
-          question = found;
-          break;
-        }
-      } else if (q.type === 'grouped' && Array.isArray(q.questions)) {
-        const found = q.questions.find(item => item.id === qId);
-        if (found) {
-          question = found;
-          break;
-        }
-      }
-    }
-  }
-  if (!question) return;
-
-  let optionSelector = `.option[data-qid="${qId}"]`;
-  if (document.querySelector(`.sub-option[data-qid="${qId}"]`)) {
-    optionSelector = `.sub-option[data-qid="${qId}"]`;
-  } else if (document.querySelector(`.group-option[data-qid="${qId}"]`)) {
-    optionSelector = `.group-option[data-qid="${qId}"]`;
+    finishSurvey();
+    return;
   }
 
-  if (isMultiSelect) {
-    if (!answers[qId]) answers[qId] = [];
-    const currentAnswers = answers[qId];
-    const index = currentAnswers.indexOf(value);
-    if (index > -1) {
-      currentAnswers.splice(index, 1);
+  console.log('Rendering question:', question.id, 'type:', question.type, 'options:', question.options);
+
+  // Skip invisible questions
+  while (question && !isQuestionVisible(question, answers)) {
+    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    if (nextIdx > -1) {
+      currentQuestionIndex = nextIdx;
+      qId = questionOrder[currentQuestionIndex];
+      question = getQuestionById(qId);
     } else {
-      if (question.validation && question.validation.maxselected && currentAnswers.length >= question.validation.maxselected) {
-        currentAnswers.shift();
-      }
-      currentAnswers.push(value);
+      finishSurvey();
+      return;
     }
-    document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(elem => {
-      elem.classList.toggle('selected');
+  }
+
+  if (!question) {
+    finishSurvey();
+    return;
+  }
+
+  // Initialize answers for multiselect
+  if (question.type === "multiselect" && !answers[qId]) {
+    answers[qId] = [];
+    console.log(`✅ Initialized ${qId} as empty array`);
+  }
+
+  const surveyContent = document.getElementById('survey-content');
+  if (!surveyContent) return;
+
+  let optionsHtml = '';
+
+  // Handle standard option types
+  if ((question.type === 'multiselect' || question.type === 'single_choice') && Array.isArray(question.options)) {
+    question.options.forEach((option, index) => {
+      const isMultiSelect = question.type === 'multiselect';
+      const optionClass = isMultiSelect ? 'option multi-select' : 'option';
+      const selected = isMultiSelect
+        ? (answers[qId] && answers[qId].includes(option.value))
+        : answers[qId] === option.value;
+
+      optionsHtml += `
+        <div class="${optionClass} ${selected ? 'selected' : ''}"
+             data-value="${option.value}"
+             onclick="handleOptionClick('${qId}', '${option.value}', ${isMultiSelect})">
+          ${option.label}
+        </div>
+      `;
     });
+  }
+
+  // Handle compound questions
+  if (question.type === 'compound' && Array.isArray(question.items)) {
+    optionsHtml = '<div class="compound-question">';
+    question.items.forEach(item => {
+      optionsHtml += `
+        <div class="compound-item">
+          <label class="compound-label">${item.label}</label>
+          <div class="compound-options">
+      `;
+      if (Array.isArray(item.options)) {
+        item.options.forEach(opt => {
+          const selected = answers[item.id] === opt.value;
+          optionsHtml += `
+            <div class="option ${selected ? 'selected' : ''}"
+                 data-value="${opt.value}"
+                 onclick="handleCompoundOption('${item.id}', '${opt.value}')">
+              ${opt.label}
+            </div>
+          `;
+        });
+      }
+      optionsHtml += '</div></div>';
+    });
+    optionsHtml += '</div>';
+  }
+
+  // Handle text/number inputs
+  if (question.type === 'text' || question.type === 'number') {
+    const inputType = question.type === 'number' ? 'number' : 'text';
+    const currentVal = answers[qId] || '';
+    optionsHtml = `
+      <input type="${inputType}"
+             class="text-input"
+             value="${currentVal}"
+             placeholder="${question.placeholder || ''}"
+             oninput="handleTextInput('${qId}', this.value)" />
+    `;
+  }
+
+  surveyContent.innerHTML = `
+    <div class="question-container">
+      <h2 class="question-title">${question.question}</h2>
+      ${question.description ? `<p class="question-description">${question.description}</p>` : ''}
+      <div class="options-container">
+        ${optionsHtml}
+      </div>
+    </div>
+  `;
+
+  updateNavigation();
+}
+
+window.handleOptionClick = function(qId, value, isMultiSelect) {
+  if (isMultiSelect) {
+    if (!Array.isArray(answers[qId])) answers[qId] = [];
+    const idx = answers[qId].indexOf(value);
+    if (idx > -1) {
+      answers[qId].splice(idx, 1);
+    } else {
+      answers[qId].push(value);
+    }
   } else {
     answers[qId] = value;
-    document.querySelectorAll(`${optionSelector}`).forEach(option => {
-      option.classList.remove('selected');
-    });
-    document.querySelectorAll(`${optionSelector}[data-value="${value}"]`).forEach(option => {
-      option.classList.add('selected');
-    });
   }
-
-  console.log("answers state after click:", JSON.stringify(answers));
-  window.updateNavigation();
+  renderQuestion();
 };
 
-window.selectSlider = function(qId, value) {
-    answers[qId] = Number(value);
-    const sliderValueSpan = document.getElementById(`slider-value-${qId}`) || document.getElementById('slider-value');
-    if (sliderValueSpan) sliderValueSpan.textContent = value;
-    console.log("answers state after slider:", JSON.stringify(answers));
-    window.updateNavigation();
+window.handleCompoundOption = function(itemId, value) {
+  answers[itemId] = value;
+  renderQuestion();
 };
 
 // ==================== NAVIGATION ====================
+function updateNavigation() {
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (prevBtn) {
+    prevBtn.disabled = getPrevVisibleQuestionIndex(currentQuestionIndex) === -1;
+  }
+
+  const qId = questionOrder[currentQuestionIndex];
+  const question = getQuestionById(qId);
+  const isAnswered = answers[qId] !== undefined && answers[qId] !== '' &&
+    !(Array.isArray(answers[qId]) && answers[qId].length === 0);
+
+  if (nextBtn) {
+    const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+    if (nextIdx === -1) {
+      nextBtn.textContent = 'Finalizar';
+      nextBtn.disabled = !isAnswered;
+    } else {
+      nextBtn.textContent = 'Siguiente';
+      nextBtn.disabled = !isAnswered;
+    }
+  }
+}
+
+window.updateNavigation = updateNavigation;
+
+window.prevQuestion = function() {
+  const prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
+  if (prevIdx > -1) {
+    currentQuestionIndex = prevIdx;
+    renderQuestion();
+  }
+};
 
 window.nextQuestion = function() {
-  console.log('⏭️ Next clicked from:', questionOrder[currentQuestionIndex]);
-  let nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
+  const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
   if (nextIdx > -1) {
     currentQuestionIndex = nextIdx;
     renderQuestion();
@@ -539,466 +505,136 @@ window.nextQuestion = function() {
   }
 };
 
-window.previousQuestion = function() {
-  console.log('⏮️ Previous clicked from:', questionOrder[currentQuestionIndex]);
-  let prevIdx = getPrevVisibleQuestionIndex(currentQuestionIndex);
-  if (prevIdx > -1) {
-    currentQuestionIndex = prevIdx;
-    renderQuestion();
-  }
-};
-
-// ==================== RESULTS ====================
-
+// ==================== CALCULATE RESULTS ====================
 function calculateResults() {
-  const scores = {
-    tension: 0,
-    calor: 0,
-    frio: 0,
-    humedad: 0,
-    sequedad: 0
-  };
+  const scores = { calor: 0, frio: 0, humedo: 0, seco: 0, tension: 0, deficiencia: 0 };
 
-  surveyQuestions.forEach(question => {
-    const answer = answers[question.id];
-    if (!answer) return;
+  surveyQuestions.forEach(q => {
+    const qId = q.id;
+    const userAnswer = answers[qId];
 
-    const answerArray = Array.isArray(answer) ? answer : [answer];
-    if (question.options) {
-      answerArray.forEach(value => {
-        const option = question.options.find(opt => opt.value === value);
-        if (option && option.scores) {
-          Object.keys(option.scores).forEach(key => {
-            scores[key] += option.scores[key];
+    if (!userAnswer) return;
+
+    // Single choice
+    if (q.type === 'single_choice' && Array.isArray(q.options)) {
+      const selectedOption = q.options.find(opt => opt.value === userAnswer);
+      if (selectedOption && selectedOption.scores) {
+        Object.keys(selectedOption.scores).forEach(dim => {
+          scores[dim] = (scores[dim] || 0) + selectedOption.scores[dim];
+        });
+      }
+    }
+
+    // Multiselect
+    if (q.type === 'multiselect' && Array.isArray(userAnswer) && Array.isArray(q.options)) {
+      userAnswer.forEach(val => {
+        const selectedOption = q.options.find(opt => opt.value === val);
+        if (selectedOption && selectedOption.scores) {
+          Object.keys(selectedOption.scores).forEach(dim => {
+            scores[dim] = (scores[dim] || 0) + selectedOption.scores[dim];
           });
+        }
+      });
+    }
+
+    // Compound
+    if (q.type === 'compound' && Array.isArray(q.items)) {
+      q.items.forEach(item => {
+        const itemAnswer = answers[item.id];
+        if (itemAnswer && Array.isArray(item.options)) {
+          const selectedOption = item.options.find(opt => opt.value === itemAnswer);
+          if (selectedOption && selectedOption.scores) {
+            Object.keys(selectedOption.scores).forEach(dim => {
+              scores[dim] = (scores[dim] || 0) + selectedOption.scores[dim];
+            });
+          }
         }
       });
     }
   });
 
-  let maxScore = 0;
-  let dominantPattern = 'sequedad';
-  ['tension', 'calor', 'frio', 'humedad', 'sequedad'].forEach(pattern => {
-    if (scores[pattern] > maxScore) {
-      maxScore = scores[pattern];
-      dominantPattern = pattern;
-    }
-  });
+  console.log('Final scores:', scores);
 
-  return dominantPattern;
-}
+  // Determine pattern
+  const { calor, frio, humedo, seco, tension, deficiencia } = scores;
+  const tempAxis = calor - frio;
+  const humidityAxis = humedo - seco;
+  const toneAxis = tension - deficiencia;
 
-// ==================== DETAILED RESULTS RENDERING ====================
-
-// Helper to safely get nested property from template
-function getTemplateSection(section, patternKey) {
-  if (!resultsTemplate || !resultsTemplate[section]) return null;
-  return resultsTemplate[section][patternKey] || resultsTemplate[section]['by_pattern']?.[patternKey] || null;
-}
-
-function renderCareTips(patternKey) {
-  const tips = resultsTemplate?.care_tips?.by_pattern?.[patternKey] || [];
-  if (!tips.length) return '';
-  return `
-    <div class="recommendations">
-      <h4>Mini-hábitos por patrón</h4>
-      <ul class="recommendations-list">
-        ${tips.map(tip => `<li>${tip}</li>`).join('')}
-      </ul>
-    </div>
-  `;
-}
-
-function renderPhase(result) {
-  const phaseTemplate = resultsTemplate.phase;
-  const primaryPattern = result.label_top;
-
-  let html = `<h2>${phaseTemplate.title}</h2>`;
-  const genericPhases = phaseTemplate.generic;
-
-
-for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
-  let about = phaseInfo.about || "";
-  let doList = [...(phaseInfo.do || [])];
-  let foods = [...(phaseInfo.foods || [])];
-  let avoid = [...(phaseInfo.avoid || [])];
-  let movement = [...(phaseInfo.movement || [])];
-  let vibe = phaseInfo.vibe || "";
-
-  // Apply pattern-specific overrides
-  const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
-  if (overrides) {
-    if (overrides.about_add) about += " " + overrides.about_add;
-    if (overrides.do_add) doList.push(...overrides.do_add);
-    if (overrides.foods_add) foods.push(...overrides.foods_add);
-    if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
-    if (overrides.movement_add) movement.push(...overrides.movement_add);
-    if (overrides.vibe_add) vibe += " " + overrides.vibe_add;
+  if (Math.abs(tempAxis) > Math.abs(humidityAxis) && Math.abs(tempAxis) > Math.abs(toneAxis)) {
+    return tempAxis > 0 ? 'calor' : 'frio';
+  } else if (Math.abs(humidityAxis) > Math.abs(toneAxis)) {
+    return humidityAxis > 0 ? 'humedo' : 'seco';
+  } else {
+    return toneAxis > 0 ? 'tension' : 'deficiencia';
   }
+}
 
-  html += `
-    <div class="phase-block">
-      <h5>${phaseInfo.label}</h5>
-      <p>${about}</p>
+// ==================== SHOW RESULTS ====================
+// ✅ FIXED: renderPhase now accepts patternKey parameter
+function renderPhase(patternKey) {
+  const result = resultsTemplate;
+  const card = document.getElementById("results-card");
+  if (!card || !result) return;
 
-      ${foods.length ? `<p>🍲 <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
-      ${doList.length ? `<p>✅ <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
-      ${avoid.length ? `<p>🚫 <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
-      ${movement.length ? `<p>🏃‍♀️ <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
-      ${vibe ? `<p>💫 <strong>Vibe:</strong> ${vibe}</p>` : ""}
+  const phases = result.phase?.generic || {};
+  if (!Object.keys(phases).length) return;
+
+  const phaseSection = document.createElement("div");
+  phaseSection.className = "tips-phase-section";
+  phaseSection.innerHTML = `
+    <h4 class="tips-main-title">Tips de cuidado por fase del ciclo</h4>
+    <div class="phases-container">
+      ${Object.values(phases)
+        .map(
+          (p) => `
+          <div class="phase-block">
+            <h5>${p.label}</h5>
+            <p>${p.about}</p>
+            <ul>${p.do
+              .slice(0, 3)
+              .map((d) => `<li>${d}</li>`)
+              .join("")}</ul>
+          </div>`
+        )
+        .join("")}
     </div>`;
+  card.appendChild(phaseSection);
 }
 
-  document.getElementById("phase-section").innerHTML = html;
-
-return html;
-}
-
-// --- Helpers for rendering the enhanced Results Page ---
-
-function renderElementHeader(patternKey) {
-  const elementLabel = resultsTemplate?.element?.by_pattern?.[patternKey]?.[0] || patternKey;
-  const summary = resultsTemplate?.summary?.by_pattern?.[patternKey]?.[0] || '';
-  return `
-    <div class="result-head">
-      <div class="element-badge">${elementLabel}</div>
-      <h3 class="result-summary">${summary}</h3>
+function createEnergeticTerrainSection(patternType) {
+  const section = document.createElement("div");
+  section.id = "energetic-terrain";
+  section.className = "energetic-terrain";
+  section.innerHTML = `
+    <h4>Estado energético de tu ciclo</h4>
+    <div class="terrain-visual">
+      <div class="terrain-axis terrain-vertical"></div>
+      <div class="terrain-axis terrain-horizontal"></div>
+      <div class="terrain-dot" id="terrain-dot"></div>
     </div>
   `;
+  return section;
 }
 
-function renderElementExplainer(patternKey) {
-  const expl = resultsTemplate?.element_explainer?.by_pattern?.[patternKey]?.[0] || '';
-  return expl ? `<div class="pattern-explainer">${expl}</div>` : '';
-}
+function positionEnergeticDot(patternType) {
+  const dot = document.getElementById('terrain-dot');
+  if (!dot) return;
 
-function renderPatternCard(patternKey) {
-  const card = resultsTemplate?.pattern_card?.by_pattern?.[patternKey] || [];
-  if (!card.length) return '';
-  const bullets = card.map(p => `<li>${p}</li>`).join('');
-  return `
-    <div class="pattern-card">
-      <h4>Tu patrón menstrual se caracteriza por:</h4>
-      <ul>${bullets}</ul>
-    </div>
-  `;
-}
-
-function renderWhyCluster(patternKey) {
-  const why = resultsTemplate?.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
-  return why
-    ? `<div class="why-cluster"><h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p></div>`
-    : '';
-}
-
-function renderCareTips(patternKey) {
-  const tips = resultsTemplate?.care_tips?.by_pattern?.[patternKey] || [];
-  if (!tips.length) return '';
-  const items = tips.map(t => `<li>${t}</li>`).join('');
-  return `
-    <section class="care-tips">
-      <h4>🌸 Mini-hábitos para tu patrón</h4>
-      <ul>${items}</ul>
-    </section>
-  `;
-}
-
-function renderRitmoCicloBlock(stateKey = 'regular') {
-  const blk = resultsTemplate?.ritmo_ciclo_block?.by_state?.[stateKey];
-  if (!blk) return '';
-  return `
-    <div class="ritmo-block">
-      <h4>Ritmo del ciclo</h4>
-      <p>${blk.que_significa}</p>
-      <p>${blk.por_que_importa}</p>
-      ${blk.tips_suaves?.length ? `<ul>${blk.tips_suaves.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
-    </div>
-  `;
-}
-
-function renderUniqueSystem() {
-  const us = resultsTemplate?.unique_system;
-  if (!us?.differentiators?.length) return '';
-  return `
-    <section class="unique-system">
-      <h4>${us.title}</h4>
-      <div class="unique-grid">
-        ${us.differentiators
-          .map(d => `<div class="unique-item"><h5>${d.title}</h5><p>${d.description}</p></div>`)
-          .join('')}
-      </div>
-    </section>
-  `;
-}
-
-function renderHowHerbsWork(patternKey) {
-  const sec = resultsTemplate?.how_herbs_work?.by_pattern?.[patternKey];
-  if (!sec) return '';
-  const mech = (sec.mechanism || []).map(m => `<li>${m}</li>`).join('');
-  const logic = sec.combo_logic ? `<p class="herb-logic">${sec.combo_logic}</p>` : '';
-  return `
-    <section class="herbs-section">
-      <h4>🌿 ¿Qué incluiría tu medicina personalizada?</h4>
-      <ul>${mech}</ul>
-      ${logic}
-    </section>
-  `;
-}
-
-function renderColitaIntro() {
-  return `
-    <section class="cdr-intro">
-      <h4>colita de rana</h4>
-      <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
-    </section>
-  `;
-  
-}
-
-// ==================== PDF GENERATION + EMAIL CONTROLS ====================
-
-/** Extract the results card as HTML */
-function extractResultsHTML() {
-  const resultsCard = document.getElementById('results-card');
-  if (!resultsCard) throw new Error('Results card not found');
-  const clone = resultsCard.cloneNode(true);
-  const buttons = clone.querySelectorAll('button');
-  buttons.forEach(btn => btn.remove());
-  const wrapper = document.createElement('div');
-  wrapper.className = 'pdf-results-wrapper';
-  wrapper.appendChild(clone);
-  return wrapper.outerHTML;
-}
-
-/** Extract all CSS rules referenced for correct styling in PDF */
-async function extractCSSContent() {
-  let allCSS = '';
-  const styleElements = document.querySelectorAll('style');
-  styleElements.forEach(style => { allCSS += style.textContent + '\n'; });
-  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
-  for (const link of linkElements) {
-    try {
-      const response = await fetch(link.href);
-      const css = await response.text();
-      allCSS += css + '\n';
-    } catch (e) {
-      console.warn(`Failed to fetch CSS from ${link.href}`, e);
-    }
-  }
-  return allCSS;
-}
-
-/** Generate and send/download PDF */
-async function generateAndSendPDF(email = null) {
-  try {
-    const resultsHTML = extractResultsHTML();
-    const cssContent = await extractCSSContent();
-    const payload = { resultsHTML, cssContent, email, sessionId };
-    const response = await fetch('/api/generate-pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) throw new Error('Failed to generate PDF');
-    const blob = await response.blob();
-    if (!email) {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `resultados-colita-de-rana-${sessionId}.pdf`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }
-    return true;
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw error;
-  }
-}
-
-/** Add PDF & email controls to results page */
-function addPDFControls() {
-  const resultsCard = document.getElementById('results-card');
-  if (!resultsCard || document.getElementById('pdf-controls')) return;
-  const controlsContainer = document.createElement('div');
-  controlsContainer.id = 'pdf-controls';
-  controlsContainer.className = 'pdf-controls';
-  controlsContainer.style.cssText = 'margin-top: 30px; padding: 20px; text-align: center;';
-  // Download
-  const downloadBtn = document.createElement('button');
-  downloadBtn.className = 'btn-primary';
-  downloadBtn.innerHTML = '📄 Descargar resultados en PDF';
-  downloadBtn.style.cssText = 'margin: 10px;';
-  downloadBtn.addEventListener('click', async () => {
-    try {
-      downloadBtn.disabled = true;
-      downloadBtn.textContent = 'Generando PDF...';
-      await generateAndSendPDF(null);
-      downloadBtn.textContent = '✅ PDF descargado';
-      setTimeout(() => { downloadBtn.disabled = false; downloadBtn.innerHTML = '📄 Descargar resultados en PDF'; }, 3000);
-    } catch { alert('❌ Error al generar el PDF'); downloadBtn.disabled = false; downloadBtn.innerHTML = '📄 Descargar resultados en PDF'; }
-  });
-  // Email
-  const emailSection = document.createElement('div');
-  emailSection.style.cssText = 'margin-top: 20px;';
-  emailSection.innerHTML = `
-    <p style="margin-bottom: 10px; color: var(--color-text-secondary);">O recibe tus resultados por correo:</p>
-    <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
-      <input type="email" id="pdf-email-input" placeholder="tu@correo.com" class="form-control" style="max-width: 300px; flex: 1; min-width: 200px;" />
-      <button id="email-pdf-btn" class="btn-secondary">✉️ Enviar por email</button>
-    </div>`;
-  controlsContainer.appendChild(downloadBtn); controlsContainer.appendChild(emailSection); resultsCard.appendChild(controlsContainer);
-  // Email button logic
-  const emailBtn = document.getElementById('email-pdf-btn');
-  const emailInput = document.getElementById('pdf-email-input');
-  emailBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      alert('Por favor ingresa un correo electrónico válido.');
-      return;
-    }
-    try {
-      emailBtn.disabled = true; emailBtn.textContent = 'Enviando...';
-      await generateAndSendPDF(email);
-      emailBtn.textContent = '✅ Enviado'; emailInput.value = '';
-      alert(`✅ Tu reporte ha sido enviado a ${email}`);
-      setTimeout(() => { emailBtn.disabled = false; emailBtn.textContent = '✉️ Enviar por email'; }, 3000);
-    } catch {
-      alert('❌ Hubo un error al enviar el correo.');
-      emailBtn.disabled = false; emailBtn.textContent = '✉️ Enviar por email';
-    }
-  });
-}
-// Call `addPDFControls()` in your `showResults` logic after rendering
-
-
-
-function pickRitmoStateFromAnswers() {
-  const p1 = answers.P1_regularity;
-  if (p1 === "Irregular (varía >7 días entre ciclos)") return "irregular";
-  if (p1 === "No tengo sangrado actualmente") return "no_sangrando";
-  return "regular";
-}
-
-// --- Radar Chart (6 petals, relative scaling) ---
-let radarInstance = null;
-
-// Build the 6-axis raw score object your quiz currently yields.
-// We already compute: tension, calor, frio, humedad, sequedad.
-// We derive relajacion as the complement of tensión relative to the max axis.
-function getRawAxisScores() {
-  const base = {
-    Calor: 0,
-    Frío: 0,
-    Humedad: 0,
-    Sequedad: 0,
-    Tensión: 0,
-    Relajación: 0
+  const positions = {
+    calor: { x: 50, y: 20 },
+    frio: { x: 50, y: 80 },
+    humedo: { x: 80, y: 50 },
+    seco: { x: 20, y: 50 },
+    tension: { x: 65, y: 35 },
+    deficiencia: { x: 35, y: 65 }
   };
 
-  // Recompute the same way calculateResults() does, but keep the raw values:
-  const raw = { tension: 0, calor: 0, frio: 0, humedad: 0, sequedad: 0 };
-
-  surveyQuestions.forEach(q => {
-    const ans = answers[q.id];
-    if (!ans || !q.options) return;
-    const arr = Array.isArray(ans) ? ans : [ans];
-    arr.forEach(v => {
-      const opt = q.options.find(o => o.value === v);
-      if (opt?.scores) {
-        Object.keys(opt.scores).forEach(k => {
-          if (k in raw) raw[k] += opt.scores[k];
-        });
-      }
-    });
-  });
-
-  // Fill labeled object
-  base.Calor = raw.calor;
-  base.Frío = raw.frio;
-  base.Humedad = raw.humedad;
-  base.Sequedad = raw.sequedad;
-  base.Tensión = raw.tension;
-
-  // Derive Relajación as the complement of Tensión vs. the max of the other axes
-  const maxOther = Math.max(base.Calor, base.Frío, base.Humedad, base.Sequedad, base.Tensión, 1);
-  base.Relajación = Math.max(0, maxOther - base.Tensión);
-
-  return base;
+  const pos = positions[patternType] || { x: 50, y: 50 };
+  dot.style.left = pos.x + '%';
+  dot.style.top = pos.y + '%';
 }
 
-// Normalize to the current max (Option A)
-function normalizeRelative(obj) {
-  const vals = Object.values(obj);
-  const max = Math.max(...vals, 1); // avoid divide-by-zero
-  const out = {};
-  Object.keys(obj).forEach(k => (out[k] = obj[k] / max));
-  return out;
-}
-
-
-// === 3D ENERGY MAP (Mapa energético) ===
-function renderEnergyMap3D() {
-  const container = document.getElementById('energyMap3D');
-  if (!container) return;
-
-  const data = [{
-    type: 'scatter3d',
-    mode: 'markers+text',
-    textposition: 'top center',
-    textfont: { size: 12, color: '#eee' },
-    marker: { size: 7, color: 'rgb(102,200,150)', line: { width: 1, color: '#fff' } },
-    x: [1, -1, 0.8, -0.9, -0.6, 0.6],  // Moisture (Moist↔Dry)
-    y: [1, -1, 0.4, -0.4, 0.9, 0.2],  // Tone (Tense↔Relaxed)
-    z: [1, -1, 0.6, -0.8, 0.3, -0.2], // Temperature (Hot↔Cold)
-    text: [
-      'Heat Excitation',
-      'Cold Depression',
-      'Damp Stagnation',
-      'Dry Atrophy',
-      'Wind Tension',
-      'Damp Relaxation'
-    ]
-  }];
-
-  const layout = {
-    scene: {
-      xaxis: {
-        title: 'Moisture (Moist ↔ Dry)',
-        titlefont: { color: '#55c4b5' },
-        tickfont: { color: '#aaa' },
-        color: '#55c4b5',
-        backgroundcolor: 'rgba(0,0,0,0)',
-        showspikes: false
-      },
-      yaxis: {
-        title: 'Tone (Tense ↔ Relaxed)',
-        titlefont: { color: '#3f8bd4' },
-        tickfont: { color: '#aaa' },
-        color: '#3f8bd4',
-        showspikes: false
-      },
-      zaxis: {
-        title: 'Temperature (Hot ↔ Cold)',
-        titlefont: { color: '#e88030' },
-        tickfont: { color: '#aaa' },
-        color: '#e88030',
-        showspikes: false
-      },
-      bgcolor: 'rgba(0,0,0,0)',
-      camera: { eye: { x: 1.5, y: 1.5, z: 1.2 } },
-      aspectratio: { x: 1, y: 1, z: 1 }
-    },
-    margin: { l: 0, r: 0, b: 0, t: 20 },
-    paper_bgcolor: 'transparent',
-    plot_bgcolor: 'transparent'
-  };
-
-  Plotly.newPlot(container, data, layout, { displayModeBar: false });
-}
-
-
-// === MAIN RESULTS RENDERING ===
 function showResults(patternType) {
   if (!resultsTemplate) {
     console.error("❌ resultsTemplate is null — failed to load results_template.json");
@@ -1006,10 +642,12 @@ function showResults(patternType) {
     return;
   }
 
+  showPage('results-page');
+
   const result = resultsTemplate;
   const card = document.getElementById("results-card");
   if (!card) return;
-  card.innerHTML = ""; // clear previous results
+  card.innerHTML = "";
 
   // --- Element Header ---
   const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
@@ -1044,6 +682,11 @@ function showResults(patternType) {
     card.appendChild(patternSection);
   }
 
+  // --- Energetic Terrain Section ---
+  const terrainSection = createEnergeticTerrainSection(patternType);
+  card.appendChild(terrainSection);
+  setTimeout(() => positionEnergeticDot(patternType), 120);
+
   // --- Why Cluster ---
   const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
   if (why) {
@@ -1065,19 +708,8 @@ function showResults(patternType) {
     card.appendChild(habitsSection);
   }
 
-
-// --- Phase Section ---
-const phaseHTML = renderPhase(result);
-if (phaseHTML) {
-  const phaseContainer = document.getElementById('phase-section');
-  if (phaseContainer) {
-    phaseContainer.innerHTML = phaseHTML;
-  } else {
-    const fallback = document.createElement('div');
-    fallback.innerHTML = phaseHTML;
-    card.appendChild(fallback);
-  }
-}
+  // ✅ FIXED: Pass patternType to renderPhase
+  renderPhase(patternType);
 
   // --- Colita de Rana Club Section ---
   const cdrContainer = document.createElement("section");
@@ -1124,7 +756,6 @@ if (phaseHTML) {
     cdrContainer.appendChild(uniqueGrid);
   }
 
-  // Append full subsection
   card.appendChild(cdrContainer);
 
   // Disclaimer
@@ -1132,120 +763,171 @@ if (phaseHTML) {
   disclaimer.className = "results-disclaimer";
   disclaimer.textContent =
     result.meta?.disclaimer ||
-    "Esta información es educativa y no sustituye atención médica.";
+    "Esta información es educativa y no sustituye consejo médico profesional.";
   card.appendChild(disclaimer);
 
-  // render radar after content loaded
-setTimeout(() => {
-  renderEnergyMap3D();
-}, 100);
-
-  showPage("results-page");
+  // ✅ ADDED: PDF controls
+  addPDFControls();
 }
 
+// ==================== PDF + EMAIL FUNCTIONALITY ====================
+function extractResultsHTML() {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard) throw new Error('Results card not found');
+  
+  const clone = resultsCard.cloneNode(true);
+  const buttons = clone.querySelectorAll('button, #pdf-controls');
+  buttons.forEach(btn => btn.remove());
+  
+  const wrapper = document.createElement('div');
+  wrapper.className = 'pdf-results-wrapper';
+  wrapper.appendChild(clone);
+  
+  return wrapper.outerHTML;
+}
 
-window.showResults = showResults;
-
-
-
-// === DEBUG TOOL: preview results page manually ===
-// Muestra resultados de cualquier patrón sin pasar por el quiz
-// Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
-
-window.debugShow = function(patternKey = 'calor') {
-  // Fake answers para secciones dependientes
-  window.answers = {
-    P1: "Regular (cada 26–32 días)",
-    P2: "Sangrado normal",
-    P3: "No hay síntomas graves"
-  };
-
-  // Muestra resultados directamente
-  console.log(`🧪 Rendering debug results for pattern: ${patternKey}`);
-  showResults(patternKey);
-  document.getElementById('landing-page').classList.remove('active');
-  document.getElementById('survey-page').classList.remove('active');
-  document.getElementById('results-page').classList.add('active');
-};
-
-// Opcional: carga automática al abrir para revisar diseño
-// window.addEventListener('load', () => debugShow('humedad'));
-
-
-// ==================== EMAIL RESULTS FORM (REMOVED/DEPRECATED) ====================
-// (No longer active; form is hidden by showResults)
-
-// ==================== PROGRESS BAR ====================
-
-function updateProgress() {
-  let visibleCount = 0;
-  for (let i = 0; i <= currentQuestionIndex; i++) {
-    const q = getQuestionById(questionOrder[i]);
-    if (isQuestionVisible(q, answers)) visibleCount++;
+async function extractCSSContent() {
+  let allCSS = '';
+  
+  const styleElements = document.querySelectorAll('style');
+  styleElements.forEach(style => {
+    allCSS += style.textContent + '\n';
+  });
+  
+  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
+  for (const link of linkElements) {
+    try {
+      const response = await fetch(link.href);
+      const css = await response.text();
+      allCSS += css + '\n';
+    } catch (e) {
+      console.warn(`Failed to fetch CSS from ${link.href}`, e);
+    }
   }
-  const totalVisible = questionOrder.filter(qId => isQuestionVisible(getQuestionById(qId), answers)).length;
-  const progress = ((visibleCount) / totalVisible) * 100;
-  const progressBar = document.getElementById('progress-bar');
-  const progressText = document.getElementById('progress-text');
-  if (progressBar) progressBar.style.width = `${progress}%`;
-  if (progressText) progressText.textContent = `Pregunta ${visibleCount} de ${totalVisible}`;
+  
+  return allCSS;
 }
 
-// ==================== NAVIGATION LOGIC (CRITICAL) ====================
+async function generateAndSendPDF(email = null) {
+  try {
+    const resultsHTML = extractResultsHTML();
+    const cssContent = await extractCSSContent();
+    
+    const payload = {
+      resultsHTML,
+      cssContent,
+      email,
+      sessionId,
+      patternType: currentPatternType
+    };
 
-window.updateNavigation = function() {
-    const qId = questionOrder[currentQuestionIndex];
-    const question = getQuestionById(qId);
-    let hasAnswer = false;
+    const response = await fetch('/api/generate-pdf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-    if (!question) return;
+    if (!response.ok) throw new Error('Failed to generate PDF');
 
-    if (question.type === 'multiselect') {
-        const selected = Array.isArray(answers[qId]) ? answers[qId] : [];
-        const minSelected = question.validation?.minselected ?? 1;
-        hasAnswer = minSelected === 0 || selected.length >= minSelected;
-    } else if (question.type === 'single_choice' || question.type === 'singlechoice') {
-        hasAnswer = answers[qId] !== undefined && answers[qId] !== null && answers[qId] !== '';
-    } else if (question.type === 'slider') {
-        hasAnswer = typeof answers[qId] === 'number';
-    } else if (question.type === 'compound' && Array.isArray(question.items)) {
-        hasAnswer = question.items.every(item => {
-            if (item.type === 'multiselect') {
-                const selected = Array.isArray(answers[item.id]) ? answers[item.id] : [];
-                const minSelected = item.validation?.minselected ?? 1;
-                return minSelected === 0 || selected.length >= minSelected;
-            } else if (item.type === 'single_choice' || item.type === 'singlechoice') {
-                return answers[item.id] !== undefined && answers[item.id] !== null && answers[item.id] !== '';
-            } else if (item.type === 'slider') {
-                return typeof answers[item.id] === 'number';
-            } else {
-                return true; // If unknown, skip validation
-            }
-        });
-    } else if (question.type === 'grouped' && Array.isArray(question.questions)) {
-        hasAnswer = question.questions.every(group => {
-            if (group.type === 'multiselect') {
-                const selected = Array.isArray(answers[group.id]) ? answers[group.id] : [];
-                const minSelected = group.validation?.minselected ?? 1;
-                return minSelected === 0 || selected.length >= minSelected;
-            } else if (group.type === 'single_choice' || group.type === 'singlechoice') {
-                return answers[group.id] !== undefined && answers[group.id] !== null && answers[group.id] !== '';
-            } else if (group.type === 'slider') {
-                return typeof answers[group.id] === 'number';
-            } else {
-                return true;
-            }
-        });
-    } else {
-        hasAnswer = !!answers[qId];
+    const blob = await response.blob();
+    
+    if (!email) {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resultados-colita-de-rana-${sessionId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     }
 
-    const nextBtn = document.getElementById('next-btn');
-    if (nextBtn) {
-        nextBtn.disabled = !hasAnswer;
-    }
-    const backBtn = document.getElementById('back-btn');
-    if (backBtn) {
-        backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
-    }
+    return true;
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    throw error;
+  }
 }
+
+function addPDFControls() {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard || document.getElementById('pdf-controls')) return;
+
+  const controlsContainer = document.createElement('div');
+  controlsContainer.id = 'pdf-controls';
+  controlsContainer.className = 'pdf-controls';
+  controlsContainer.style.cssText = 'margin-top: 30px; padding: 20px; text-align: center;';
+
+  // Download button
+  const downloadBtn = document.createElement('button');
+  downloadBtn.className = 'btn-primary';
+  downloadBtn.innerHTML = '📄 Descargar resultados en PDF';
+  downloadBtn.style.cssText = 'margin: 10px;';
+  
+  downloadBtn.addEventListener('click', async () => {
+    try {
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Generando PDF...';
+      await generateAndSendPDF(null);
+      downloadBtn.textContent = '✅ PDF descargado';
+      setTimeout(() => {
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = '📄 Descargar resultados en PDF';
+      }, 3000);
+    } catch {
+      alert('❌ Error al generar el PDF');
+      downloadBtn.disabled = false;
+      downloadBtn.innerHTML = '📄 Descargar resultados en PDF';
+    }
+  });
+
+  // Email section
+  const emailSection = document.createElement('div');
+  emailSection.style.cssText = 'margin-top: 20px;';
+  emailSection.innerHTML = `
+    <p style="margin-bottom: 10px; color: var(--color-text-secondary);">
+      O recibe tus resultados por correo:
+    </p>
+    <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <input type="email" id="pdf-email-input" placeholder="tu@correo.com" class="form-control"
+        style="max-width: 300px; flex: 1; min-width: 200px;" />
+      <button id="email-pdf-btn" class="btn-secondary">✉️ Enviar por email</button>
+    </div>
+  `;
+
+  controlsContainer.appendChild(downloadBtn);
+  controlsContainer.appendChild(emailSection);
+  resultsCard.appendChild(controlsContainer);
+
+  // Email button logic
+  const emailBtn = document.getElementById('email-pdf-btn');
+  const emailInput = document.getElementById('pdf-email-input');
+
+  emailBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+    
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Por favor ingresa un correo electrónico válido.');
+      return;
+    }
+
+    try {
+      emailBtn.disabled = true;
+      emailBtn.textContent = 'Enviando...';
+      await generateAndSendPDF(email);
+      emailBtn.textContent = '✅ Enviado';
+      emailInput.value = '';
+      alert(`✅ Tu reporte ha sido enviado a ${email}`);
+      setTimeout(() => {
+        emailBtn.disabled = false;
+        emailBtn.textContent = '✉️ Enviar por email';
+      }, 3000);
+    } catch {
+      alert('❌ Hubo un error al enviar el correo.');
+      emailBtn.disabled = false;
+      emailBtn.textContent = '✉️ Enviar por email';
+    }
+  });
+}
+
+console.log('✅ App.js fully loaded with PDF support');
