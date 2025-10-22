@@ -609,49 +609,49 @@ function renderCareTips(patternKey) {
   `;
 }
 
-function renderPhase(patternType) {
-  const phaseTemplate = resultsTemplate.phase;
-  const primaryPattern = result.label_top;
+function renderPhase(patternKey) {
+  if (!resultsTemplate) return ''; // Safety check
+  
+  const result = resultsTemplate;
+  const phaseTemplate = result.phase;
+  const primaryPattern = patternKey;
+
+  if (!phaseTemplate || !phaseTemplate.generic) return '';
 
   let html = `<h2>${phaseTemplate.title}</h2>`;
   const genericPhases = phaseTemplate.generic;
 
+  for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
+    let about = phaseInfo.about || "";
+    let doList = [...(phaseInfo.do || [])];
+    let foods = [...(phaseInfo.foods || [])];
+    let avoid = [...(phaseInfo.avoid || [])];
+    let movement = [...(phaseInfo.movement || [])];
+    let vibe = phaseInfo.vibe || "";
 
-for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
-  let about = phaseInfo.about || "";
-  let doList = [...(phaseInfo.do || [])];
-  let foods = [...(phaseInfo.foods || [])];
-  let avoid = [...(phaseInfo.avoid || [])];
-  let movement = [...(phaseInfo.movement || [])];
-  let vibe = phaseInfo.vibe || "";
+    const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
+    if (overrides) {
+      if (overrides.about_add) about += " " + overrides.about_add;
+      if (overrides.do_add) doList.push(...overrides.do_add);
+      if (overrides.foods_add) foods.push(...overrides.foods_add);
+      if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
+      if (overrides.movement_add) movement.push(...overrides.movement_add);
+      if (overrides.vibe_add) vibe += " " + overrides.vibe_add;
+    }
 
-  // Apply pattern-specific overrides
-  const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
-  if (overrides) {
-    if (overrides.about_add) about += " " + overrides.about_add;
-    if (overrides.do_add) doList.push(...overrides.do_add);
-    if (overrides.foods_add) foods.push(...overrides.foods_add);
-    if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
-    if (overrides.movement_add) movement.push(...overrides.movement_add);
-    if (overrides.vibe_add) vibe += " " + overrides.vibe_add;
+    html += `
+      <div class="phase-block">
+        <h5>${phaseInfo.label}</h5>
+        <p>${about}</p>
+        ${foods.length ? `<p>🍲 <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
+        ${doList.length ? `<p>✅ <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
+        ${avoid.length ? `<p>🚫 <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
+        ${movement.length ? `<p>🏃‍♀️ <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
+        ${vibe ? `<p>💫 <strong>Vibe:</strong> ${vibe}</p>` : ""}
+      </div>`;
   }
 
-  html += `
-    <div class="phase-block">
-      <h5>${phaseInfo.label}</h5>
-      <p>${about}</p>
-
-      ${foods.length ? `<p>🍲 <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
-      ${doList.length ? `<p>✅ <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
-      ${avoid.length ? `<p>🚫 <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
-      ${movement.length ? `<p>🏃‍♀️ <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
-      ${vibe ? `<p>💫 <strong>Vibe:</strong> ${vibe}</p>` : ""}
-    </div>`;
-}
-
-  document.getElementById("phase-section").innerHTML = html;
-
-return html;
+  return html;
 }
 
 // --- Helpers for rendering the enhanced Results Page ---
