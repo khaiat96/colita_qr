@@ -1,3 +1,5 @@
+//Version 6.0- Everything works (but email pdf not sending)
+
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
@@ -10,11 +12,47 @@ let surveyQuestions = [];
 let answers = {};
 let currentQuestionIndex = 0;
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-let isProMode = false;
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 2.0 - CACHE BUSTED');
+console.log('🚀 APP.JS LOADED - VERSION 5.1 - CACHE BUSTED');
+
+function scrollToWaitlist() {
+  const waitlistSection = document.getElementById('waitlist-section');
+  if (waitlistSection) {
+    waitlistSection.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+window.handleTextInput = function(qId, value) {
+    answers[qId] = value;
+    window.updateNavigation();
+};
+
+async function sendResponsesToGoogleSheet() {
+  try {
+    const payload = {
+      session_id: sessionId,
+      timestamp: new Date().toISOString(),
+      answers: answers
+    };
+
+    const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+    }
+
+    console.log('✅ Survey responses sent to Google Sheets via Make webhook.');
+  } catch (err) {
+    console.error('❌ Failed to send survey data to Google Sheets:', err);
+  }
+}
+
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -27,22 +65,17 @@ window.scrollToWaitlist = function() {
 
 // ==================== PAGE NAVIGATION ====================
 function showPage(pageId) {
-  // Hide all pages
   const pages = document.querySelectorAll('.page');
   pages.forEach(page => {
     page.classList.remove('active');
     page.style.display = 'none';
   });
 
-  // Show the requested page
   const targetPage = document.getElementById(pageId);
   if (targetPage) {
     targetPage.classList.add('active');
     targetPage.style.display = 'block';
-
-    // Scroll to top of page
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
     console.log(`✓ Switched to page: ${pageId}`);
   } else {
     console.error(`✗ Page not found: ${pageId}`);
@@ -60,91 +93,72 @@ window.startSurvey = function() {
 
 document.addEventListener('DOMContentLoaded', async function() {
   showPage('landing-page');
-  isProMode = false;
 
   const quizBtn = document.getElementById('take-quiz-btn');
-  if (quizBtn) quizBtn.disabled = true; // Disabled until loaded
+  if (quizBtn) quizBtn.disabled = true;
 
   try {
-    // Load survey questions
     const surveyResp = await fetch('survey_questions.json');
     if (!surveyResp.ok) throw new Error(`HTTP ${surveyResp.status}: ${surveyResp.statusText}`);
     const surveyData = await surveyResp.json();
     surveyQuestions = surveyData.questions;
     questionOrder = surveyData.question_order;
 
-    // Load decision mapping
     const mappingResp = await fetch('decision_mapping.json');
     if (!mappingResp.ok) throw new Error(`HTTP ${mappingResp.status}: ${mappingResp.statusText}`);
     const decisionMapping = await mappingResp.json();
 
-// --- MERGE MAPPING SCORES INTO SURVEY QUESTIONS ---
+    try {
+      const resultsResp = await fetch('results_template.json');
+      if (!resultsResp.ok) throw new Error(`HTTP ${resultsResp.status}: ${resultsResp.statusText}`);
+      resultsTemplate = await resultsResp.json();
+      console.log('✅ Loaded results_template.json');
+    } catch (err) {
+      resultsTemplate = null;
+      console.error('❌ Failed to load results_template.json:', err);
+    }
+
     surveyQuestions.forEach(q => {
-      // 1. Top-level options
-      if (Array.isArray(q.options)) {
-        const mappingList = decisionMapping.scoring[q.id]; // ← FIXED: Added .scoring
-        if (mappingList) {
-          q.options.forEach(opt => {
-            const mapping = mappingList.find(m => m.value === opt.value);
-            if (mapping && mapping.scores) {
-              opt.scores = mapping.scores;
-            }
-          });
-        }
-      }
-
-      // 2. Compound questions (items)
-      if (q.type === "compound" && Array.isArray(q.items)) {
-        q.items.forEach(item => {
-          if (Array.isArray(item.options)) {
-            const mappingList = decisionMapping.scoring[item.id]; // ← FIXED: Added .scoring
-            if (mappingList) {
-              item.options.forEach(opt => {
-                const mapping = mappingList.find(m => m.value === opt.value);
-                if (mapping && mapping.scores) {
-                  opt.scores = mapping.scores;
-                }
-              });
-            }
-          }
-        });
-      }
-
-      // 3. Grouped questions (questions)
-      if (q.type === "grouped" && Array.isArray(q.questions)) {
-        q.questions.forEach(group => {
-          if (Array.isArray(group.options)) {
-            const mappingList = decisionMapping.scoring[group.id]; // ← FIXED: Added .scoring
-            if (mappingList) {
-              group.options.forEach(opt => {
-                const mapping = mappingList.find(m => m.value === opt.value);
-                if (mapping && mapping.scores) {
-                  opt.scores = mapping.scores;
-                }
-              });
-            }
-          }
-        });
+      if (q.type === 'singlechoice' || q.type === 'single') {
+        q.type = 'single_choice';
       }
     });
 
-    // Normalize type values for singlechoice
     surveyQuestions.forEach(q => {
-      if (q.type === 'singlechoice') {
-        q.type = 'single_choice';
+      if (Array.isArray(q.options)) {
+        const mappingList = decisionMapping?.decision_map?.[q.id];
+        if (mappingList) {
+          q.options.forEach(opt => {
+            const mapping = mappingList[opt.value];
+            if (mapping && mapping.scores) opt.scores = mapping.scores;
+          });
+        }
+      }
+      if (q.type === "compound" && Array.isArray(q.items)) {
+        q.items.forEach(item => {
+          if (Array.isArray(item.options)) {
+            const mappingList = decisionMapping?.decision_map?.[item.id];
+            if (mappingList) {
+              item.options.forEach(opt => {
+                const mapping = mappingList[opt.value];
+                if (mapping && mapping.scores) opt.scores = mapping.scores;
+              });
+            }
+          }
+        });
       }
     });
 
     window.surveyLoaded = true;
     console.log('✅ Loaded', surveyQuestions.length, 'questions');
-
-    if (quizBtn) quizBtn.disabled = true;
+    if (quizBtn) quizBtn.disabled = false;
   } catch (err) {
     console.error('❌ Error:', err);
     alert(`No se pudieron cargar las preguntas del quiz: ${err.message}`);
     if (quizBtn) quizBtn.disabled = true;
   }
 });
+
 
 // ==================== WAITLIST FORM HANDLER ====================
 
@@ -169,8 +183,27 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+  const resultsWaitlistForm = document.getElementById('results-waitlist-form');
+  if (resultsWaitlistForm) {
+    resultsWaitlistForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('results-waitlist-name').value;
+      const email = document.getElementById('results-waitlist-email').value;
+      try {
+        await fetch(WAITLIST_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, source: 'results_page' })
+        });
+        alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
+        resultsWaitlistForm.reset();
+      } catch (error) {
+        console.error('Error joining waitlist:', error);
+        alert('Hubo un error. Por favor intenta de nuevo.');
+      }
+    });
+  }
 });
-
 
 // ==================== UTILITY FUNCTIONS ====================
 
@@ -244,11 +277,12 @@ function getPrevVisibleQuestionIndex(currentIndex) {
   return -1;
 }
 
-window.finishSurvey = function() {
-  // Calculate the results and show them
+window.finishSurvey = function () {
   const patternKey = calculateResults();
   showResults(patternKey);
+  sendResponsesToGoogleSheet(); 
 };
+
 
 // ==================== SURVEY RENDERING ====================
 
@@ -261,7 +295,8 @@ function renderQuestion() {
         finishSurvey();
         return;
     }
-
+    console.log('Rendering question:', question.id, 'type:', question.type, 'options:', question.options);
+  
     // Skip invisible questions
     while (question && !isQuestionVisible(question, answers)) {
         const nextIdx = getNextVisibleQuestionIndex(currentQuestionIndex);
@@ -386,9 +421,19 @@ function renderQuestion() {
                 }).join('')}
             </div>
         </div>`;
-    } else {
-        optionsHtml = `<div>No options for this question type.</div>`;
-    }
+    } else if (question.type === 'text') {
+    optionsHtml = `
+        <input type="text"
+            id="input-${qId}"
+            class="input-text"
+            value="${answers[qId] || ''}"
+            placeholder="${question.help_text || ''}"
+            oninput="window.handleTextInput('${qId}', this.value)">
+    `;
+}
+else {
+    optionsHtml = `<div>No options for this question type.</div>`;
+}
 
     surveyContent.innerHTML = `
         <div class="question">
@@ -560,100 +605,346 @@ function renderCareTips(patternKey) {
   `;
 }
 
-function renderPhaseAdvice(patternKey) {
-  const phaseSections = resultsTemplate?.phase?.generic || {};
-  let html = `<div class="recommendations"><h4>Tips de cuidado por fase del ciclo</h4>`;
-  Object.keys(phaseSections).forEach(phaseKey => {
-    const phase = phaseSections[phaseKey];
-    html += `<div class="phase-block"><h5>${phase.label}</h5>`;
-    html += `<div>${phase.about}</div>`;
-    if (phase.foods) html += `<ul>${phase.foods.map(f => `<li>${f}</li>`).join('')}</ul>`;
-    html += `</div>`;
-  });
-  html += `</div>`;
+function renderPhase(patternKey) {
+  if (!resultsTemplate) return ''; // Safety check
+  
+  const result = resultsTemplate;
+  const phaseTemplate = result.phase;
+  const primaryPattern = patternKey;
+
+  if (!phaseTemplate || !phaseTemplate.generic) return '';
+
+  let html = `<h2>${phaseTemplate.title}</h2>`;
+  const genericPhases = phaseTemplate.generic;
+
+  for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
+    let about = phaseInfo.about || "";
+    let doList = [...(phaseInfo.do || [])];
+    let foods = [...(phaseInfo.foods || [])];
+    let avoid = [...(phaseInfo.avoid || [])];
+    let movement = [...(phaseInfo.movement || [])];
+    let vibe = phaseInfo.vibe || "";
+
+    const overrides = phaseTemplate.overrides_by_pattern?.[patternKey]?.[phaseKey];
+    if (overrides) {
+      if (overrides.about_add) about += " " + overrides.about_add;
+      if (overrides.do_add) doList.push(...overrides.do_add);
+      if (overrides.foods_add) foods.push(...overrides.foods_add);
+      if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
+      if (overrides.movement_add) movement.push(...overrides.movement_add);
+      if (overrides.vibe_add) vibe += " " + overrides.vibe_add;
+    }
+
+    html += `
+      <div class="phase-block">
+        <h5>${phaseInfo.label}</h5>
+        <p>${about}</p>
+        ${foods.length ? `<p> <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
+        ${doList.length ? `<p> <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
+        ${avoid.length ? `<p> <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
+        ${movement.length ? `<p> <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
+        ${vibe ? `<p> <strong>Vibra:</strong> ${vibe}</p>` : ""}
+      </div>`;
+  }
+
   return html;
 }
 
-function renderPatternCard(patternKey) {
-  const card = resultsTemplate?.pattern_card?.single?.[patternKey] || {};
-  if (!card.pattern_explainer) return '';
+// --- Helpers for rendering the enhanced Results Page ---
+
+function renderElementHeader(patternKey) {
+  const elementLabel = resultsTemplate?.element?.by_pattern?.[patternKey]?.[0] || patternKey;
+  const summary = resultsTemplate?.summary?.by_pattern?.[patternKey]?.[0] || '';
   return `
-    <div class="pattern-description">${card.pattern_explainer}</div>
-    <ul class="characteristics">
-      ${(card.characteristics || []).map(char => `<li>${char}</li>`).join('')}
-    </ul>
+    <div class="result-head">
+      <div class="element-badge">${elementLabel}</div>
+      <h3 class="result-summary">${summary}</h3>
+    </div>
   `;
 }
 
-// Main function to show results with full template
-function showResults(patternKey) {
-  // Show pro mode indicator if needed
-  const proModeText = isProMode ? '<div class="pro-mode-indicator">✨ Resultados PRO - Análisis Avanzado</div>' : '';
+function renderElementExplainer(patternKey) {
+  const expl = resultsTemplate?.element_explainer?.by_pattern?.[patternKey]?.[0] || '';
+  return expl ? `<div class="pattern-explainer">${expl}</div>` : '';
+}
 
-  // Compose detailed results from the template
-  let html = `
-    ${proModeText}
-    <h2>${resultsTemplate?.element?.by_pattern?.[patternKey] || ''}</h2>
-    <h3>${resultsTemplate?.summary?.single?.replace('{{label_top}}', resultsTemplate?.labels?.[patternKey] || patternKey)}</h3>
-    ${renderPatternCard(patternKey)}
-    <div class="element-explainer">${getTemplateSection('element_explainer', patternKey)?.[0] || ''}</div>
-    ${renderCareTips(patternKey)}
-    ${renderPhaseAdvice(patternKey)}
-    <div class="disclaimer">
-      <strong>Nota importante:</strong> ${resultsTemplate?.meta?.disclaimer || 'Esta evaluación es orientativa y no sustituye el consejo médico profesional.'}
+function renderPatternCard(patternKey) {
+  const card = resultsTemplate?.pattern_card?.by_pattern?.[patternKey] || [];
+  if (!card.length) return '';
+  const bullets = card.map(p => `<li>${p}</li>`).join('');
+  return `
+    <div class="pattern-card">
+      <h4>Tu patrón menstrual se caracteriza por:</h4>
+      <ul>${bullets}</ul>
+    </div>
+  `;
+}
+
+function renderWhyCluster(patternKey) {
+  const why = resultsTemplate?.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
+  return why
+    ? `<div class="why-cluster"><h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p></div>`
+    : '';
+}
+
+function renderCareTips(patternKey) {
+  const tips = resultsTemplate?.care_tips?.by_pattern?.[patternKey] || [];
+  if (!tips.length) return '';
+  const items = tips.map(t => `<li>${t}</li>`).join('');
+  return `
+    <section class="care-tips">
+      <h4>🌸 Mini-hábitos para tu patrón</h4>
+      <ul>${items}</ul>
+    </section>
+  `;
+}
+
+function renderRitmoCicloBlock(stateKey = 'regular') {
+  const blk = resultsTemplate?.ritmo_ciclo_block?.by_state?.[stateKey];
+  if (!blk) return '';
+  return `
+    <div class="ritmo-block">
+      <h4>Ritmo del ciclo</h4>
+      <p>${blk.que_significa}</p>
+      <p>${blk.por_que_importa}</p>
+      ${blk.tips_suaves?.length ? `<ul>${blk.tips_suaves.map(t => `<li>${t}</li>`).join('')}</ul>` : ''}
+    </div>
+  `;
+}
+
+function renderUniqueSystem() {
+  const us = resultsTemplate?.unique_system;
+  if (!us?.differentiators?.length) return '';
+  return `
+    <section class="unique-system">
+      <h4>${us.title}</h4>
+      <div class="unique-grid">
+        ${us.differentiators
+          .map(d => `<div class="unique-item"><h5>${d.title}</h5><p>${d.description}</p></div>`)
+          .join('')}
+      </div>
+    </section>
+  `;
+}
+
+function renderHowHerbsWork(patternKey) {
+  const sec = resultsTemplate?.how_herbs_work?.by_pattern?.[patternKey];
+  if (!sec) return '';
+  const mech = (sec.mechanism || []).map(m => `<li>${m}</li>`).join('');
+  const logic = sec.combo_logic ? `<p class="herb-logic">${sec.combo_logic}</p>` : '';
+  return `
+    <section class="herbs-section">
+      <h4>🌿 ¿Qué incluiría tu medicina personalizada?</h4>
+      <ul>${mech}</ul>
+      ${logic}
+    </section>
+  `;
+}
+
+function renderColitaIntro() {
+  return `
+    <section class="cdr-intro">
+      <h4>colita de rana</h4>
+      <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
+    </section>
+  `;
+  
+}
+
+function pickRitmoStateFromAnswers() {
+  const p1 = answers.P1_regularity;
+  if (p1 === "Irregular (varía >7 días entre ciclos)") return "irregular";
+  if (p1 === "No tengo sangrado actualmente") return "no_sangrando";
+  return "regular";
+}
+
+// === MAIN RESULTS RENDERING ===
+function showResults(patternType) {
+  if (!resultsTemplate) {
+    console.error("❌ resultsTemplate is null — failed to load results_template.json");
+    alert("No se pudo cargar el archivo de resultados. Revisa results_template.json");
+    return;
+  }
+
+  const result = resultsTemplate;
+  const card = document.getElementById("results-card");
+  if (!card) return;
+  card.innerHTML = ""; // clear previous results
+
+  // --- Element Header ---
+  const elementTitle = result.element?.by_pattern?.[patternType]?.[0] || patternType;
+  const title = document.createElement("h2");
+  title.className = "results-main-title";
+  title.textContent = elementTitle;
+  card.appendChild(title);
+
+  // --- Subtitle ---
+  const subtitleText =
+    (result.summary?.single || "Tu tipo de ciclo: {{label_top}}").replace(
+      "{{label_top}}",
+      result.labels?.[patternType] || patternType
+    );
+  const subtitle = document.createElement("h3");
+  subtitle.className = "results-subtitle";
+  subtitle.textContent = subtitleText;
+  card.appendChild(subtitle);
+
+  // --- Pattern Card ---
+  const patternData = result.pattern_card?.single?.[patternType];
+  if (patternData) {
+    const patternSection = document.createElement("div");
+    patternSection.className = "pattern-description";
+    const expl = patternData.pattern_explainer || "";
+    const bullets = (patternData.characteristics || [])
+      .map((c) => `<li>${c}</li>`)
+      .join("");
+    patternSection.innerHTML = `
+      <p class="pattern-explainer">${expl}</p>
+      <ul class="characteristics">${bullets}</ul>`;
+    card.appendChild(patternSection);
+  }
+
+  // --- Why Cluster ---
+  const why = result.why_cluster?.by_pattern?.[patternType]?.[0];
+  if (why) {
+    const whySection = document.createElement("div");
+    whySection.className = "why-cluster";
+    whySection.innerHTML = `<h4>¿Por qué se agrupan tus síntomas?</h4><p>${why}</p>`;
+    card.appendChild(whySection);
+  }
+
+   // --- Care Tips ---
+  const habits = result.care_tips?.by_pattern?.[patternType] || [];
+  if (habits.length) {
+    const habitsSection = document.createElement("div");
+    habitsSection.className = "recommendations";
+    const items = habits.map((h) => `<li>${h}</li>`).join("");
+    habitsSection.innerHTML = `
+      <h4>🌸 Mini-hábitos para tu patrón</h4>
+      <ul class="recommendations-list">${items}</ul>`;
+    card.appendChild(habitsSection);
+  }
+
+  // --- Colita de Rana Club Section (BEFORE PHASE) ---
+  const cdrContainer = document.createElement("section");
+  cdrContainer.className = "cdr-section";
+  cdrContainer.innerHTML = `
+    <div class="cdr-header">
+      <h3>🌿 Colita de Rana Club</h3>
+      <p>Tu cuerpo tiene un lenguaje propio. Nuestro sistema lo traduce en elementos (aire, fuego, tierra y agua) para ofrecerte <em>medicina personalizada</em> que evoluciona contigo.</p>
     </div>
   `;
 
-  // Inject into the results-card
-  document.getElementById('results-card').innerHTML = html;
+  // Herbal mechanisms
+  const herbs = result.how_herbs_work?.by_pattern?.[patternType];
+  if (herbs) {
+    const herbSection = document.createElement("div");
+    herbSection.className = "herbs-section";
+    herbSection.innerHTML = `
+      <h4>Cómo trabajaríamos tu patrón</h4>
+      <ul class="herb-mechanisms">
+        ${herbs.mechanism.map((m) => `<li>${m}</li>`).join("")}
+      </ul>
+      <p class="herb-logic">${herbs.combo_logic}</p>`;
+    cdrContainer.appendChild(herbSection);
+  }
 
-  // Show email form
-  document.getElementById('email-results-form-section').style.display = 'block';
+  // Unique system differentiators
+  const diff = result.unique_system?.differentiators || [];
+  if (diff.length) {
+    const uniqueGrid = document.createElement("div");
+    uniqueGrid.className = "unique-system";
+    uniqueGrid.innerHTML = `
+      <h4>${result.unique_system.title}</h4>
+      <div class="unique-grid">
+        ${diff
+          .map(
+            (d) => `
+          <div class="unique-item">
+            <h5>${d.title}</h5>
+            <p>${d.description}</p>
+          </div>`
+          )
+          .join("")}
+      </div>`;
+    cdrContainer.appendChild(uniqueGrid);
+  }
 
-  showPage('results-page');
+  // Append Colita de Rana section
+  card.appendChild(cdrContainer);
+
+  // --- Phase Section (AFTER COLITA) ---
+  const phaseHTML = renderPhase(patternType);
+  if (phaseHTML) {
+    const phaseContainer = document.createElement('div');
+    phaseContainer.className = 'phase-section';
+    phaseContainer.innerHTML = phaseHTML;
+    card.appendChild(phaseContainer);
+  }
+
+// --- After rendering all result sections but before showPage ---
+const resultsWaitlistForm = `
+  <div class="waitlist-results-form">
+    <h2>Únete a la lista de espera</h2>
+    <div class="fields">
+      <input
+        type="text"
+        id="results-waitlist-name"
+        placeholder="Tu nombre"
+        required
+      />
+      <input
+        type="email"
+        id="results-waitlist-email"
+        placeholder="tu@email.com"
+        required
+      />
+    </div>
+    <button id="results-join-waitlist-btn" class="btn-primary">
+      Enviar
+    </button>
+  </div>
+`;
+card.insertAdjacentHTML('beforeend', resultsWaitlistForm);
+
+const joinBtn = card.querySelector('#results-join-waitlist-btn');
+if (joinBtn) {
+  joinBtn.addEventListener('click', async () => {
+    const name = card.querySelector('#results-waitlist-name').value.trim();
+    const email = card.querySelector('#results-waitlist-email').value.trim();
+    if (!name || !email) {
+      alert('Por favor ingresa tu nombre y correo.');
+      return;
+    }
+    try {
+      await fetch(WAITLIST_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'results_page' })
+      });
+      alert('¡Gracias! Te has unido a la lista de espera.');
+    } catch (err) {
+      console.error('Error joining waitlist:', err);
+      alert('Hubo un error. Por favor intenta de nuevo.');
+    }
+  });
 }
 
-// ==================== EMAIL RESULTS FORM ====================
 
-async function sendFullResultsReport(name, email) {
-  // Prepare the "full report" as HTML/text
-  // You can customize this to send all template sections, answers, and result summary
-  const patternKey = calculateResults();
-  const reportHtml = document.getElementById('results-card').innerHTML;
+    // Disclaimer
+  const disclaimer = document.createElement("p");
+  disclaimer.className = "results-disclaimer";
+  disclaimer.textContent =
+    result.meta?.disclaimer ||
+    "Esta información es educativa y no sustituye atención médica.";
+  card.appendChild(disclaimer);
 
-  // Send to webhook (or Supabase, or email API)
-  try {
-    await fetch(EMAIL_REPORT_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name, email,
-        session_id: sessionId,
-        answers,
-        pattern: patternKey,
-        html_report: reportHtml
-      }),
-    });
-    alert('¡Tu reporte completo ha sido enviado a tu correo!');
-  } catch (err) {
-    alert('Hubo un error al enviar el reporte. Intenta de nuevo.');
-    console.error('Error sending report:', err);
-  }
+
+  showPage("results-page");
 }
 
-// Email form handler
-document.addEventListener('DOMContentLoaded', function() {
-  const emailResultsForm = document.getElementById('email-results-form');
-  if (emailResultsForm) {
-    emailResultsForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const name = document.getElementById('email-results-name').value;
-      const email = document.getElementById('email-results-email').value;
-      await sendFullResultsReport(name, email);
-      emailResultsForm.reset();
-    });
-  }
-});
+window.showResults = showResults;
+
 
 // ==================== PROGRESS BAR ====================
 
@@ -728,4 +1019,29 @@ window.updateNavigation = function() {
     if (backBtn) {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
-};
+}
+
+// Helper function to extract all CSS
+async function getAllCSS() {
+  let allCSS = '';
+  
+  // Get inline styles
+  const styleElements = document.querySelectorAll('style');
+  styleElements.forEach(style => {
+    allCSS += style.textContent + '\n';
+  });
+  
+  // Get external stylesheets
+  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
+  for (const link of linkElements) {
+    try {
+      const response = await fetch(link.href);
+      const css = await response.text();
+      allCSS += css + '\n';
+    } catch (e) {
+      console.warn(`Failed to fetch CSS from ${link.href}`, e);
+    }
+  }
+  
+  return allCSS;
+}

@@ -26,50 +26,11 @@
       ]
     }
   },
-<<<<<<< HEAD
-  "common": {
-    "phase_labels": {
-      "antes": "Antes del periodo (PMS)",
-      "durante": "Durante",
-      "despues": "Después",
-      "entre": "Entre periodos"
-    },
-    "safety_notes": {
-      "heavy": "Si cambias tu toalla/tampón cada <1 h en días intensos, considera una valoración clínica.",
-      "pain": "Si el dolor es 9–10/10, busca apoyo profesional.",
-      "low_flow": "Si el sangrado es muy escaso por varios meses, consulta apoyo profesional para descartar causas."
-    }
-  },
-  "layout": {
-    "sections_order": [
-      "header",
-      "summary",
-      "element",
-      "element_explainer",
-      "pattern_card",
-      "why_cluster",
-      "ritmo_ciclo_block",
-      "how_herbs_work",
-      "phase",
-      "care_tips",
-      "support_signals",
-      "advisories",
-      "unique_system",
-      "footer",
-      "disclaimer"
-    ]
-  },
-  "header": {
-    "title": "Tu Perfil Energético",
-    "subtitle_hint_from_P1": true
-  },
-=======
     "layout": {
-
 "sections_order": [
   "header",
   "summary",
-  "energetic_state",   // new tri-axis visualization
+  "energetic_state",
   "pattern_card",
   "why_cluster",
   "phase",
@@ -80,52 +41,13 @@
   "disclaimer"
 ]
   },
-
->>>>>>> parent of d7920ba (Update results_template.json)
   "summary": {
     "single": "Tu tipo de ciclo: {{label_top}}",
     "mixed": "Tu tipo de ciclo: {{label_top_1}} + {{label_top_2}}",
     "tension_tendency_label": "Tendencia a tensión",
     "mixed_id_template": "{{label_top_1}}_{{label_top_2}}"
   },
-<<<<<<< HEAD
-  "element": {
-    "title": "Elemento:",
-    "by_pattern": {
-      "tension": [
-        "Viento/Aire 🌬️"
-      ],
-      "calor": [
-        "Fuego 🔥"
-      ],
-      "frio": [
-        "Fuego Deficiente ❄️"
-      ],
-      "humedad": [
-        "Agua 💧"
-      ],
-      "sequedad": [
-        "Agua Deficiente 🌵"
-      ],
-      "calor_humedad": [
-        "Fuego + Agua (calor con estancamiento suave)"
-      ],
-      "frio_humedad": [
-        "Fuego Deficiente + Agua (frío con retención y pesadez)"
-      ],
-      "calor_sequedad": [
-        "Fuego + Agua Deficiente (calor con consumo de fluidos)"
-      ],
-      "frio_sequedad": [
-        "Fuego Deficiente + Agua deficiente (frío con contracción y rigidez)"
-      ],
-      "tension_calor": [
-        "Viento + Fuego (energía inquieta y caliente)"
-      ],
-      "tension_humedad": [
-        "Viento + Agua Densa (presión con lentitud y retención)"
-=======
-"energetic_state": {
+  "energetic_state": {
   "title": "Estado energético de tu ciclo:",
   "intro": "Tu cuerpo se equilibra a través de tres ejes naturales: temperatura, humedad y tono. El punto que ves refleja hacia qué lado tiende tu energía en este momento.",
   "axes": {
@@ -137,21 +59,19 @@
     "excess": "Exceso",
     "deficiency": "Deficiencia"
   }
-},
-
-"element": {
+  },
+  "element": {
   "title": "Elemento predominante:",
   "by_pattern": {
-    "calor": ["🔥 Fuego — exceso de energía y calor tisular"],
-    "frio": ["🌍 Tierra + Fuego deficiente — frialdad, lentitud y metabolismo bajo"],
-    "humedad": ["💧 Agua + Tierra — estancamiento, retención y pesadez"],
-    "sequedad": ["🌬️ Aire + Fuego deficiente — resequedad, rigidez y agotamiento"],
-    "tension": ["🌪️ Aire — sobrecarga nerviosa y contracción muscular"],
-    "relajacion": ["🌾 Agua — tono bajo, laxitud y fatiga general"]
+    "calor": ["🔥 Fuego"],
+    "frio": [" ❄️ Fuego deficiente + Tierra"],
+    "humedad": ["💧 Agua + Tierra"],
+    "sequedad": ["❄️ Fuego deficiente + 🌬️ Aire "],
+    "tension": ["🌬️ Aire"],
+    "relajacion": ["💧 Agua"]
   }
-},
-
-"pattern_card": {
+  },
+  "pattern_card": {
   "single": {
     "tension": {
       "pattern_explainer": "El Viento representa movimiento y cambio. En equilibrio aporta flexibilidad y claridad mental; en exceso genera tensión muscular, irritabilidad y sensación de no poder relajarte.",
@@ -211,214 +131,11 @@
         "Sueño profundo pero no reparador",
         "Sensación de pesadez corporal sin inflamación",
         "Alivio con movimiento suave y ritmo constante"
->>>>>>> parent of d7920ba (Update results_template.json)
       ]
     }
-  },
-  "element_explainer": {
-    "by_pattern": {
-      "tension": [
-        "El viento en tu cuerpo no es solo una metáfora: es una fuerza real que puedes sentir como tensión muscular y en la respiración. En equilibrio da flexibilidad; en exceso causa contracciones irregulares, humor variable y síntomas cambiantes."
-      ],
-      "calor": [
-        "El Fuego es energía transformadora que, cuando se desborda, inflama y agota reservas. En equilibrio brinda vitalidad y claridad; en exceso genera irritabilidad, calor e hipermetabolismo."
-      ],
-      "frio": [
-        "Falta de Fuego vital: se enfría la circulación y baja la chispa interna. En equilibrio el fuego sostiene metabolismo y digestión; en deficiencia hay lentitud, frío y baja energía."
-      ],
-      "humedad": [
-        "El Agua nutre y lubrica; en exceso se estanca y pesa. En equilibrio permite fluir; en exceso causa retención, hinchazón y lentitud metabólica."
-      ],
-      "sequedad": [
-        "Deficiencia de Agua: se pierde fluidez y nutrición. En equilibrio, el agua nutre; en deficiencia hay sequedad, rigidez y agotamiento."
-      ]
-    }
-<<<<<<< HEAD
-  },
-  "pattern_card": {
-    "single": {
-      "tension": {
-        "pattern_explainer": "Exceso de Viento con espasmo uterino y nervioso; síntomas que ‘se mueven’.",
-        "characteristics": [
-          "Dolor cólico o punzante (espasmos)",
-          "Síntomas irregulares/cambiantes",
-          "Ansiedad, hipervigilancia",
-          "Sensibilidad al estrés",
-          "Respiración entrecortada con dolor"
-        ]
-      },
-      "calor": {
-        "pattern_explainer": "Exceso de Fuego: calor interno, sangrado abundante, irritabilidad.",
-        "characteristics": [
-          "Flujo rojo brillante/abundante",
-          "Sensación de calor/sed/enrojecimiento",
-          "Irritabilidad premenstrual",
-          "Sueño ligero",
-          "Digestión rápida/acidez"
-        ]
-      },
-      "frio": {
-        "pattern_explainer": "Deficiencia de Fuego: circulación lenta y retrasos.",
-        "characteristics": [
-          "Flujo escaso/retrasos",
-          "Manos/pies fríos; mejora con calor",
-          "Cansancio y digestión lenta",
-          "Dolor sordo que mejora con calor",
-          "Preferencia por bebidas/comidas calientes"
-        ]
-      },
-      "humedad": {
-        "pattern_explainer": "Exceso de Agua: pesadez, retención, coágulos.",
-        "characteristics": [
-          "Hinchazón/pesadez",
-          "Coágulos o flujo espeso",
-          "Digestión lenta de grasas",
-          "Letargo postcomida",
-          "Mejoría con movimiento suave"
-        ]
-      },
-      "sequedad": {
-        "pattern_explainer": "Deficiencia de Agua: flujo escaso, piel/mucosas secas, fatiga.",
-        "characteristics": [
-          "Sangrado muy escaso o ausente",
-          "Sed y sequedad",
-          "Cansancio, sueño no reparador",
-          "Rigidez articular",
-          "Irritabilidad por agotamiento"
-        ]
-      }
-    },
-    "mixed_pairs": {
-      "calor_humedad": {
-        "pattern_explainer": "Intensidad con estancamiento: calor que espesa y humedad que retiene.",
-        "characteristics": [
-          "Calor con pesadez",
-          "Coágulos/flujo espeso",
-          "Irritabilidad + letargo",
-          "Empeora con frituras/alcohol",
-          "Alivio con frescor y movimiento"
-        ]
-      },
-      "frio_humedad": {
-        "pattern_explainer": "Fuego bajo + agua acumulada: pesadez y dolor que mejora con calor.",
-        "characteristics": [
-          "Retención y pesadez",
-          "Dolor alivia con calor/movimiento",
-          "Coágulos frecuentes",
-          "Digestión lenta",
-          "Cansancio postcomidas"
-        ]
-      },
-      "calor_sequedad": {
-        "pattern_explainer": "Calor con poca humedad: irritación + sed/sequedad.",
-        "characteristics": [
-          "Calor con labios/mucosas secas",
-          "Flujo escaso/oscuro al inicio o final",
-          "Sueño inquieto",
-          "Mejora con alimentos jugosos"
-        ]
-      },
-      "frio_sequedad": {
-        "pattern_explainer": "Baja temperatura y humedad: rigidez, cansancio, flujo muy escaso.",
-        "characteristics": [
-          "Flujo escaso o ausente",
-          "Frío y baja energía",
-          "Piel/mucosas secas",
-          "Rigidez que mejora con calor/aceites"
-        ]
-      },
-      "tension_calor": {
-        "pattern_explainer": "Espasmo con inflamación: viento agita el fuego y viceversa.",
-        "characteristics": [
-          "Cólicos apretados con calor",
-          "Irritabilidad/reactividad",
-          "Sueño inquieto",
-          "Alivio con calma y frescor"
-        ]
-      },
-      "tension_humedad": {
-        "pattern_explainer": "Nudos con pesadez: espasmo atrapado en medio denso.",
-        "characteristics": [
-          "Congestión pélvica",
-          "Hinchazón/pesadez",
-          "Dolor migrante",
-          "Alivio con caminata y respiración"
-        ]
-      }
-    }
+  }
   },
   "why_cluster": {
-    "title": "¿Por qué se agrupan tus síntomas?",
-    "by_pattern": {
-      "tension": [
-        "El viento sobre-estimula los nervios y músculos lisos: causa espasmos que aprietan vasos y mueven el dolor; por eso hay punzadas y síntomas cambiantes."
-      ],
-      "calor": [
-        "El Fuego acelera circulación y metabolismo: sube la temperatura e irrita tejidos (rojo brillante, sed, acidez, irritabilidad)."
-      ],
-      "frio": [
-        "Fuego bajo enlentece circulación y tono: la sangre avanza despacio, dolor sordo que mejora con calor, menstruación retrasada."
-      ],
-      "humedad": [
-        "Exceso de Agua estanca linfa y venas: los fluidos se espesan y retienen (pesadez, coágulos, hinchazón)."
-      ],
-      "sequedad": [
-        "Falta de Agua reduce lubricación y resiliencia: tejidos rígidos, reservas bajas, flujo escaso y cansancio."
-      ],
-      "calor_humedad": [
-        "El calor espesa y la humedad retiene: intensidad con estancamiento (coágulos, pesadez, calor interno)."
-      ],
-      "frio_humedad": [
-        "Fuego bajo no evapora ni mueve líquidos: humedad se acumula; alivia con tibieza y movimiento suave."
-      ],
-      "calor_sequedad": [
-        "Fuego sostenido seca tejidos: irritación con poca humedad, sed y sueño ligero."
-      ],
-      "frio_sequedad": [
-        "Poco fuego y poca agua: rigidez, fatiga y flujo muy escaso que mejora con calor y aceites."
-      ],
-      "tension_calor": [
-        "Viento mueve el Fuego y el Fuego agita al Viento: espasmo con inflamación (cólicos apretados, enrojecimiento, irritabilidad)."
-      ],
-      "tension_humedad": [
-        "La tensión queda atrapada en un medio denso: nudos y dolor migrante con pesadez e hinchazón; mejora al drenar y mover."
-      ]
-    }
-  },
-  "ritmo_ciclo_block": {
-    "title": "Ritmo del ciclo",
-    "subtitle": "Ritmo de tu ciclo",
-    "by_state": {
-      "regular": {
-        "que_significa": "Tu ciclo muestra un ritmo estable.",
-        "por_que_importa": "La constancia ayuda a observar patrones y prevenir desequilibrios.",
-        "tips_suaves": [
-          "Mantén lo que te funciona: horarios de comida, descanso y movimiento regular."
-        ]
-      },
-      "irregular": {
-        "que_significa": "Tus ciclos varían más de lo esperado.",
-        "por_que_importa": "La variación puede relacionarse con estrés, sueño, nutrición o cambios hormonales.",
-        "tips_suaves": [
-          "Regula ritmos externos: comidas a horas parecidas, luz matutina diaria, higiene del sueño.",
-          "Registra tus ciclos para ver tendencias."
-        ]
-      },
-      "no_sangrando": {
-        "que_significa": "Actualmente no hay menstruación.",
-        "por_que_importa": "La ausencia de sangrado cambia cómo se perciben las fases, pero todavía se puede apoyar el terreno.",
-        "tips_suaves": [
-          "Enfócate en lo básico: nutrición mineral, manejo del estrés y buen descanso.",
-          "Si pasan 3 meses sin menstruación no explicada, considera consultar con un profesional."
-        ]
-      }
-    }
-  },
-=======
-  }
-},
-
-"why_cluster": {
   "title": "¿Por qué se agrupan tus síntomas?",
   "by_pattern": {
     "tension": [
@@ -458,11 +175,9 @@
       "La tensión atrapada en un medio denso genera nudos y pesadez; mejora al drenar y mover suavemente."
     ]
   }
-},
-  
->>>>>>> parent of d7920ba (Update results_template.json)
+  }, 
   "phase": {
-    "title": "Tips de cuidado por fase del ciclo",
+    "title": "Tips de cuidado personalizados, por fase del ciclo",
     "render_rules": {
       "merge_strategy": "generic_plus_primary_pattern",
       "primary_pattern": "{{label_top}}",
@@ -834,7 +549,66 @@
             "Rutina pre-sueño consistente (luces tenues, lectura)"
           ]
         }
-      }
+      },
+      "relajacion": {
+  "menstruacion": {
+    "about_add": "Activar suavemente el tono y la circulación sin agotar el cuerpo.",
+    "foods_add": [
+      "Caldos tibios con jengibre o cúrcuma para estimular suavemente",
+      "Proteínas ligeras (pescado, huevo, legumbres suaves)",
+      "Verduras cocidas con un toque de especias aromáticas (romero, cardamomo)"
+    ],
+    "do_add": [
+      "Caminar o estirarse 10–15 min al día para mover energía",
+      "Usar compresas tibias si hay sensación de pesadez"
+    ],
+    "avoid_add": [
+      "Permanecer inmóvil o acostada demasiado tiempo",
+      "Comidas muy pesadas o exceso de dulces"
+    ]
+  },
+  "folicular": {
+    "about_add": "Recuperar tono y energía de forma gradual.",
+    "foods_add": [
+      "Desayunos tibios que den energía sostenida (avena, amaranto, frutas cocidas)",
+      "Infusiones tónicas suaves (romero, ortiga, albahaca)"
+    ],
+    "do_add": [
+      "Ejercicio ligero constante (caminatas, yoga suave)",
+      "Exposición diaria a luz natural matutina para activar el metabolismo"
+    ]
+  },
+  "ovulacion": {
+    "about_add": "Mantener estabilidad energética y circulación activa.",
+    "foods_add": [
+      "Comidas equilibradas con buena proporción de proteína y vegetales coloridos"
+    ],
+    "do_add": [
+      "Caminar después de comer para activar digestión",
+      "Respirar profundo entre actividades para sostener vitalidad"
+    ],
+    "avoid_add": [
+      "Usar estimulantes (café, azúcar) para compensar el cansancio",
+      "Saltarse comidas largas o cenas muy tardías"
+    ]
+  },
+  "lutea": {
+    "about_add": "Conservar energía y tono interno mientras el cuerpo se prepara para descansar.",
+    "foods_add": [
+      "Cenas tibias y ligeras (sopas con verduras y granos suaves)",
+      "Fuentes naturales de magnesio y B6 (plátano, semillas, hojas verdes)"
+    ],
+    "do_add": [
+      "Rutina tranquila antes de dormir para mejorar descanso",
+      "Cepillado corporal o masaje seco para estimular circulación"
+    ],
+    "avoid_add": [
+      "Dormir en exceso durante el día",
+      "Cenas muy pesadas que dificulten digestión y sueño"
+    ]
+  }
+}
+
     }
   },
   "care_tips": {
@@ -870,7 +644,12 @@
         "Hidratación frecuente con minerales naturales",
         "Grasas omega-3 de calidad (pescado, semillas)",
         "Descanso temprano para regeneración celular"
-      ]
+      ],
+    "relajacion": [
+      "Caminar o moverse 20-30 min diarios para activar tono sin agotar",
+      "Evitar comidas muy pesadas o prolongar ayunos",
+      "Masaje seco o cepillado corporal para estimular circulación"
+    ]
     },
     "by_mixed": {
       "calor_humedad": [
@@ -943,6 +722,14 @@
         ],
         "combo_logic": "Humectar + nutrir, restaura reservas y regulariza el flujo."
       },
+      "relajacion": {
+      "mechanism": [
+        "Hierbas Tonificantes → fortalecen tejidos y circulación suave",
+        "Hierbas Digestivas y Amargas suaves → estimulan metabolismo sin irritar",
+        "Hierbas Adaptógenas ligeras → restauran energía sostenida"
+      ],
+      "combo_logic": "Tonificar y templar sin sobrecalentar mejora el tono y vitalidad general."
+    },
       "calor_humedad": {
         "mechanism": [
           "Hierbas Enfriantes/Antiinflamatorias → bajan inflamación y calor",
@@ -994,16 +781,6 @@
       }
     }
   },
-  "support_signals": {
-    "title": "Señales útiles a observar",
-    "items": [
-      "Color del flujo (brillante/oscuro/marrón/rosado)",
-      "Coágulos >~2.5 cm: consúltalo",
-      "Duración: >7 días suele considerarse abundante",
-      "Qué te alivia (calor/movimiento/descanso)",
-      "Indicadores de sequedad (sed, boca/vagina seca)"
-    ]
-  },
   "advisories": {
     "title": "Notas de seguridad",
     "items": [
@@ -1050,32 +827,12 @@
       }
     ]
   },
-  "footer": {
-    "title": "🌟 Únete a la lista de espera",
-    "description": "Recibe acceso temprano al primer sistema personalizado de medicina herbal, para la salud menstrual.",
-    "benefits": [
-      "💰 Descuento de miembra fundadora",
-      "🔔 Notificaciones de lanzamiento",
-      "🎯 Acceso prioritario a tu kit personalizado",
-      "📚 Guías gratuitas de salud menstrual"
-    ],
-    "launch_date": "Lanzamiento previsto: Primavera 2026"
-  },
   "labels": {
     "tension": "Tensión",
     "calor": "Calor",
     "frio": "Frío",
     "humedad": "Retención (Humedad)",
+    "relajacion": "Relajación",
     "sequedad": "Sequedad"
-  },
-  "telemetry": {
-    "enabled": true,
-    "schema_version": "1.0",
-    "session_fields": [
-      "app_version",
-      "build",
-      "locale",
-      "mode"
-    ]
   }
 }

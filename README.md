@@ -1,5 +1,7 @@
 # Colita de Rana Menstrual Health Survey – Vercel Deployment Guide
 
+This version works!! (just need to change questions)
+
 ## How it works
 
 This is a vanilla JS/HTML/CSS menstrual health survey app for “colita de rana”. All UI text and logic are loaded from JSON files in `/data/`, making content updates easy. The app guides users through symptom questions, computes their energetic type, and provides gentle lifestyle/herbal tips—no medical claims, no proprietary blends.
