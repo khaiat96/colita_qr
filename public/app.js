@@ -1003,7 +1003,7 @@ function showResults(patternType) {
     card.appendChild(phaseContainer);
   }
 
-  // Disclaimer
+    // Disclaimer
   const disclaimer = document.createElement("p");
   disclaimer.className = "results-disclaimer";
   disclaimer.textContent =
@@ -1011,35 +1011,42 @@ function showResults(patternType) {
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
 
+  // ✅ EMAIL SECTION FOR PDF
+  const emailSection = document.createElement("div");
+  emailSection.className = "email-results-section";
+  emailSection.innerHTML = `
+    <div class="email-container">
+      <h4>📧 Recibe tus resultados por correo</h4>
+      <p>Te enviaremos un PDF con tu patrón menstrual y recomendaciones personalizadas.</p>
+      <div class="email-form">
+        <input 
+          type="email" 
+          id="results-email-input" 
+          placeholder="tu@email.com"
+          class="email-input"
+        />
+        <button 
+          id="send-results-btn" 
+          class="btn-send-results"
+          onclick="sendResultsAsPDF()"
+        >
+          Enviar PDF
+        </button>
+      </div>
+      <p id="email-status-message" class="email-status"></p>
+    </div>
+  `;
+  card.appendChild(emailSection);
+
+  showPage("results-page");
+}
+
+
   showPage("results-page");
 }
 
 window.showResults = showResults;
 
-
-
-// === DEBUG TOOL: preview results page manually ===
-// Muestra resultados de cualquier patrón sin pasar por el quiz
-// Uso: en consola → window.debugShow('calor') o 'frio', 'humedad', 'sequedad', 'tension', etc.
-
-window.debugShow = function(patternKey = 'calor') {
-  // Fake answers para secciones dependientes
-  window.answers = {
-    P1: "Regular (cada 26–32 días)",
-    P2: "Sangrado normal",
-    P3: "No hay síntomas graves"
-  };
-
-  // Muestra resultados directamente
-  console.log(`🧪 Rendering debug results for pattern: ${patternKey}`);
-  showResults(patternKey);
-  document.getElementById('landing-page').classList.remove('active');
-  document.getElementById('survey-page').classList.remove('active');
-  document.getElementById('results-page').classList.add('active');
-};
-
-// Opcional: carga automática al abrir para revisar diseño
-// window.addEventListener('load', () => debugShow('humedad'));
 
 
 // ==================== EMAIL RESULTS FORM (REMOVED/DEPRECATED) ====================
@@ -1118,4 +1125,103 @@ window.updateNavigation = function() {
     if (backBtn) {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
+}
+
+// ==================== SEND RESULTS AS PDF VIA EMAIL ====================
+window.sendResultsAsPDF = async function() {
+  const emailInput = document.getElementById('results-email-input');
+  const sendBtn = document.getElementById('send-results-btn');
+  const statusMsg = document.getElementById('email-status-message');
+  
+  const email = emailInput.value.trim();
+  
+  // Validate email
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    statusMsg.textContent = '⚠️ Por favor ingresa un correo válido.';
+    statusMsg.style.color = '#ff6b6b';
+    return;
+  }
+  
+  // Disable button and show loading
+  sendBtn.disabled = true;
+  sendBtn.textContent = 'Generando PDF...';
+  statusMsg.textContent = '';
+  
+  try {
+    // Get the complete results HTML
+    const resultsCard = document.getElementById('results-card');
+    const resultsHTML = resultsCard.innerHTML;
+    
+    // Get all CSS for proper styling
+    const cssContent = await getAllCSS();
+    
+    // Prepare payload for Make.com
+    const payload = {
+      email: email,
+      sessionId: sessionId,
+      timestamp: new Date().toISOString(),
+      patternType: calculateResults(), // Get the pattern type
+      resultsHTML: resultsHTML,
+      cssContent: cssContent,
+      answers: answers
+    };
+    
+    // Send to Make.com webhook (you'll create this URL in Step 2)
+    const PDF_WEBHOOK = 'https://hook.us2.make.com/YOUR_WEBHOOK_URL_HERE';
+    
+    const response = await fetch(PDF_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    if (!response.ok) {
+      throw new Error('Error al generar PDF');
+    }
+    
+    // Success
+    statusMsg.textContent = '✅ ¡PDF enviado! Revisa tu correo en unos minutos.';
+    statusMsg.style.color = '#51C4B5';
+    emailInput.value = '';
+    sendBtn.textContent = '✓ Enviado';
+    
+    // Reset button after 3 seconds
+    setTimeout(() => {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Enviar PDF';
+      statusMsg.textContent = '';
+    }, 4000);
+    
+  } catch (error) {
+    console.error('Error sending PDF:', error);
+    statusMsg.textContent = '❌ Hubo un error. Intenta de nuevo.';
+    statusMsg.style.color = '#ff6b6b';
+    sendBtn.disabled = false;
+    sendBtn.textContent = 'Enviar PDF';
+  }
+};
+
+// Helper function to extract all CSS
+async function getAllCSS() {
+  let allCSS = '';
+  
+  // Get inline styles
+  const styleElements = document.querySelectorAll('style');
+  styleElements.forEach(style => {
+    allCSS += style.textContent + '\n';
+  });
+  
+  // Get external stylesheets
+  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
+  for (const link of linkElements) {
+    try {
+      const response = await fetch(link.href);
+      const css = await response.text();
+      allCSS += css + '\n';
+    } catch (e) {
+      console.warn(`Failed to fetch CSS from ${link.href}`, e);
+    }
+  }
+  
+  return allCSS;
 }

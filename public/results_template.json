@@ -177,7 +177,7 @@
   }
   }, 
   "phase": {
-    "title": "Tips de cuidado por fase del ciclo",
+    "title": "Tips de cuidado personalizados, por fase del ciclo",
     "render_rules": {
       "merge_strategy": "generic_plus_primary_pattern",
       "primary_pattern": "{{label_top}}",

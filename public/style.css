@@ -2449,3 +2449,91 @@ canvas#radarChart {
 .phase-block p strong::before {
   margin-right: 8px;
 }
+
+/* ========== EMAIL RESULTS SECTION ========== */
+.email-results-section {
+  margin-top: 40px;
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(85, 196, 181, 0.1), rgba(63, 139, 212, 0.1));
+  border-radius: 16px;
+  border: 1px solid rgba(85, 196, 181, 0.3);
+  text-align: center;
+}
+
+.email-container h4 {
+  color: var(--color-primary);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.email-container > p {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.email-form {
+  display: flex;
+  gap: 12px;
+  max-width: 500px;
+  margin: 0 auto 16px auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.email-input {
+  flex: 1;
+  min-width: 250px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(85, 196, 181, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.email-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.email-input:focus {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(85, 196, 181, 0.1);
+}
+
+.btn-send-results {
+  padding: 14px 28px;
+  background: var(--color-primary);
+  color: #1a2332;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-send-results:hover {
+  background: #5fd4c3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(85, 196, 181, 0.3);
+}
+
+.btn-send-results:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.email-status {
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 20px;
+  margin-top: 12px;
+}
