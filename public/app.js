@@ -1156,8 +1156,9 @@ window.sendResultsAsPDF = async function() {
       answers: answers
     };
     
-    // Send to Make.com webhook (you'll create this URL in Step 2)
-    const PDF_WEBHOOK = '9popmq7u8g70gusdmeprwo6gplrdzo8m@hook.us2.make.com';
+    // Send to Make.com webhook 
+    const PDF_WEBHOOK = 'https://hook.us2.make.com/9popmq7u8g70gusdmeprwo6gplrdzo8m';
+
     
     const response = await fetch(PDF_WEBHOOK, {
       method: 'POST',
