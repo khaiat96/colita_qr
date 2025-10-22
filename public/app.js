@@ -1157,7 +1157,7 @@ window.sendResultsAsPDF = async function() {
     };
     
     // Send to Make.com webhook 
-    const PDF_WEBHOOK = 'https://hook.us2.make.com/9popmq7u8g70gusdmeprwo6gplrdzo8m';
+    const PDF_WEBHOOK = 'https://hook.us2.make.com/9popmq7u8g70gusdmeprwo6gplrdzo8m@hook.us2.make.com';
 
     
     const response = await fetch(PDF_WEBHOOK, {
