@@ -27,7 +27,6 @@
     }
   },
     "layout": {
-
 "sections_order": [
   "header",
   "summary",
@@ -42,14 +41,13 @@
   "disclaimer"
 ]
   },
-
   "summary": {
     "single": "Tu tipo de ciclo: {{label_top}}",
     "mixed": "Tu tipo de ciclo: {{label_top_1}} + {{label_top_2}}",
     "tension_tendency_label": "Tendencia a tensión",
     "mixed_id_template": "{{label_top_1}}_{{label_top_2}}"
   },
-"energetic_state": {
+  "energetic_state": {
   "title": "Estado energético de tu ciclo:",
   "intro": "Tu cuerpo se equilibra a través de tres ejes naturales: temperatura, humedad y tono. El punto que ves refleja hacia qué lado tiende tu energía en este momento.",
   "axes": {
@@ -61,8 +59,8 @@
     "excess": "Exceso",
     "deficiency": "Deficiencia"
   }
-},
-"element": {
+  },
+  "element": {
   "title": "Elemento predominante:",
   "by_pattern": {
     "calor": ["🔥 Fuego"],
@@ -72,9 +70,8 @@
     "tension": ["🌬️ Aire"],
     "relajacion": ["💧 Agua"]
   }
-},
-
-"pattern_card": {
+  },
+  "pattern_card": {
   "single": {
     "tension": {
       "pattern_explainer": "El Viento representa movimiento y cambio. En equilibrio aporta flexibilidad y claridad mental; en exceso genera tensión muscular, irritabilidad y sensación de no poder relajarte.",
@@ -137,8 +134,8 @@
       ]
     }
   }
-},
-"why_cluster": {
+  },
+  "why_cluster": {
   "title": "¿Por qué se agrupan tus síntomas?",
   "by_pattern": {
     "tension": [
@@ -178,7 +175,7 @@
       "La tensión atrapada en un medio denso genera nudos y pesadez; mejora al drenar y mover suavemente."
     ]
   }
-}, 
+  }, 
   "phase": {
     "title": "Tips de cuidado por fase del ciclo",
     "render_rules": {
