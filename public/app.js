@@ -1035,10 +1035,6 @@ function showResults(patternType) {
   showPage("results-page");
 }
 
-
-  showPage("results-page");
-}
-
 window.showResults = showResults;
 
 
