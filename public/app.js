@@ -157,6 +157,25 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
+async function sendResultsAsPDF(email) {
+  const resultsHTML = document.getElementById('results-content').outerHTML;
+  
+  const payload = {
+    email: email,
+    resultsHTML: resultsHTML,  // ← This must be present
+    patternType: calculateResults(),
+    sessionId: sessionId,
+    timestamp: new Date().toISOString()
+  };
+
+  await fetch('YOUR_WEBHOOK_URL', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
+
+
 // ==================== WAITLIST FORM HANDLER ====================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1011,7 +1030,7 @@ function showResults(patternType) {
   emailSection.innerHTML = `
     <div class="email-container">
       <h4>📧 Recibe tus resultados por correo</h4>
-      <p>Te enviaremos un PDF con tu patrón menstrual y recomendaciones personalizadas.</p>
+      <p>Te enviaremos un PDF con tus respuestas.</p>
       <div class="email-form">
         <input 
           type="email" 
@@ -1037,10 +1056,6 @@ function showResults(patternType) {
 
 window.showResults = showResults;
 
-
-
-// ==================== EMAIL RESULTS FORM (REMOVED/DEPRECATED) ====================
-// (No longer active; form is hidden by showResults)
 
 // ==================== PROGRESS BAR ====================
 
