@@ -609,7 +609,7 @@ function renderCareTips(patternKey) {
   `;
 }
 
-function renderPhase(patternKey) {
+function renderPhase(patternType) {
   const phaseTemplate = resultsTemplate.phase;
   const primaryPattern = result.label_top;
 
@@ -1067,7 +1067,7 @@ function showResults(patternType) {
 
 
 // --- Phase Section ---
-const phaseHTML = renderPhase(patternKey);
+const phaseHTML = renderPhase(patternType);
 if (phaseHTML) {
   const phaseContainer = document.getElementById('phase-section');
   if (phaseContainer) {
