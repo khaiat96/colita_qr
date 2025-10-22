@@ -1031,26 +1031,33 @@ function showResults(patternType) {
   emailSection.className = "email-results-section";
   emailSection.innerHTML = `
     <div class="email-container">
-      <h4>📧 Recibe tus resultados por correo</h4>
-      <p>Te enviaremos un PDF con tus respuestas.</p>
-      <div class="email-form">
-        <input 
-          type="email" 
-          id="results-email-input" 
-          placeholder="tu@email.com"
-          class="email-input"
-        />
-        <button 
-          id="send-results-btn" 
-          class="btn-send-results"
-          onclick="sendResultsAsPDF()"
-        >
-          Enviar PDF
-        </button>
-      </div>
-      <p id="email-status-message" class="email-status"></p>
+    <h4>📧 Recibe tus resultados por correo</h4>
+    <p>Te enviaremos un PDF con tus respuestas.</p>
+    <div class="email-form">
+      <input 
+        type="text" 
+        id="results-name-input" 
+        placeholder="Tu nombre"
+        class="email-input"
+      />
+      <input 
+        type="email" 
+        id="results-email-input" 
+        placeholder="tu@email.com"
+        class="email-input"
+      />
+      <button 
+        id="send-results-btn" 
+        class="btn-send-results"
+        onclick="sendResultsAsPDF()"
+      >
+        Enviar PDF
+      </button>
     </div>
-  `;
+    <p id="email-status-message" class="email-status"></p>
+  </div>
+`;
+
   card.appendChild(emailSection);
 
   showPage("results-page");
