@@ -26,21 +26,6 @@
       ]
     }
   },
-    "layout": {
-"sections_order": [
-  "header",
-  "summary",
-  "energetic_state",
-  "pattern_card",
-  "why_cluster",
-  "phase",
-  "care_tips",
-  "how_herbs_work",
-  "unique_system",
-  "footer",
-  "disclaimer"
-]
-  },
   "summary": {
     "single": "Tu tipo de ciclo: {{label_top}}",
     "mixed": "Tu tipo de ciclo: {{label_top_1}} + {{label_top_2}}",
@@ -607,8 +592,7 @@
       "Cenas muy pesadas que dificulten digestión y sueño"
     ]
   }
-}
-
+      }
     }
   },
   "care_tips": {
@@ -626,12 +610,12 @@
         "Limitar cafeína después de las 2 PM"
       ],
       "calor": [
-        "Hidratación inteligente con electrolitos naturales",
+        "Hidratación con electrolitos naturales",
         "Evitar picantes, alcohol y alimentos procesados",
         "Dormir en ambiente fresco y bien ventilado"
       ],
       "frio": [
-        "Caldos minerales e infusiones tibias regulares",
+        "Caldos minerales y tés herbales",
         "Calor local suave (compresa, baño tibio)",
         "Evitar bebidas frías y alimentos crudos en exceso"
       ],
@@ -641,15 +625,15 @@
         "Elevar piernas 10-15 min si hay retención"
       ],
       "sequedad": [
-        "Hidratación frecuente con minerales naturales",
+        "Hidratación frecuente con electrolitos",
         "Grasas omega-3 de calidad (pescado, semillas)",
         "Descanso temprano para regeneración celular"
       ],
-    "relajacion": [
+      "relajacion": [
       "Caminar o moverse 20-30 min diarios para activar tono sin agotar",
       "Evitar comidas muy pesadas o prolongar ayunos",
       "Masaje seco o cepillado corporal para estimular circulación"
-    ]
+      ]
     },
     "by_mixed": {
       "calor_humedad": [
@@ -692,35 +676,35 @@
           "Hierbas Antiespasmódicas → relajan músculo liso uterino",
           "Hierbas Nervinas suaves → bajan reactividad y mejoran el descanso"
         ],
-        "combo_logic": "Relajar + calmar, permite que la sangre fluya sin nudos; sumar hierbas que eliminan gas si hay espasmo digestivo."
+        "combo_logic": "Objetivo: Relajar + calmar; Permite que la sangre fluya sin nudos."
       },
       "calor": {
         "mechanism": [
           "Hierbas Enfriantes/Antiinflamatorias → moderan calor tisular",
           "Hierbas Astringentes → fortalecen tono vascular"
         ],
-        "combo_logic": "Enfriar + tonificar vasculatura, estabiliza la intensidad; amargos ligeros ayudan a ‘liberar’ calor."
+        "combo_logic": "Objetivo: Enfriar + tonificar vasculatura; Estabiliza la intensidad."
       },
       "frio": {
         "mechanism": [
           "Hierbas Calentadoras → activan microcirculación pélvica",
           "Hierbas Circulatorias → mueven estasis sin sobreestimular"
         ],
-        "combo_logic": "Templar + mover, reduce dolor por contracción fría."
+        "combo_logic": "Objetivo: Templar + mover; Reduce dolor por contracciones frías."
       },
       "humedad": {
         "mechanism": [
           "Hierbas Drenantes/Linfáticas → movilizan líquidos",
           "Hierbas Digestivas Suaves → mejoran tránsito de grasas/residuos"
         ],
-        "combo_logic": "Drenar + activar digestión, aligera pesadez y coágulos."
+        "combo_logic": "Objetivo: Drenar + activar digestión; Aligera pesadez y coágulos."
       },
       "sequedad": {
         "mechanism": [
           "Hierbas Demulcentes → hidratan mucosas",
           "Hierbas Nutritivas → reponen ‘jugos’ tisulares"
         ],
-        "combo_logic": "Humectar + nutrir, restaura reservas y regulariza el flujo."
+        "combo_logic": "Objetivo: Humectar + nutrir; Restaura reservas y regulariza el flujo."
       },
       "relajacion": {
       "mechanism": [
@@ -728,8 +712,8 @@
         "Hierbas Digestivas y Amargas suaves → estimulan metabolismo sin irritar",
         "Hierbas Adaptógenas ligeras → restauran energía sostenida"
       ],
-      "combo_logic": "Tonificar y templar sin sobrecalentar mejora el tono y vitalidad general."
-    },
+      "combo_logic": "Objetivo: Tonificar y templar sin sobrecalentar; Mejora el tono y vitalidad general."
+      },
       "calor_humedad": {
         "mechanism": [
           "Hierbas Enfriantes/Antiinflamatorias → bajan inflamación y calor",

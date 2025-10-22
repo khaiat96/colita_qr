@@ -31,7 +31,8 @@
         "calor",
         "frio",
         "humedad",
-        "sequedad"
+        "sequedad",
+        "relajacion"
     ],
     "ui_rules": {
         "use_priority_for_label_order": true,
@@ -77,14 +78,13 @@
             "id": "P0_nombre",
             "type": "text",
             "title": "¿Cuál es tu nombre?",
-            "help_text": "Lo usaremos para personalizar tus recomendaciones.",
             "required": true,
             "prompt": "Question P0_nombre"
         },
         {
             "id": "P0_contraception",
             "type": "single",
-            "title": "¿Usas anticoncepción actualmente? 🛡️",
+            "title": "¿Usas anticonceptivos actualmente? 🛡️",
             "help_text": "Nos ayuda a interpretar mejor tus señales.",
             "options": [
                 {
@@ -257,7 +257,7 @@
         {
             "id": "P2_spotting_frecuencia",
             "type": "single",
-            "title": "¿Con qué frecuencia tuviste manchado entre reglas? (si aplica)",
+            "title": "¿Con qué frecuencia tuviste manchado entre reglas?",
             "help_text": "Ayuda a precisar el patrón de manchado.",
             "visible_if": {
                 "question_id": "P2_sintomas",
@@ -365,7 +365,7 @@
         {
             "id": "P2_acne",
             "type": "single",
-            "title": "¿Brotes/acné relacionados con el ciclo? (opcional) 🔴",
+            "title": "¿Brotes/acné relacionados con el ciclo? 🔴",
             "help_text": "Elige la opción que más se acerque.",
             "visible_if": {
                 "question_id": "P2_sintomas",
@@ -755,7 +755,7 @@
             ],
             "validation": {
                 "minselected": 1,
-                "maxselected": 3
+                "maxselected": 4
             },
             "prompt": "Question P4_emocional"
         },
@@ -862,7 +862,6 @@
             "id": "P7b_sequedad_detalle",
             "type": "multiselect",
             "title": "Si notas sequedad, ¿dónde lo sientes más? 🌵",
-            "help_text": "Esta pregunta aparece si reportaste sequedad o sangrado escaso.",
             "visible_if": {
                 "any": [
                     {
@@ -908,24 +907,8 @@
             ],
             "validation": {
                 "minselected": 1,
-                "maxselected": 5,
-                "soft_required_when": {
-                    "all": [
-                        {
-                            "question_id": "P2_sintomas",
-                            "includes": [
-                                "Sangrado escaso o ausente"
-                            ]
-                        },
-                        {
-                            "question_id": "P5_sed",
-                            "equals": "bebidas_calientes"
-                        }
-                    ],
-                    "message": "Ayúdanos a precisar señales de sequedad"
-                }
+                "maxselected": 5
             },
-            "prompt": "Question P7b_sequedad_detalle"
         },
         {
             "id": "P7c_sensibilidad_clima",
@@ -1042,12 +1025,12 @@
                     "value": "1"
                 },
                 {
-                    "label": "2",
-                    "value": "2"
+                    "label": "3",
+                    "value": "3"
                 },
                 {
-                    "label": "3 o más",
-                    "value": "3+"
+                    "label": "4 o más",
+                    "value": "4+"
                 }
             ],
             "prompt": "Question P8c_cafeina"
