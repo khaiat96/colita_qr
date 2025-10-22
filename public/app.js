@@ -1134,80 +1134,27 @@ window.updateNavigation = function() {
     }
 }
 
-// ==================== SEND RESULTS AS PDF VIA EMAIL ====================
-window.sendResultsAsPDF = async function() {
-  const emailInput = document.getElementById('results-email-input');
-  const sendBtn = document.getElementById('send-results-btn');
-  const statusMsg = document.getElementById('email-status-message');
-  
-  const email = emailInput.value.trim();
-  
-  // Validate email
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    statusMsg.textContent = '⚠️ Por favor ingresa un correo válido.';
-    statusMsg.style.color = '#ff6b6b';
+//results waitlist
+async function joinWaitlist() {
+  const name = document.getElementById('waitlist-name-input').value.trim();
+  const email = document.getElementById('waitlist-email-input').value.trim();
+  if (!name || !email) {
+    alert('Por favor ingresa tu nombre y correo.');
     return;
   }
-  
-  // Disable button and show loading
-  sendBtn.disabled = true;
-  sendBtn.textContent = 'Generando PDF...';
-  statusMsg.textContent = '';
-  
-  try {
-    // Get the complete results HTML
-    const resultsCard = document.getElementById('results-card');
-    const resultsHTML = resultsCard.innerHTML;
-    
-    // Get all CSS for proper styling
-    const cssContent = await getAllCSS();
-    
-    // Prepare payload for Make.com
-    const payload = {
-      email: email,
-      sessionId: sessionId,
-      timestamp: new Date().toISOString(),
-      patternType: calculateResults(), // Get the pattern type
-      resultsHTML: resultsHTML,
-      cssContent: cssContent,
-      answers: answers
-    };
-    
-    // Send to Make.com webhook 
-    const PDF_WEBHOOK = 'https://hook.us2.make.com/x85saa0ur1u1fac79amcvmdjlbnpixaw';
+  const payload = { name, email };
+  await fetch(WAITLIST_WEBHOOK, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  alert('¡Gracias! Te has unido a la lista de espera.');
+}
 
-    
-    const response = await fetch(PDF_WEBHOOK, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    
-    if (!response.ok) {
-      throw new Error('Error al generar PDF');
-    }
-    
-    // Success
-    statusMsg.textContent = '✅ ¡Respuestas enviadas! Revisa tu correo en unos minutos.';
-    statusMsg.style.color = '#51C4B5';
-    emailInput.value = '';
-    sendBtn.textContent = '✓ Enviado';
-    
-    // Reset button after 3 seconds
-    setTimeout(() => {
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'Enviar PDF';
-      statusMsg.textContent = '';
-    }, 4000);
-    
-  } catch (error) {
-    console.error('Error sending PDF:', error);
-    statusMsg.textContent = '❌ Hubo un error. Intenta de nuevo.';
-    statusMsg.style.color = '#ff6b6b';
-    sendBtn.disabled = false;
-    sendBtn.textContent = 'Enviar PDF';
-  }
-};
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('join-waitlist-button');
+  if (btn) btn.addEventListener('click', joinWaitlist);
+});
 
 // Helper function to extract all CSS
 async function getAllCSS() {
