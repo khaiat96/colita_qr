@@ -51,12 +51,6 @@ async function sendResponsesToGoogleSheet() {
   }
 }
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById(id);
-  if (target) target.classList.add('active');
-  window.scrollTo(0, 0);
-}
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -1167,7 +1161,7 @@ window.sendResultsAsPDF = async function() {
     };
     
     // Send to Make.com webhook (you'll create this URL in Step 2)
-    const PDF_WEBHOOK = 'https://hook.us2.make.com/YOUR_WEBHOOK_URL_HERE';
+    const PDF_WEBHOOK = '9popmq7u8g70gusdmeprwo6gplrdzo8m@hook.us2.make.com';
     
     const response = await fetch(PDF_WEBHOOK, {
       method: 'POST',
@@ -1180,7 +1174,7 @@ window.sendResultsAsPDF = async function() {
     }
     
     // Success
-    statusMsg.textContent = '✅ ¡PDF enviado! Revisa tu correo en unos minutos.';
+    statusMsg.textContent = '✅ ¡Respuestas enviadas! Revisa tu correo en unos minutos.';
     statusMsg.style.color = '#51C4B5';
     emailInput.value = '';
     sendBtn.textContent = '✓ Enviado';
