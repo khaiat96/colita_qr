@@ -906,7 +906,7 @@ const resultsWaitlistForm = `
     </button>
   </div>
 `;
-card.insertAdjacentHTML('beforeend', waitlistFormHtml);
+card.insertAdjacentHTML('beforeend', resultsWaitlistForm);
 
 
     // Disclaimer
