@@ -908,7 +908,7 @@
             "validation": {
                 "minselected": 1,
                 "maxselected": 5
-            },
+            }
         },
         {
             "id": "P7c_sensibilidad_clima",
