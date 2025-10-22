@@ -947,15 +947,6 @@ function showResults(patternType) {
   }
 
 
-// --- Phase Section ---
-const phaseHTML = renderPhase(patternType);
-if (phaseHTML) {
-  const phaseContainer = document.createElement('div');
-  phaseContainer.className = 'phase-section';
-  phaseContainer.innerHTML = phaseHTML;
-  card.appendChild(phaseContainer);
-}
-
   // --- Colita de Rana Club Section ---
   const cdrContainer = document.createElement("section");
   cdrContainer.className = "cdr-section";
@@ -1001,6 +992,16 @@ if (phaseHTML) {
     cdrContainer.appendChild(uniqueGrid);
   }
 
+
+// --- Phase Section ---
+const phaseHTML = renderPhase(patternType);
+if (phaseHTML) {
+  const phaseContainer = document.createElement('div');
+  phaseContainer.className = 'phase-section';
+  phaseContainer.innerHTML = phaseHTML;
+  card.appendChild(phaseContainer);
+}
+
   // Append full subsection
   card.appendChild(cdrContainer);
 
@@ -1011,11 +1012,6 @@ if (phaseHTML) {
     result.meta?.disclaimer ||
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
-
-  // render radar after content loaded
-//setTimeout(() => {
-//  renderEnergyMap3D();
-//}, 100);
 
   showPage("results-page");
 }
