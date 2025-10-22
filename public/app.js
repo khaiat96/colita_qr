@@ -872,131 +872,12 @@ function addPDFControls() {
 // Call `addPDFControls()` in your `showResults` logic after rendering
 
 
-
 function pickRitmoStateFromAnswers() {
   const p1 = answers.P1_regularity;
   if (p1 === "Irregular (varía >7 días entre ciclos)") return "irregular";
   if (p1 === "No tengo sangrado actualmente") return "no_sangrando";
   return "regular";
 }
-
-// --- Radar Chart (6 petals, relative scaling) ---
-let radarInstance = null;
-
-// Build the 6-axis raw score object your quiz currently yields.
-// We already compute: tension, calor, frio, humedad, sequedad.
-// We derive relajacion as the complement of tensión relative to the max axis.
-function getRawAxisScores() {
-  const base = {
-    Calor: 0,
-    Frío: 0,
-    Humedad: 0,
-    Sequedad: 0,
-    Tensión: 0,
-    Relajación: 0
-  };
-
-  // Recompute the same way calculateResults() does, but keep the raw values:
-  const raw = { tension: 0, calor: 0, frio: 0, humedad: 0, sequedad: 0 };
-
-  surveyQuestions.forEach(q => {
-    const ans = answers[q.id];
-    if (!ans || !q.options) return;
-    const arr = Array.isArray(ans) ? ans : [ans];
-    arr.forEach(v => {
-      const opt = q.options.find(o => o.value === v);
-      if (opt?.scores) {
-        Object.keys(opt.scores).forEach(k => {
-          if (k in raw) raw[k] += opt.scores[k];
-        });
-      }
-    });
-  });
-
-  // Fill labeled object
-  base.Calor = raw.calor;
-  base.Frío = raw.frio;
-  base.Humedad = raw.humedad;
-  base.Sequedad = raw.sequedad;
-  base.Tensión = raw.tension;
-
-  // Derive Relajación as the complement of Tensión vs. the max of the other axes
-  const maxOther = Math.max(base.Calor, base.Frío, base.Humedad, base.Sequedad, base.Tensión, 1);
-  base.Relajación = Math.max(0, maxOther - base.Tensión);
-
-  return base;
-}
-
-// Normalize to the current max (Option A)
-function normalizeRelative(obj) {
-  const vals = Object.values(obj);
-  const max = Math.max(...vals, 1); // avoid divide-by-zero
-  const out = {};
-  Object.keys(obj).forEach(k => (out[k] = obj[k] / max));
-  return out;
-}
-
-
-// === 3D ENERGY MAP (Mapa energético) ===
-function renderEnergyMap3D() {
-  const container = document.getElementById('energyMap3D');
-  if (!container) return;
-
-  const data = [{
-    type: 'scatter3d',
-    mode: 'markers+text',
-    textposition: 'top center',
-    textfont: { size: 12, color: '#eee' },
-    marker: { size: 7, color: 'rgb(102,200,150)', line: { width: 1, color: '#fff' } },
-    x: [1, -1, 0.8, -0.9, -0.6, 0.6],  // Moisture (Moist↔Dry)
-    y: [1, -1, 0.4, -0.4, 0.9, 0.2],  // Tone (Tense↔Relaxed)
-    z: [1, -1, 0.6, -0.8, 0.3, -0.2], // Temperature (Hot↔Cold)
-    text: [
-      'Heat Excitation',
-      'Cold Depression',
-      'Damp Stagnation',
-      'Dry Atrophy',
-      'Wind Tension',
-      'Damp Relaxation'
-    ]
-  }];
-
-  const layout = {
-    scene: {
-      xaxis: {
-        title: 'Moisture (Moist ↔ Dry)',
-        titlefont: { color: '#55c4b5' },
-        tickfont: { color: '#aaa' },
-        color: '#55c4b5',
-        backgroundcolor: 'rgba(0,0,0,0)',
-        showspikes: false
-      },
-      yaxis: {
-        title: 'Tone (Tense ↔ Relaxed)',
-        titlefont: { color: '#3f8bd4' },
-        tickfont: { color: '#aaa' },
-        color: '#3f8bd4',
-        showspikes: false
-      },
-      zaxis: {
-        title: 'Temperature (Hot ↔ Cold)',
-        titlefont: { color: '#e88030' },
-        tickfont: { color: '#aaa' },
-        color: '#e88030',
-        showspikes: false
-      },
-      bgcolor: 'rgba(0,0,0,0)',
-      camera: { eye: { x: 1.5, y: 1.5, z: 1.2 } },
-      aspectratio: { x: 1, y: 1, z: 1 }
-    },
-    margin: { l: 0, r: 0, b: 0, t: 20 },
-    paper_bgcolor: 'transparent',
-    plot_bgcolor: 'transparent'
-  };
-
-  Plotly.newPlot(container, data, layout, { displayModeBar: false });
-}
-
 
 // === MAIN RESULTS RENDERING ===
 function showResults(patternType) {
@@ -1136,9 +1017,9 @@ if (phaseHTML) {
   card.appendChild(disclaimer);
 
   // render radar after content loaded
-setTimeout(() => {
-  renderEnergyMap3D();
-}, 100);
+//setTimeout(() => {
+//  renderEnergyMap3D();
+//}, 100);
 
   showPage("results-page");
 }
