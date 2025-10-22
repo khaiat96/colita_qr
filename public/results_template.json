@@ -140,24 +140,6 @@
     ],
     "relajacion": [
       "Cuando el tono corporal es bajo, la energía tiende a descender y los tejidos pierden contención. Aparecen fatiga, digestión lenta y sensación de debilidad general; mejora con calor suave, movimiento y descanso regular."
-    ],
-    "calor_humedad": [
-      "El calor espesa y la humedad retiene: genera inflamación y congestión (coágulos, calor interno, pesadez)."
-    ],
-    "frio_humedad": [
-      "El Fuego bajo no evapora ni moviliza líquidos: la humedad se acumula; mejora con tibieza y movimiento."
-    ],
-    "calor_sequedad": [
-      "El calor sostenido reseca los tejidos: provoca irritación, sed y sueño liviano."
-    ],
-    "frio_sequedad": [
-      "Poco Fuego y poca Agua dejan el cuerpo rígido y agotado: mejora con calor y aceites nutritivos."
-    ],
-    "tension_calor": [
-      "El Viento mueve el Fuego y el Fuego agita al Viento: se combinan espasmos con inflamación (cólicos, irritabilidad, enrojecimiento)."
-    ],
-    "tension_humedad": [
-      "La tensión atrapada en un medio denso genera nudos y pesadez; mejora al drenar y mover suavemente."
     ]
   }
   }, 
@@ -634,38 +616,6 @@
       "Evitar comidas muy pesadas o prolongar ayunos",
       "Masaje seco o cepillado corporal para estimular circulación"
       ]
-    },
-    "by_mixed": {
-      "calor_humedad": [
-        "Hidratación ligera y continua con limón",
-        "Vegetales amargos, evitar fritos y alcohol",
-        "Caminatas suaves + movimientos de torsión"
-      ],
-      "frio_humedad": [
-        "Bebidas tibias constantes (infusiones, caldos)",
-        "Caminatas post-comida para activar digestión",
-        "Fermentos tibios y sal marina moderada"
-      ],
-      "calor_sequedad": [
-        "Agua con minerales naturales y cítricos",
-        "Frutas jugosas y caldos claros refrescantes",
-        "Evitar sol directo y ambientes muy secos"
-      ],
-      "frio_sequedad": [
-        "Bebidas tibias frecuentes con grasas saludables",
-        "Estofados nutritivos y aceites de calidad",
-        "Humidificador + sueño temprano reparador"
-      ],
-      "tension_calor": [
-        "Respiración refrescante 4-6 entre actividades",
-        "Masaje suave de cuello y mandíbula",
-        "Limitar estimulantes después del mediodía"
-      ],
-      "tension_humedad": [
-        "Pausas activas cada hora con respiración",
-        "Fibra + amargos para metabolización hormonal",
-        "Drenaje linfático con piernas elevadas"
-      ]
     }
   },
   "how_herbs_work": {
@@ -713,55 +663,6 @@
         "Hierbas Adaptógenas ligeras → restauran energía sostenida"
       ],
       "combo_logic": "Objetivo: Tonificar y templar sin sobrecalentar; Mejora el tono y vitalidad general."
-      },
-      "calor_humedad": {
-        "mechanism": [
-          "Hierbas Enfriantes/Antiinflamatorias → bajan inflamación y calor",
-          "Hierbas Astringentes/Linfáticas → tonifican vasos y favorecen drenaje",
-          "Amargos → desatascan digestión y apoyan hígado"
-        ],
-        "combo_logic": "Enfriar + secar + drenar; reduce congestión y sensación de pesadez caliente."
-      },
-      "frio_humedad": {
-        "mechanism": [
-          "Hierbas Calentadoras Aromáticas → activan digestión y circulación",
-          "Hierbas Drenantes/Linfáticas → movilizan líquidos estancados",
-          "Amargos suaves → estimulan bilis sin enfriar en exceso"
-        ],
-        "combo_logic": "Templar + drenar + mover; resuelve ‘frío‑húmedo’ con estasis y pesadez."
-      },
-      "calor_sequedad": {
-        "mechanism": [
-          "Hierbas Demulcentes Enfriantes → calman e hidratan tejido irritado",
-          "Hierbas Antiinflamatorias/Astringentes → moderan calor y sostienen vasculatura",
-          "Amargos muy suaves → favorecen depuración sin resecar"
-        ],
-        "combo_logic": "Enfriar + humectar; calma calor mientras repone líquidos y protege mucosas."
-      },
-      "frio_sequedad": {
-        "mechanism": [
-          "Hierbas Demulcentes Nutritivas → restauran humedad tisular",
-          "Hierbas Calentadoras y Circulatorias → llevan fluido y calor a periferia",
-          "Hierbas Adaptógenas Nutritivas (opcional) → sostienen energía sin sobrecalentar"
-        ],
-        "combo_logic": "Humectar + templar + mover; útil en dolor por contracción ‘seca’ y baja vitalidad."
-      },
-      "tension_calor": {
-        "mechanism": [
-          "Hierbas Antiespasmódicas → liberan espasmo uterino",
-          "Hierbas Enfriantes/Antiinflamatorias → moderan calor local",
-          "Hierbas Nervinas Ansiolíticas → bajan reactividad del eje HPA y mejoran sueño"
-        ],
-        "combo_logic": "Relajar + enfriar; permite flujo sin nudos y reduce irritabilidad/ardor."
-      },
-      "tension_humedad": {
-        "mechanism": [
-          "Hierbas Antiespasmódicas → aflojan el ‘nudo’ pélvico",
-          "Hierbas Aromáticas Carminativas → reducen gas y estasis digestiva",
-          "Hierbas Linfáticas/Astringentes suaves → drenan y ordenan el flujo",
-          "Amargos suaves → mejoran manejo de grasas y residuos"
-        ],
-        "combo_logic": "Relajar + drenar + mover; despeja pesadez con cólicos y coágulos."
       }
     }
   },
