@@ -907,6 +907,29 @@ const resultsWaitlistForm = `
 `;
 card.insertAdjacentHTML('beforeend', resultsWaitlistForm);
 
+const joinBtn = card.querySelector('#results-join-waitlist-btn');
+if (joinBtn) {
+  joinBtn.addEventListener('click', async () => {
+    const name = card.querySelector('#results-waitlist-name').value.trim();
+    const email = card.querySelector('#results-waitlist-email').value.trim();
+    if (!name || !email) {
+      alert('Por favor ingresa tu nombre y correo.');
+      return;
+    }
+    try {
+      await fetch(WAITLIST_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, source: 'results_page' })
+      });
+      alert('¡Gracias! Te has unido a la lista de espera.');
+    } catch (err) {
+      console.error('Error joining waitlist:', err);
+      alert('Hubo un error. Por favor intenta de nuevo.');
+    }
+  });
+}
+
 
     // Disclaimer
   const disclaimer = document.createElement("p");
