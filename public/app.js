@@ -13,7 +13,7 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 5.0 - CACHE BUSTED');
+console.log('🚀 APP.JS LOADED - VERSION 5.1 - CACHE BUSTED');
 
 function scrollToWaitlist() {
   const waitlistSection = document.getElementById('waitlist-section');
@@ -934,7 +934,7 @@ function showResults(patternType) {
     card.appendChild(whySection);
   }
 
-  // --- Care Tips ---
+   // --- Care Tips ---
   const habits = result.care_tips?.by_pattern?.[patternType] || [];
   if (habits.length) {
     const habitsSection = document.createElement("div");
@@ -946,8 +946,7 @@ function showResults(patternType) {
     card.appendChild(habitsSection);
   }
 
-
-  // --- Colita de Rana Club Section ---
+  // --- Colita de Rana Club Section (BEFORE PHASE) ---
   const cdrContainer = document.createElement("section");
   cdrContainer.className = "cdr-section";
   cdrContainer.innerHTML = `
@@ -992,18 +991,17 @@ function showResults(patternType) {
     cdrContainer.appendChild(uniqueGrid);
   }
 
-
-// --- Phase Section ---
-const phaseHTML = renderPhase(patternType);
-if (phaseHTML) {
-  const phaseContainer = document.createElement('div');
-  phaseContainer.className = 'phase-section';
-  phaseContainer.innerHTML = phaseHTML;
-  card.appendChild(phaseContainer);
-}
-
-  // Append full subsection
+  // Append Colita de Rana section
   card.appendChild(cdrContainer);
+
+  // --- Phase Section (AFTER COLITA) ---
+  const phaseHTML = renderPhase(patternType);
+  if (phaseHTML) {
+    const phaseContainer = document.createElement('div');
+    phaseContainer.className = 'phase-section';
+    phaseContainer.innerHTML = phaseHTML;
+    card.appendChild(phaseContainer);
+  }
 
   // Disclaimer
   const disclaimer = document.createElement("p");
@@ -1015,7 +1013,6 @@ if (phaseHTML) {
 
   showPage("results-page");
 }
-
 
 window.showResults = showResults;
 

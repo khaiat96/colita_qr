@@ -2342,3 +2342,72 @@ canvas#radarChart {
   margin-top: 0.5rem;
   padding-left: 1.2rem;
 }
+
+/* ========== PHASE SECTION STYLING ========== */
+.phase-section {
+  margin-top: 40px;
+  padding: 30px;
+  background: linear-gradient(135deg, rgba(85, 196, 181, 0.08), rgba(63, 139, 212, 0.08));
+  border-radius: 16px;
+  border: 1px solid rgba(85, 196, 181, 0.2);
+}
+
+.phase-section h2 {
+  color: var(--color-primary);
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.phase-block {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border-left: 4px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.phase-block:last-child {
+  margin-bottom: 0;
+}
+
+.phase-block h5 {
+  color: var(--color-primary);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.phase-block > p {
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.phase-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 16px 0;
+}
+
+.phase-block ul li {
+  color: var(--color-text-secondary);
+  padding: 8px 0 8px 24px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.phase-block ul li::before {
+  content: "•";
+  position: absolute;
+  left: 8px;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.phase-block strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
