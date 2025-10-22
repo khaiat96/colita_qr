@@ -950,14 +950,10 @@ function showResults(patternType) {
 // --- Phase Section ---
 const phaseHTML = renderPhase(patternType);
 if (phaseHTML) {
-  const phaseContainer = document.getElementById('phase-section');
-  if (phaseContainer) {
-    phaseContainer.innerHTML = phaseHTML;
-  } else {
-    const fallback = document.createElement('div');
-    fallback.innerHTML = phaseHTML;
-    card.appendChild(fallback);
-  }
+  const phaseContainer = document.createElement('div');
+  phaseContainer.className = 'phase-section';
+  phaseContainer.innerHTML = phaseHTML;
+  card.appendChild(phaseContainer);
 }
 
   // --- Colita de Rana Club Section ---
