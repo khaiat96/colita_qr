@@ -2343,30 +2343,32 @@ canvas#radarChart {
   padding-left: 1.2rem;
 }
 
-/* ========== PHASE SECTION STYLING ========== */
+
+/* ========== PHASE SECTION STYLING (IMPROVED) ========== */
 .phase-section {
   margin-top: 40px;
-  padding: 30px;
-  background: linear-gradient(135deg, rgba(85, 196, 181, 0.08), rgba(63, 139, 212, 0.08));
-  border-radius: 16px;
-  border: 1px solid rgba(85, 196, 181, 0.2);
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 .phase-section h2 {
   color: var(--color-primary);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
   margin-bottom: 30px;
-  text-align: center;
+  text-align: left;
+  padding: 0 0 16px 0;
+  border-bottom: 2px solid rgba(85, 196, 181, 0.3);
 }
 
 .phase-block {
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 12px;
-  padding: 24px;
+  background: rgba(23, 42, 58, 0.6);
+  border-radius: 16px;
+  padding: 28px 32px;
   margin-bottom: 24px;
-  border-left: 4px solid var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(85, 196, 181, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .phase-block:last-child {
@@ -2375,39 +2377,75 @@ canvas#radarChart {
 
 .phase-block h5 {
   color: var(--color-primary);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  text-align: left;
 }
 
-.phase-block > p {
-  color: var(--color-text);
-  line-height: 1.6;
-  margin-bottom: 16px;
+.phase-block > p:first-of-type {
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.65;
+  margin-bottom: 24px;
+  font-size: 15px;
+  font-style: italic;
+  text-align: left;
 }
 
+/* Subsection headers (Alimentos, Haz, Evita, etc) */
+.phase-block > p > strong {
+  display: block;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 16px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+/* Lists inside phase blocks */
 .phase-block ul {
   list-style: none;
   padding: 0;
-  margin: 8px 0 16px 0;
+  margin: 0 0 20px 0;
+}
+
+.phase-block ul:last-child {
+  margin-bottom: 0;
 }
 
 .phase-block ul li {
-  color: var(--color-text-secondary);
-  padding: 8px 0 8px 24px;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 8px 0 8px 28px;
   position: relative;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-size: 14px;
+  text-align: left;
 }
 
 .phase-block ul li::before {
-  content: "•";
+  content: "·";
   position: absolute;
-  left: 8px;
+  left: 12px;
   color: var(--color-primary);
+  font-size: 20px;
   font-weight: bold;
+  line-height: 1;
 }
 
-.phase-block strong {
-  color: var(--color-text);
-  font-weight: 600;
+/* Special styling for the "Vibe" paragraph */
+.phase-block > p:last-of-type {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 16px;
+  margin-bottom: 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(85, 196, 181, 0.15);
+  text-align: left;
+}
+
+/* Specific color for emoji/icons in phase headers */
+.phase-block p strong::before {
+  margin-right: 8px;
 }
