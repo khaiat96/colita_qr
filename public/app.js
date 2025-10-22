@@ -1026,32 +1026,26 @@ function showResults(patternType) {
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
 
-  // ✅ EMAIL SECTION FOR PDF
-  const emailSection = document.createElement("div");
-  emailSection.className = "email-results-section";
-  emailSection.innerHTML = `
-    <div class="email-container">
-      <h4>📧 Recibe tus resultados por correo</h4>
-      <p>Te enviaremos un PDF con tus respuestas.</p>
-      <div class="email-form">
-        <input 
-          type="email" 
-          id="results-email-input" 
-          placeholder="tu@email.com"
-          class="email-input"
-        />
-        <button 
-          id="send-results-btn" 
-          class="btn-send-results"
-          onclick="sendResultsAsPDF()"
-        >
-          Enviar PDF
-        </button>
-      </div>
-      <p id="email-status-message" class="email-status"></p>
-    </div>
-  `;
-  card.appendChild(emailSection);
+<div class="waitlist-results-form">
+  <h2>Únete a la lista de espera</h2>
+  <div class="fields">
+    <input
+      type="text"
+      id="waitlist-name-input"
+      placeholder="Tu nombre"
+      required
+    />
+    <input
+      type="email"
+      id="waitlist-email-input"
+      placeholder="tu@email.com"
+      required
+    />
+  </div>
+  <button id="join-waitlist-button" class="btn-primary">
+    Enviar
+  </button>
+</div>
 
   showPage("results-page");
 }
@@ -1133,28 +1127,6 @@ window.updateNavigation = function() {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
 }
-
-//results waitlist
-async function joinWaitlist() {
-  const name = document.getElementById('waitlist-name-input').value.trim();
-  const email = document.getElementById('waitlist-email-input').value.trim();
-  if (!name || !email) {
-    alert('Por favor ingresa tu nombre y correo.');
-    return;
-  }
-  const payload = { name, email };
-  await fetch(WAITLIST_WEBHOOK, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  alert('¡Gracias! Te has unido a la lista de espera.');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('join-waitlist-button');
-  if (btn) btn.addEventListener('click', joinWaitlist);
-});
 
 // Helper function to extract all CSS
 async function getAllCSS() {
