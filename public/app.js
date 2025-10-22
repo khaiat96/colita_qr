@@ -159,24 +159,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-async function sendResultsAsPDF(email) {
-  const resultsHTML = document.getElementById('results-content').outerHTML;
-  
-  const payload = {
-    email: email,
-    resultsHTML: resultsHTML,  // ← This must be present
-    patternType: calculateResults(),
-    sessionId: sessionId,
-    timestamp: new Date().toISOString()
-  };
-
-  await fetch('YOUR_WEBHOOK_URL', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-}
-
 
 // ==================== WAITLIST FORM HANDLER ====================
 
@@ -770,123 +752,6 @@ function renderColitaIntro() {
   
 }
 
-// ==================== PDF GENERATION + EMAIL CONTROLS ====================
-
-/** Extract the results card as HTML */
-function extractResultsHTML() {
-  const resultsCard = document.getElementById('results-card');
-  if (!resultsCard) throw new Error('Results card not found');
-  const clone = resultsCard.cloneNode(true);
-  const buttons = clone.querySelectorAll('button');
-  buttons.forEach(btn => btn.remove());
-  const wrapper = document.createElement('div');
-  wrapper.className = 'pdf-results-wrapper';
-  wrapper.appendChild(clone);
-  return wrapper.outerHTML;
-}
-
-/** Extract all CSS rules referenced for correct styling in PDF */
-async function extractCSSContent() {
-  let allCSS = '';
-  const styleElements = document.querySelectorAll('style');
-  styleElements.forEach(style => { allCSS += style.textContent + '\n'; });
-  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
-  for (const link of linkElements) {
-    try {
-      const response = await fetch(link.href);
-      const css = await response.text();
-      allCSS += css + '\n';
-    } catch (e) {
-      console.warn(`Failed to fetch CSS from ${link.href}`, e);
-    }
-  }
-  return allCSS;
-}
-
-/** Generate and send/download PDF */
-async function generateAndSendPDF(email = null) {
-  try {
-    const resultsHTML = extractResultsHTML();
-    const cssContent = await extractCSSContent();
-    const payload = { resultsHTML, cssContent, email, sessionId };
-    const response = await fetch('/api/generate-pdf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) throw new Error('Failed to generate PDF');
-    const blob = await response.blob();
-    if (!email) {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `resultados-colita-de-rana-${sessionId}.pdf`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    }
-    return true;
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    throw error;
-  }
-}
-
-/** Add PDF & email controls to results page */
-function addPDFControls() {
-  const resultsCard = document.getElementById('results-card');
-  if (!resultsCard || document.getElementById('pdf-controls')) return;
-  const controlsContainer = document.createElement('div');
-  controlsContainer.id = 'pdf-controls';
-  controlsContainer.className = 'pdf-controls';
-  controlsContainer.style.cssText = 'margin-top: 30px; padding: 20px; text-align: center;';
-  // Download
-  const downloadBtn = document.createElement('button');
-  downloadBtn.className = 'btn-primary';
-  downloadBtn.innerHTML = '📄 Descargar resultados en PDF';
-  downloadBtn.style.cssText = 'margin: 10px;';
-  downloadBtn.addEventListener('click', async () => {
-    try {
-      downloadBtn.disabled = true;
-      downloadBtn.textContent = 'Generando PDF...';
-      await generateAndSendPDF(null);
-      downloadBtn.textContent = '✅ PDF descargado';
-      setTimeout(() => { downloadBtn.disabled = false; downloadBtn.innerHTML = '📄 Descargar resultados en PDF'; }, 3000);
-    } catch { alert('❌ Error al generar el PDF'); downloadBtn.disabled = false; downloadBtn.innerHTML = '📄 Descargar resultados en PDF'; }
-  });
-  // Email
-  const emailSection = document.createElement('div');
-  emailSection.style.cssText = 'margin-top: 20px;';
-  emailSection.innerHTML = `
-    <p style="margin-bottom: 10px; color: var(--color-text-secondary);">O recibe tus resultados por correo:</p>
-    <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
-      <input type="email" id="pdf-email-input" placeholder="tu@correo.com" class="form-control" style="max-width: 300px; flex: 1; min-width: 200px;" />
-      <button id="email-pdf-btn" class="btn-secondary">✉️ Enviar por email</button>
-    </div>`;
-  controlsContainer.appendChild(downloadBtn); controlsContainer.appendChild(emailSection); resultsCard.appendChild(controlsContainer);
-  // Email button logic
-  const emailBtn = document.getElementById('email-pdf-btn');
-  const emailInput = document.getElementById('pdf-email-input');
-  emailBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      alert('Por favor ingresa un correo electrónico válido.');
-      return;
-    }
-    try {
-      emailBtn.disabled = true; emailBtn.textContent = 'Enviando...';
-      await generateAndSendPDF(email);
-      emailBtn.textContent = '✅ Enviado'; emailInput.value = '';
-      alert(`✅ Tu reporte ha sido enviado a ${email}`);
-      setTimeout(() => { emailBtn.disabled = false; emailBtn.textContent = '✉️ Enviar por email'; }, 3000);
-    } catch {
-      alert('❌ Hubo un error al enviar el correo.');
-      emailBtn.disabled = false; emailBtn.textContent = '✉️ Enviar por email';
-    }
-  });
-}
-// Call `addPDFControls()` in your `showResults` logic after rendering
-
-
 function pickRitmoStateFromAnswers() {
   const p1 = answers.P1_regularity;
   if (p1 === "Irregular (varía >7 días entre ciclos)") return "irregular";
@@ -1018,6 +883,32 @@ function showResults(patternType) {
     card.appendChild(phaseContainer);
   }
 
+// --- After rendering all result sections but before showPage ---
+const resultsWaitlistForm = `
+  <div class="waitlist-results-form">
+    <h2>Únete a la lista de espera</h2>
+    <div class="fields">
+      <input
+        type="text"
+        id="results-waitlist-name"
+        placeholder="Tu nombre"
+        required
+      />
+      <input
+        type="email"
+        id="results-waitlist-email"
+        placeholder="tu@email.com"
+        required
+      />
+    </div>
+    <button id="results-join-waitlist-btn" class="btn-primary">
+      Enviar
+    </button>
+  </div>
+`;
+card.insertAdjacentHTML('beforeend', waitlistFormHtml);
+
+
     // Disclaimer
   const disclaimer = document.createElement("p");
   disclaimer.className = "results-disclaimer";
@@ -1026,26 +917,6 @@ function showResults(patternType) {
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
 
-<div class="waitlist-results-form">
-  <h2>Únete a la lista de espera</h2>
-  <div class="fields">
-    <input
-      type="text"
-      id="waitlist-name-input"
-      placeholder="Tu nombre"
-      required
-    />
-    <input
-      type="email"
-      id="waitlist-email-input"
-      placeholder="tu@email.com"
-      required
-    />
-  </div>
-  <button id="join-waitlist-button" class="btn-primary">
-    Enviar
-  </button>
-</div>
 
   showPage("results-page");
 }
