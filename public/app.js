@@ -157,6 +157,24 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
+async function sendResultsAsPDF(email) {
+  const resultsHTML = document.getElementById('results-content').outerHTML;
+  
+  const payload = {
+    email: email,
+    resultsHTML: resultsHTML,  // ← This must be present
+    patternType: calculateResults(),
+    sessionId: sessionId,
+    timestamp: new Date().toISOString()
+  };
+
+  await fetch('YOUR_WEBHOOK_URL', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
+
 
 // ==================== WAITLIST FORM HANDLER ====================
 
@@ -1213,86 +1231,3 @@ async function getAllCSS() {
   
   return allCSS;
 }
-
-// 1. Grab your webhook URL from Make.com
-const PDF_WEBHOOK_URL = 'https://hook.us2.make.com/x85saa0ur1u1fac79amcvmdjlbnpixaw';
-
-// 2. Define the sendResultsAsPDF function
-async function sendResultsAsPDF() {
-  // Get the user’s email from your input field
-  const emailInput = document.getElementById('pdf-email-input');
-  const email = emailInput.value.trim();
-  if (!email) {
-    alert('Por favor ingresa tu correo electrónico.');
-    return;
-  }
-
-  // Get the HTML of the results container
-  const resultsContainer = document.getElementById('results-container');
-  const resultsHTML = resultsContainer.outerHTML;
-
-  // Get your CSS as text (optional, if you need inline styles)
-  const cssContent = Array.from(document.styleSheets)
-    .map(sheet => {
-      try {
-        return Array.from(sheet.cssRules).map(rule => rule.cssText).join('');
-      } catch (e) {
-        return '';
-      }
-    })
-    .join('');
-
-  // Build payload
-  const payload = {
-    email,
-    resultsHTML,
-    cssContent
-  };
-
-  // Send to Make.com webhook
-  await fetch(PDF_WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  alert('Enviando tu PDF al correo…');
-}
-
-// 3. Attach to your button
-document.getElementById('send-pdf-button')
-  .addEventListener('click', sendResultsAsPDF);
-
-
-// Replace with your actual webhook URL from Make.com
-const PDF_WEBHOOK_URL = 'https://hook.us2.make.com/YOUR_WEBHOOK_ID';
-
-// Function to send results HTML + email
-async function sendResultsAsPDF() {
-  const emailInput = document.getElementById('pdf-email-input');
-  const email = emailInput.value.trim();
-  if (!email) {
-    alert('Por favor ingresa tu correo electrónico.');
-    return;
-  }
-
-  // Grab the full results HTML
-  const resultsContainer = document.getElementById('results-container');
-  const resultsHTML = resultsContainer.outerHTML;
-
-  // Build and send payload
-  const payload = { email, resultsHTML };
-  await fetch(PDF_WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-
-  alert('Tu PDF está en camino al correo.');
-}
-
-// Attach click handler once DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('send-pdf-button');
-  if (btn) btn.addEventListener('click', sendResultsAsPDF);
-});
