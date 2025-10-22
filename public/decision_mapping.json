@@ -2,75 +2,43 @@
 {
 
   "meta": {
-
-    "version": "decision_mapping_v3.5_tissue6",
-
+    "version": "decision_mapping_v6_tissue6",
     "description": "Scoring aligned to 6 tissue states (incl. tono bajo = relajación) prioritizing menstrual tissue states over constitucionales; añade reglas condicionales para diferenciar Humedad vs Relajación, un follow-up Calor vs Tensión, y reduce el peso de señales de temperatura corporal/preferencias salvo como refuerzo de patrón.",
-
     "last_updated": "2025-10-22",
-
     "scoring_variables": [
-
       "tension",
-
       "calor",
-
       "frio",
-
       "humedad",
-
       "sequedad",
-
       "relajacion"
-
     ],
 
     "non_scored_questions": [
-
       "P0_nombre",
-
       "consent_data_usage",
-
       "consent_data_safety"
-
     ],
 
     "tissue_state_mapping": {
-
       "heat_excitation": "Fuego — calor (+tensión)",
-
       "cold_depression": "Tierra — frío + sequedad",
-
       "damp_stagnation": "Agua — humedad + frío",
-
       "dry_atrophy": "Aire — sequedad (+tensión)",
-
       "wind_tension": "Aire — tensión",
-
       "damp_relaxation": "Agua — relajación (bajo tono) + humedad"
-
     }
-
   },
 
   "decision_map": {
-
     "P0_contraception": {
-
       "hormonal_sistemica": {
-
         "scores": {
-
           "frio": 3,
-
           "sequedad": 3,
-
           "tension": 1,
-
           "humedad": -2,
-
           "relajacion": 1
-
         },
 
         "context_note": "Anticoncepción hormonal puede aplanar señales y asociarse a tono más bajo en algunas personas."
@@ -78,17 +46,11 @@
       },
 
       "hormonal_larga": {
-
         "scores": {
-
           "frio": 4,
-
           "sequedad": 4,
-
           "tension": 2,
-
           "relajacion": 1
-
         },
 
         "context_note": "Métodos de acción prolongada pueden suprimir más el patrón natural."
@@ -96,1874 +58,1043 @@
       },
 
       "ninguna": {
-
         "scores": {},
-
         "context_note": "Patrones cíclicos más observables."
-
       }
-
     },
 
     "P1_regularity": {
-
       "Regular (24–35 días)": {
-
         "scores": {
-
           "sequedad": 0
-
         }
-
       },
-
       "Irregular (varía >7 días entre ciclos)": {
-
         "scores": {
-
           "tension": 4,
-
-          "sequedad": 2
-
+          "sequedad": 1
         },
-
         "note": "Irregularidad = viento/tensión."
-
       },
 
       "No tengo sangrado actualmente": {
-
         "scores": {
-
           "sequedad": 4,
-
           "frio": 3,
-
           "relajacion": 1
-
         }
-
       }
-
     },
 
     "P1_no_cycle_desde_cuando": {
-
       "<3m": {
-
         "scores": {
-
           "sequedad": 2,
-
           "frio": 2
-
         }
-
       },
-
       "3–6m": {
-
         "scores": {
-
           "sequedad": 3,
-
           "frio": 3
-
         }
-
       },
-
       ">6m": {
-
         "scores": {
-
           "sequedad": 4,
-
           "frio": 4,
-
           "relajacion": 2
-
         }
-
       }
-
     },
 
     "P1_amenorrea_contexto": {
-
       "lactancia": {
-
         "scores": {
-
           "sequedad": 2,
-
           "relajacion": 1
-
         }
-
       },
 
       "cambios_peso": {
-
         "scores": {
-
           "sequedad": 3,
-
           "frio": 2,
-
           "relajacion": 1
-
         }
-
       },
 
       "estres_alto": {
-
         "scores": {
-
           "tension": 4,
-
           "sequedad": 3
-
         }
-
       },
 
       "ejercicio_intenso": {
-
         "scores": {
-
           "sequedad": 3,
-
           "frio": 2
-
         }
-
       },
 
       "antecedentes_tiroideos": {
-
         "scores": {
-
           "sequedad": 3,
-
           "frio": 3,
-
           "relajacion": 1
-
         }
-
       },
 
       "menopausia_posible": {
-
         "scores": {
-
           "sequedad": 4,
-
           "frio": 3,
-
           "relajacion": 2
-
         }
-
       },
 
       "Ninguna de las anteriores": {
-
         "scores": {}
-
       }
-
     },
 
     "P2_sintomas": {
 
       "Dolor o cólicos": {
-
         "scores": {
-
           "tension": 4,
-
           "calor": 1
-
         },
-
         "note": "Cólicos = viento/tensión."
-
       },
 
       "Ligera": {
-
         "scores": {
-
           "sequedad": 3,
-
           "frio": 1
-
         },
-
         "note": "Flujo escaso = sequedad/frío."
-
       },
 
       "Abundante": {
-
         "scores": {
-
           "humedad": 5,
-
           "calor": 1,
-
           "relajacion": 1
-
         },
-
         "note": "Flujo abundante = humedad (estasis) y a veces tono bajo."
-
       },
 
       "Hinchazón o retención de líquidos": {
-
         "scores": {
-
           "humedad": 5,
-
           "relajacion": 2
-
         },
-
         "note": "Retención = humedad; suma a tono bajo."
-
       },
 
       "Manchado entre reglas": {
-
         "scores": {
-
           "calor": 2,
-
           "humedad": 1
-
         }
-
       },
 
       "Cambios de ánimo / ansiedad": {
-
         "scores": {
-
           "tension": 4,
-
           "frio": 1
-
         },
 
         "note": "Ansiedad = tensión."
-
       },
 
       "Brotes o acné": {
-
         "scores": {
-
           "calor": 2,
-
           "humedad": 1
-
         }
-
       },
 
       "Fatiga o cansancio extremo": {
-
         "scores": {
-
           "frio": 4,
-
           "sequedad": 2,
-
           "relajacion": 2
-
         },
-
         "note": "Fatiga = frío/depresión; puede coexistir con tono bajo."
-
       },
 
       "Sensibilidad en los senos": {
-
         "scores": {
-
           "humedad": 2,
-
           "tension": 1,
-
           "relajacion": 1
-
         }
-
       },
-
       "Ninguna de las anteriores": {
-
         "scores": {}
-
       }
-
     },
 
     "P2_spotting_frecuencia": {
-
       "spot_ocasional": {
-
         "scores": {
-
           "calor": 1
-
         }
-
       },
-
       "spot_a_veces": {
-
         "scores": {
-
           "calor": 2
-
         }
-
       },
-
       "spot_frecuente": {
-
         "scores": {
-
           "calor": 3,
-
           "humedad": 1
-
         }
-
       }
-
     },
 
     "P2_hinchazon_severidad": {
-
       "variable_map": {
-
         "humedad": 0.45,
-
         "relajacion": 0.15
-
       },
-
       "note": "Hinchazón intensa = humedad; tono bajo aporta a sensación de pesadez."
-
     },
 
     "P2_fatiga_severidad": {
-
       "variable_map": {
-
         "frio": 0.35,
-
         "sequedad": 0.15,
-
         "relajacion": 0.35
-
       },
-
       "note": "Fatiga sostenida = frío/depresión y posible tono bajo."
-
     },
 
     "P2_animo_severidad": {
-
       "variable_map": {
-
         "tension": 0.4,
-
         "calor": 0.1
-
       },
-
       "note": "Cambios de ánimo/ansiedad = tensión predominante."
-
     },
 
     "P2_acne": {
-
       "acne_caliente_rojo": {
-
         "scores": {
-
           "calor": 3,
-
           "humedad": 1
-
         }
-
       },
-
       "acne_humedo_lento": {
-
         "scores": {
-
           "humedad": 3,
-
           "frio": 1
-
         }
-
       },
-
       "no": {
-
         "scores": {}
-
       }
-
     },
 
     "P2_duracion_dias": {
-
       "variable_map": {
-
         "humedad": 0.15,
-
         "relajacion": 0.1
-
       },
-
       "note": "Duración >5 días sugiere humedad/estasis; el tono bajo puede prolongar goteo."
-
     },
 
     "P2_cantidad": {
-
       "variable_map": {
-
         "humedad": 0.32,
-
         "relajacion": 0.2
-
       },
-
       "note": "Cantidad alta = humedad; tono bajo puede favorecer 'inundación'."
-
     },
 
     "P2_color": {
-
       "rojo_brillante": {
-
         "scores": {
-
           "calor": 4
-
         },
-
         "note": "Rojo brillante = calor/excitación."
-
       },
-
       "rojo_oscuro": {
-
         "scores": {
-
           "frio": 2,
-
           "humedad": 2
-
         },
-
         "note": "Rojo oscuro = frío + humedad."
-
       },
 
       "marron": {
-
         "scores": {
-
           "frio": 4,
-
           "sequedad": 1
-
         },
-
         "note": "Marrón = estasis por frío."
-
       },
 
       "rosa_aguado": {
-
         "scores": {
-
           "sequedad": 3,
-
           "frio": 1
-
         },
-
         "note": "Rosa/acuoso = deficiencia/atrofia."
-
       }
-
     },
 
     "P2_textura": {
-
       "coagulos": {
-
         "scores": {
-
           "humedad": 6,
-
           "frio": 4,
-
           "relajacion": 1
-
         },
-
         "note": "Coágulos = humedad/estasis; tono bajo puede coexistir."
-
       },
 
       "fluido": {
-
         "scores": {
-
           "calor": 2
-
         },
-
         "note": "Flujo fluido = calor/fluidez."
-
       },
 
       "espeso": {
-
         "scores": {
-
           "humedad": 4,
-
           "frio": 3
-
         },
-
         "note": "Espeso/pegajoso = humedad/frío."
-
       }
-
     },
 
     "P2_coagulo_tamano": {
-
       "<0cm": {
-
         "scores": {}
-
       },
-
       "<1cm": {
-
         "scores": {
-
           "humedad": 2,
-
           "frio": 1,
-
           "relajacion": 1
-
         }
-
       },
-
       "1–2.4cm": {
-
         "scores": {
-
           "humedad": 5,
-
           "frio": 3,
-
           "relajacion": 1
-
         },
-
         "note": "Coágulos medianos = estasis notable."
-
       },
-
       ">2.4cm": {
-
         "scores": {
-
           "humedad": 7,
-
           "frio": 5,
-
           "relajacion": 1
-
         },
-
         "note": "Coágulos grandes = estasis severa."
-
       }
-
     },
 
     "P2_patron_flujo": {
-
       "empieza_termina_marron": {
-
         "scores": {
-
           "frio": 3,
-
           "humedad": 1
-
         },
-
         "note": "Inicio/fin café = estasis por frío."
-
       },
 
       "oleadas_inundaciones": {
-
         "scores": {
-
           "calor": 2,
-
           "humedad": 3,
-
           "relajacion": 2
-
         },
-
         "note": "‘Inundación’ = calor + humedad; tono bajo puede facilitar."
-
       },
 
       "goteo_lento_prolongado": {
-
         "scores": {
-
           "sequedad": 2,
-
           "frio": 2,
-
           "relajacion": 3
-
         },
-
         "note": "Goteo prolongado = deficiencia/tono bajo."
-
       },
 
       "intermitente": {
-
         "scores": {
-
           "tension": 4
-
         },
-
         "note": "Intermitente = viento/tensión."
-
       }
-
     },
 
     "P2q_dolor_severidad": {
-
       "scale_factor": 0.5,
-
       "variable": "tension",
-
       "note": "Dolor intenso = patrón viento/tensión."
-
     },
 
     "P2q_dolor_caracter": {
-
       "punzante_localizado": {
-
         "scores": {
-
           "calor": 3,
-
           "tension": 2
-
         },
-
         "note": "Punzante/localizado = calor + tensión."
-
       },
-
       "sordo_pesado": {
-
         "scores": {
-
           "humedad": 5,
-
           "frio": 4,
-
           "relajacion": 1
-
         },
-
         "note": "Sordo/pesado = humedad/frío; añade bajo tono."
-
       },
-
       "ardor_caliente": {
-
         "scores": {
-
           "calor": 4,
-
           "tension": 1
-
         }
-
       },
-
       "espasmodico": {
-
         "scores": {
-
           "tension": 5,
-
           "humedad": 1
-
         },
-
         "note": "Espasmódico = viento/tensión."
-
       }
-
     },
-
     "P3_cuerpo": {
-
       "supportive_only": true,
-
       "Calor, enrojecimiento": {
-
         "scores": {
-
           "calor": 1
-
         },
-
         "note": "Calor durante la regla (aporta como refuerzo, no define patrón por sí solo)."
-
       },
-
       "Frío en manos/pies": {
-
         "scores": {
-
           "frio": 1
-
         },
-
         "note": "Frío periférico durante la regla (refuerzo de patrón)."
-
       },
-
       "Hinchazón, pesadez, retención": {
-
         "scores": {
-
           "humedad": 4,
-
           "relajacion": 1
-
         },
-
         "note": "Pesadez = humedad; sugiere bajo tono."
-
       },
 
       "Sequedad (piel, mucosas)": {
-
         "scores": {
-
           "sequedad": 2
-
         },
-
         "note": "Sequedad en periodo."
-
       },
-
       "Ninguna de las anteriores": {
-
         "scores": {}
-
       }
-
     },
 
     "P2b_sintomas_premenstruales": {
-
       "irritabilidad": {
-
         "scores": {
-
           "calor": 3,
-
           "tension": 2
-
         },
-
         "note": "Irritabilidad premenstrual = calor + tensión."
-
       },
 
       "tristeza": {
-
         "scores": {
-
           "frio": 3
-
         },
-
         "note": "Tristeza PMS = frío/depresión."
-
       },
 
       "antojos": {
-
         "scores": {
-
           "humedad": 2
-
         },
 
         "note": "Antojos = humedad."
-
       },
 
       "insomnio": {
-
         "scores": {
-
           "tension": 3,
-
           "calor": 2
-
         },
-
         "note": "Insomnio PMS = tensión + calor."
-
       },
-
       "ninguno": {
-
         "scores": {}
-
       }
-
     },
 
     "P6_energia": {
 
       "Con subidas y bajadas marcadas": {
-
         "scores": {
-
           "tension": 2
-
         }
-
       },
 
       "Ráfagas de energía": {
-
         "scores": {
-
           "calor": 2,
-
           "tension": 1
-
         }
-
       },
 
       "Lenta, pesada, con poca motivación": {
-
         "scores": {
-
           "humedad": 3,
-
           "frio": 2,
-
           "relajacion": 2
-
         }
-
       },
 
       "Agotada, drenada": {
-
         "scores": {
-
           "frio": 4,
-
           "sequedad": 2,
-
           "relajacion": 3
-
         }
-
       },
-
       "Ninguna de las anteriores": {
-
         "scores": {}
-
       }
-
     },
 
     "P4_emocional": {
-
       "sensible": {
-
         "scores": {}
-
       },
 
       "irritable": {
-
         "scores": {
-
           "tension": 1,
-
           "calor": 1
-
         }
-
       },
 
       "triste": {
-
         "scores": {
-
           "frio": 1
-
         }
-
       },
 
       "ansiosa": {
-
         "scores": {
-
           "tension": 2
-
         }
-
       },
 
       "normal": {
-
         "scores": {}
-
       }
-
     },
 
     "P4_timing_emocional": {
-
       "antes": {
-
         "scores": {}
-
       },
 
       "durante": {
-
         "scores": {}
-
       },
 
       "despues": {
-
         "scores": {}
-
       },
 
       "sin_patron": {
-
         "scores": {
-
           "tension": 1
-
         }
-
       }
-
     },
 
     "P5_sed": {
-
       "supportive_only": true,
-
       "bebidas_frias": {
-
         "scores": {
-
           "calor": 0.5
-
         }
-
       },
 
       "bebidas_calientes": {
-
         "scores": {
-
           "frio": 0.5
-
         }
-
       },
 
       "temperatura_ambiente": {
-
         "scores": {}
-
       },
-
       "sin_preferencia": {
-
         "scores": {}
-
       }
 
     },
 
     "P7_signos_corporales": {
-
       "Sed intensa": {
-
         "scores": {
-
           "sequedad": 2,
-
           "calor": 1
-
         }
 
       },
 
       "Piel muy seca": {
-
         "scores": {
-
           "sequedad": 2
-
         }
 
       },
 
       "Sudor pegajoso": {
-
         "scores": {
-
           "humedad": 1,
-
           "calor": 0.5,
-
           "relajacion": 0.5
-
         }
 
       },
 
       "Poco sudor con calor": {
-
         "scores": {
-
           "sequedad": 1,
-
           "frio": 0.25
-
         }
-
       },
 
       "Ninguna de las anteriores": {
-
         "scores": {}
-
       }
-
     },
 
     "P7b_sequedad_detalle": {
-
       "boca_seca": {
-
         "scores": {
-
           "sequedad": 1
-
         }
-
       },
 
       "ojos_secos": {
-
         "scores": {
-
           "sequedad": 1
-
         }
-
       },
-
       "lubricacion_baja": {
-
         "scores": {
-
           "sequedad": 3
-
         }
-
       },
-
       "sed_nocturna": {
-
         "scores": {
-
           "sequedad": 1,
-
           "calor": 0.5
-
         }
-
       },
 
       "piel_muy_seca": {
-
         "scores": {
-
           "sequedad": 1
-
         }
-
       },
 
       "Ninguna de las anteriores": {
-
         "scores": {}
-
       }
-
     },
 
     "P7c_sensibilidad_clima": {
-
       "supportive_only": true,
-
       "sensible_frio": {
-
         "scores": {
-
           "frio": 0.5
-
         }
-
       },
-
       "sensible_calor": {
-
         "scores": {
-
           "calor": 0.5
-
         }
-
       },
 
       "sensible_humedad": {
-
         "scores": {
-
           "humedad": 0.5
-
         }
 
       },
 
       "sensible_sequedad": {
-
         "scores": {
-
           "sequedad": 0.5
-
         }
-
       },
 
       "no_sensible": {
-
         "scores": {}
-
       }
-
     },
 
     "P8_sueno_calidad": {
-
       "inverse_scale": true,
-
       "scale_factor": 0.2,
-
       "variable": "tension",
-
       "note": "Sueño pobre = mayor tensión."
-
     },
 
     "P8a_estres": {
-
       "scale_factor": 0.3,
-
       "variable": "tension",
-
       "note": "Estrés elevado incrementa tensión."
-
     },
 
     "P8b_ejercicio": {
-
       "ninguno": {
-
         "scores": {
-
           "humedad": 1,
-
           "frio": 0.5,
-
           "relajacion": 1
-
         }
-
       },
-
       "1–2_dias_sem": {
-
         "scores": {}
-
       },
-
       "3–5_dias_sem": {
-
         "scores": {}
-
       },
-
       "6–7_dias_sem": {
-
         "scores": {
-
           "sequedad": 2,
-
           "tension": 1
-
         }
-
       }
-
     },
 
     "P8c_cafeina": {
-
       "0": {
-
         "scores": {}
-
       },
-
       "1": {
-
         "scores": {
-
           "tension": 0
-
         }
-
+      },
+      "3": {
+        "scores": {
+          "tension": 0
+        }
       },
 
-      "2": {
-
+      "4+": {
         "scores": {
-
-          "tension": 0
-
-        }
-
-      },
-
-      "3+": {
-
-        "scores": {
-
           "tension": 2
-
         }
-
       }
-
     }
-
   },
 
   "conditional_logic": {
-
     "modifiers": [
-
       {
-
         "id": "relajacion_boost_no_coagulos_goteo",
-
         "when_all": [
-
           {
-
             "any_of": [
-
               {
-
                 "question": "P2_textura",
-
                 "equals": "fluido"
-
               },
-
               {
-
                 "question": "P2_textura",
-
                 "equals": "espeso"
-
               },
-
               {
-
                 "question": "P2_coagulo_tamano",
-
                 "in": [
-
                   "<0cm",
-
                   "<1cm"
-
                 ]
-
               }
-
             ]
-
           },
-
           {
-
             "question": "P2_patron_flujo",
-
             "equals": "goteo_lento_prolongado"
-
           }
-
         ],
-
         "adjust": {
-
           "add_scores": {
-
             "relajacion": 2
-
           }
-
         },
-
         "note": "Si no hay coágulos o son muy pequeños, y hay goteo prolongado, priorizar tono bajo sobre humedad."
-
       },
 
       {
-
         "id": "relajacion_boost_fatiga_alta_no_coagulos",
-
         "when_all": [
-
           {
-
             "any_of": [
-
               {
-
                 "question": "P2_textura",
-
                 "not_equals": "coagulos"
-
               },
-
               {
-
                 "question": "P2_coagulo_tamano",
-
                 "in": [
-
                   "<0cm",
-
                   "<1cm"
-
                 ]
-
               }
-
             ]
-
           },
 
           {
-
             "question": "P2_fatiga_severidad",
-
             "gte": 7
-
           }
-
         ],
 
         "adjust": {
-
           "variable_map_multiplier": {
-
             "target_question": "P2_fatiga_severidad",
-
             "variable": "relajacion",
-
             "multiplier": 1.45
-
           }
-
         },
-
         "note": "Fatiga alta sin coágulos significativos inclina hacia Relajación (bajo tono)."
-
       },
-
       {
-
         "id": "amenorrhea_6m_bias",
-
         "when_all": [
-
           {
-
             "question": "P1_regularity",
-
             "equals": "No tengo sangrado actualmente"
-
           },
-
           {
-
             "question": "P1_no_cycle_desde_cuando",
-
             "equals": ">6m"
-
           }
-
         ],
 
         "adjust": {
-
           "add_scores": {
-
             "sequedad": 1,
-
             "frio": 1,
-
             "relajacion": 1
-
           }
-
         },
 
         "trigger_advisories": [
-
           "amenorrhea_6m"
-
         ],
-
         "note": "Amenorrea >6m: reforzar Tierra (frío+sequedad) y posible bajo tono."
-
       },
-
       {
-
         "id": "amenorrhea_lactancia_bias",
-
         "when_all": [
-
           {
-
             "question": "P1_regularity",
-
             "equals": "No tengo sangrado actualmente"
-
           },
-
           {
-
             "question": "P1_no_cycle_desde_cuando",
-
             "equals": ">6m"
-
           },
-
           {
-
             "question": "P1_amenorrea_contexto",
-
             "equals": "lactancia"
-
           }
-
         ],
-
         "adjust": {
-
           "add_scores": {
-
             "sequedad": 1,
-
             "relajacion": 1
-
           }
-
         },
 
         "trigger_advisories": [
-
           "amenorrhea_lactancia"
-
         ],
-
         "note": "Amenorrea en lactancia prolongada: sesgo a sequedad y bajo tono."
-
       },
-
       {
-
         "id": "amenorrhea_menopausia_bias",
-
         "when_all": [
-
           {
-
             "question": "P1_regularity",
-
             "equals": "No tengo sangrado actualmente"
-
           },
-
           {
-
             "question": "P1_no_cycle_desde_cuando",
-
             "equals": ">6m"
-
           },
-
           {
-
             "any_of": [
-
               {
-
                 "question": "P1_amenorrea_contexto",
-
                 "equals": "menopausia_posible"
-
               }
-
             ]
-
           }
-
         ],
-
         "adjust": {
-
           "add_scores": {
-
             "sequedad": 1,
-
             "frio": 1,
-
             "relajacion": 1
-
           }
-
         },
-
         "trigger_advisories": [
-
           "amenorrhea_menopausia"
-
         ],
-
         "note": "Amenorrea perimenopáusica: reforzar sequedad, frío y bajo tono."
-
       }
-
     ],
-
     "follow_ups": [
-
       {
-
         "id": "FU1_calor_tension_refine",
-
         "trigger_when_all": [
-
           {
-
             "question": "P2q_dolor_caracter",
-
             "equals": "espasmodico"
-
           },
-
           {
-
             "question": "P2_color",
-
             "equals": "rojo_brillante"
-
           }
-
         ],
-
         "question_text": "Cuando tienes espasmos y el sangrado es rojo brillante, ¿qué describe mejor la sensación predominante?",
-
         "type": "single_choice",
-
         "options": {
-
           "ardor_caliente": {
-
             "label": "Ardor/caliente",
-
             "scores": {
-
               "calor": 2
-
             },
-
             "primary_bias": "calor"
-
           },
-
           "nervioso_irritable": {
-
             "label": "Nerviosa/irritable",
-
             "scores": {
-
               "tension": 2
-
             },
-
             "primary_bias": "tension"
-
           }
-
         },
-
         "note": "Pequeño desempate para frontera Calor vs Tensión en contexto de espasmo con sangre brillante."
-
       }
-
     ],
 
     "supportive_weighting_rules": [
-
       {
-
         "id": "supportive_sections_rule",
-
         "sections": [
-
           "P3_cuerpo",
-
           "P5_sed",
-
           "P7c_sensibilidad_clima"
-
         ],
 
         "apply_only_if_any_true": [
-
           {
-
             "question": "P2_color",
-
             "in": [
-
               "rojo_brillante",
-
               "rojo_oscuro",
-
               "marron",
-
               "rosa_aguado"
-
             ]
-
           },
-
           {
-
             "question": "P2q_dolor_caracter",
-
             "in": [
-
               "espasmodico",
-
               "sordo_pesado",
-
               "ardor_caliente",
-
               "punzante_localizado"
-
             ]
-
           },
-
           {
-
             "question": "P2_patron_flujo",
-
             "in": [
-
               "goteo_lento_prolongado",
-
               "oleadas_inundaciones",
-
               "empieza_termina_marron",
-
               "intermitente"
-
             ]
-
           },
 
           {
-
             "question": "P2_cantidad",
-
             "exists": true
-
           },
-
           {
-
             "question": "P2_duracion_dias",
-
             "exists": true
-
           }
-
         ],
-
         "note": "Señales de temperatura corporal y preferencias suman solo como refuerzo si hay evidencia menstrual específica."
-
       }
-
     ],
-
     "advisories": {
 
       "amenorrhea_6m": {
-
         "title": "Amenorrea mayor a 6 meses",
-
         "message": "Si llevas más de 6 meses sin sangrado, considera una evaluación médica para descartar causas subyacentes. Nuestro enfoque sugiere tendencia a Tierra (frío + sequedad) con posible bajo tono.",
-
         "priority": "high"
-
       },
 
       "amenorrhea_lactancia": {
-
         "title": "Amenorrea en lactancia",
-
         "message": "La lactancia puede suprimir el ciclo. Apoyo suave a la recuperación del tono y reservas es prioritario; consulta si te preocupa la ausencia prolongada de sangrado.",
-
         "priority": "high"
 
       },
 
       "amenorrhea_menopausia": {
-
         "title": "Amenorrea y posible perimenopausia",
-
         "message": "Cambios de ciclo a los 45+ pueden indicar transición menopáusica. Enfoque en Tierra (frío + sequedad) y Relajación según tus síntomas.",
-
         "priority": "high"
-
       }
 
     }
-
   },
 
   "scoring_notes": {
-
     "tension": "Viento/Tensión — espasmos, cólicos, ansiedad, irregularidad, síntomas intermitentes.",
-
     "calor": "Calor/Excitación — inflamación, sangre rojo brillante, irritabilidad, sed, sueño ligero.",
-
     "frio": "Frío/Depresión — sangre oscura/marrón, fatiga, metabolismo lento, dolor que mejora con calor.",
-
     "humedad": "Humedad/Estasis — flujo abundante, coágulos, hinchazón, pesadez, digestión lenta.",
-
     "sequedad": "Sequedad/Atrofia — flujo escaso, mucosas secas, agotamiento, sangre pálida/acuosa.",
-
     "relajacion": "Relajación/Bajo tono — laxitud, pesadez sin inflamación, ‘inundación’ con fatiga, sueño no reparador, mejora con movimiento suave."
-
   },
 
   "clinical_notes": {
-
     "logic": "Se añaden reglas condicionales para: (1) desplazar el peso hacia Relajación cuando hay goteo prolongado y fatiga alta sin coágulos o con coágulos muy pequeños; (2) un micro-follow-up para diferenciar Calor vs Tensión cuando coexisten espasmos y rojo brillante; (3) reforzar puntaje y avisos en amenorrea >6m (lactancia y 45+). Las señales de temperatura corporal y preferencias se consideran solo reforzadoras (peso reducido) si ya existe evidencia menstrual.",
-
     "archetype_formulas": {
-
       "Fuego": "calor ± tensión",
-
       "Aire": "tensión ± sequedad",
-
       "Agua": "humedad ± relajación; humedad + frío = estasis",
-
       "Tierra": "frío + sequedad (depleción)"
-
     }
-
   }
 
 }
-
