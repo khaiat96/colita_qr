@@ -643,11 +643,11 @@ function renderPhase(patternKey) {
       <div class="phase-block">
         <h5>${phaseInfo.label}</h5>
         <p>${about}</p>
-        ${foods.length ? `<p>🍲 <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
-        ${doList.length ? `<p>✅ <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
-        ${avoid.length ? `<p>🚫 <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
-        ${movement.length ? `<p>🏃‍♀️ <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
-        ${vibe ? `<p>💫 <strong>Vibe:</strong> ${vibe}</p>` : ""}
+        ${foods.length ? `<p> <strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
+        ${doList.length ? `<p> <strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
+        ${avoid.length ? `<p> <strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
+        ${movement.length ? `<p> <strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
+        ${vibe ? `<p> <strong>Vibra:</strong> ${vibe}</p>` : ""}
       </div>`;
   }
 
