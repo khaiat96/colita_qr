@@ -183,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-
   const resultsWaitlistForm = document.getElementById('results-waitlist-form');
   if (resultsWaitlistForm) {
     resultsWaitlistForm.addEventListener('submit', async function(e) {
