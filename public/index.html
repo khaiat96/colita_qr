@@ -149,7 +149,7 @@
     </div>
   </div>
 
-<!-- === Results Page === -->
+<!-- === Results Page (replaced content) === -->
 <div id="results-page" class="page">
   <header class="app-header">
     <h1 class="brand-name">🌿 Colita de Rana</h1>
@@ -158,26 +158,33 @@
   <main class="results-container">
     <!-- JS writes all results into this: -->
     <div id="results-card" class="results-card"></div>
-  <!-- Temporary Join Waitlist Form -->
-  <div class="waitlist-join-form">
-    <input
-      type="text"
-      id="waitlist-name-input"
-      placeholder="Tu nombre"
-      required
-    />
-    <input
-      type="email"
-      id="waitlist-email-input"
-      placeholder="tu@email.com"
-      required
-    />
-    <button id="join-waitlist-button" class="btn-primary">
-      Unirme a la lista de espera
-    </button>
-  </div>
-</main>
+
+    <!-- NEW: Join Waitlist Prompt & Form -->
+    <h2>Únete a la lista de espera</h2>
+    <div class="waitlist-join-form">
+      <input 
+        type="text" 
+        id="waitlist-name-input" 
+        placeholder="Tu nombre" 
+        required 
+      />
+      <input 
+        type="email" 
+        id="waitlist-email-input" 
+        placeholder="tu@email.com" 
+        required 
+      />
+      <button 
+        id="join-waitlist-button" 
+        class="btn-primary"
+      >
+        Enviar
+      </button>
+    </div>
+  </main>
+
 </div>
+
 
   <!-- === Waitlist Page (Dedicated standalone) === -->
   <div id="waitlist-page" class="page">
