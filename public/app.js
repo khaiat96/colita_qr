@@ -1,4 +1,4 @@
-//Version 6.2- adding send pdf button
+//Version 6.3- send pdf button stuck fix
 
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
@@ -1052,9 +1052,18 @@ if (joinBtn) {
 
       sendResultsBtn.textContent = '✓ Enviado a ' + email;
       sendResultsBtn.style.background = '#00D4AA';
-      emailInput.disabled = true;
+    
 
-      console.log('✅ PDF sent to:', email);
+      console.log('✅ PDF request sent to Make.com for:', email);
+      console.log('📧 Check your inbox (and spam folder) in a few moments');
+
+      // Re-enable after 3 seconds
+      setTimeout(() => {
+        sendResultsBtn.textContent = 'Enviar PDF';
+        sendResultsBtn.disabled = false;
+        sendResultsBtn.style.background = '';
+      }, 3000);
+
     } catch (err) {
       console.error('❌ Error:', err);
       sendResultsBtn.textContent = '✗ Error - Intentar de nuevo';
