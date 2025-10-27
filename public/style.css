@@ -2675,3 +2675,10 @@ canvas#radarChart {
     margin-top: 10px;
   }
 }
+
+/* === MOBILE: SIGUIENTE ON TOP === */
+@media (max-width: 768px) {
+  .survey-navigation {
+    flex-direction: column-reverse !important;
+  }
+}
