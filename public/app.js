@@ -984,41 +984,93 @@ if (joinBtn) {
 
 
   
-  // Add "Send Results by Email" button
+  // Add email form for PDF delivery
+  const emailFormSection = document.createElement('div');
+  emailFormSection.className = 'email-pdf-section';
+  emailFormSection.style.marginTop = '40px';
+  emailFormSection.style.padding = '24px';
+  emailFormSection.style.background = 'rgba(33, 128, 141, 0.08)';
+  emailFormSection.style.borderRadius = '12px';
+  emailFormSection.style.maxWidth = '500px';
+  emailFormSection.style.marginLeft = 'auto';
+  emailFormSection.style.marginRight = 'auto';
+
+  const emailFormTitle = document.createElement('h4');
+  emailFormTitle.textContent = 'Recibe tus resultados por email';
+  emailFormTitle.style.textAlign = 'center';
+  emailFormTitle.style.marginBottom = '16px';
+  emailFormTitle.style.color = '#21808D';
+
+  const emailInput = document.createElement('input');
+  emailInput.type = 'email';
+  emailInput.placeholder = 'tu@email.com';
+  emailInput.required = true;
+  emailInput.style.width = '100%';
+  emailInput.style.padding = '12px 16px';
+  emailInput.style.fontSize = '16px';
+  emailInput.style.border = '1px solid rgba(94, 82, 64, 0.3)';
+  emailInput.style.borderRadius = '8px';
+  emailInput.style.marginBottom = '12px';
+
   const sendResultsBtn = document.createElement('button');
-  sendResultsBtn.className = 'btn-primary btn-send-results';
-  sendResultsBtn.textContent = 'Enviar resultados por email';
-  sendResultsBtn.style.marginTop = '30px';
-  sendResultsBtn.style.display = 'block';
-  sendResultsBtn.style.maxWidth = '400px';
-  sendResultsBtn.style.marginLeft = 'auto';
-  sendResultsBtn.style.marginRight = 'auto';
+  sendResultsBtn.className = 'btn-primary';
+  sendResultsBtn.textContent = 'Enviar PDF';
+  sendResultsBtn.style.width = '100%';
+  sendResultsBtn.style.padding = '14px 24px';
 
   sendResultsBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim();
+
+    if (!email || !emailInput.checkValidity()) {
+      alert('Por favor ingresa un email válido');
+      return;
+    }
+
     sendResultsBtn.disabled = true;
     sendResultsBtn.textContent = 'Enviando...';
 
     try {
-      await sendResponsesToGoogleSheet();
-      sendResultsBtn.textContent = '✓ Enviado!';
+      const pdfHTML = generatePDFHTML();
+
+      const payload = {
+        session_id: sessionId,
+        timestamp: new Date().toISOString(),
+        answers: answers,
+        results_html: pdfHTML,
+        user_email: email
+      };
+
+      const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+      }
+
+      sendResultsBtn.textContent = '✓ Enviado a ' + email;
       sendResultsBtn.style.background = '#00D4AA';
-      setTimeout(() => {
-        sendResultsBtn.textContent = 'Enviar resultados por email';
-        sendResultsBtn.disabled = false;
-        sendResultsBtn.style.background = '';
-      }, 3000);
+      emailInput.disabled = true;
+
+      console.log('✅ PDF sent to:', email);
     } catch (err) {
+      console.error('❌ Error:', err);
       sendResultsBtn.textContent = '✗ Error - Intentar de nuevo';
       sendResultsBtn.style.background = '#FF5459';
       setTimeout(() => {
-        sendResultsBtn.textContent = 'Enviar resultados por email';
+        sendResultsBtn.textContent = 'Enviar PDF';
         sendResultsBtn.disabled = false;
         sendResultsBtn.style.background = '';
       }, 3000);
     }
   });
 
-  card.appendChild(sendResultsBtn);
+  emailFormSection.appendChild(emailFormTitle);
+  emailFormSection.appendChild(emailInput);
+  emailFormSection.appendChild(sendResultsBtn);
+  card.appendChild(emailFormSection);
 
   showPage("results-page");
 }
