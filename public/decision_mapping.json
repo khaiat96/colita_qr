@@ -1,5 +1,6 @@
 
 {
+
   "meta": {
     "version": "decision_mapping_v6_tissue6",
     "description": "Scoring aligned to 6 tissue states (incl. tono bajo = relajación) prioritizing menstrual tissue states over constitucionales; añade reglas condicionales para diferenciar Humedad vs Relajación, un follow-up Calor vs Tensión, y reduce el peso de señales de temperatura corporal/preferencias salvo como refuerzo de patrón.",
