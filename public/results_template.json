@@ -1,15 +1,10 @@
 {
   "meta": {
-    "version": "result_templates-v5.3.3.json",
+    "version": "result_templates-v7.json",
     "language": "es-MX",
     "brand_voice": "colita de rana — cercano, cálido, ancestral-moderno",
-    "description": "Resultados educativos por patrón menstrual con tips personalizados.",
+    "description": "Resultados educativos por patrón menstrual + tips personalizados.",
     "disclaimer": "Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.",
-    "schema_version": "1.0",
-    "compat": {
-      "min_app": "1.0.0",
-      "tested_up_to": "1.0.0"
-    },
     "content_safety": {
       "blocklist": [
         "1:3",
@@ -59,7 +54,7 @@
   "pattern_card": {
   "single": {
     "tension": {
-      "pattern_explainer": "El Viento representa movimiento y cambio. En equilibrio aporta flexibilidad y claridad mental; en exceso genera tensión muscular, irritabilidad y sensación de no poder relajarte.",
+      "pattern_explainer": "El Viento representa movimiento y cambio. En equilibrio aporta flexibilidad y claridad mental; en exceso genera tensión muscular, irritabilidad y sensación de no poder relajarse.",
       "characteristics": [
         "Dolor cólico o punzante (espasmos)",
         "Síntomas irregulares o cambiantes",
@@ -79,7 +74,7 @@
       ]
     },
     "frio": {
-      "pattern_explainer": "Cuando el Fuego vital está bajo, el cuerpo se enfría y los procesos se vuelven más lentos. En equilibrio da calma y estabilidad; en deficiencia aparecen cansancio, apatía y circulación débil.",
+      "pattern_explainer": "Cuando el Fuego vital está bajo, el cuerpo se enfría y los procesos se vuelven más lentos. En equilibrio el fuego da vitalidad y energía; en deficiencia fuerte aparecen cansancio, apatía y circulación débil.",
       "characteristics": [
         "Flujo escaso o retrasado",
         "Manos y pies fríos (mejora con calor)",
@@ -89,7 +84,7 @@
       ]
     },
     "humedad": {
-      "pattern_explainer": "El Agua lubrica y sostiene los tejidos. En equilibrio da fluidez y estabilidad; en exceso se estanca, generando pesadez, hinchazón y digestión lenta.",
+      "pattern_explainer": "El Agua lubrica y sostiene la estructura de los tejidos. En equilibrio, el agua da fluidez y estabilidad; en exceso se estanca, generando pesadez, hinchazón y digestión lenta.",
       "characteristics": [
         "Sensación de hinchazón o pesadez",
         "Coágulos o flujo espeso",
@@ -109,7 +104,7 @@
       ]
     },
     "relajacion": {
-      "pattern_explainer": "Cuando el tono vital es bajo, los tejidos pierden firmeza y la energía se dispersa. En equilibrio, la relajación permite descanso y recuperación; en exceso genera laxitud, hinchazón y fatiga constante.",
+      "pattern_explainer": "Cuando el tono vital es bajo, los tejidos pierden firmeza y la energía se dispersa. En equilibrio, la relajación permite descanso y recuperación; pero en exceso genera laxitud, hinchazón y fatiga constante.",
       "characteristics": [
         "Cansancio persistente o dificultad para sostener energía",
         "Tendencia a retención o flacidez (varices, digestión lenta)",
@@ -130,10 +125,10 @@
       "El Fuego acelera la circulación y el metabolismo, elevando la temperatura e irritando tejidos (rojez, sed, acidez, irritabilidad)."
     ],
     "frio": [
-      "El Fuego débil enlentece la circulación y el tono: la sangre avanza despacio, el dolor mejora con calor y la menstruación suele retrasarse."
+      "El Fuego débil enlentece la circulación y el tono: la sangre avanza despacio, la menstruación suele retrasarse y el dolor menstrual mejora con el calor."
     ],
     "humedad": [
-      "El exceso de Agua estanca los fluidos: se espesan y retienen, generando pesadez, coágulos e hinchazón."
+      "El exceso de Agua estanca los fluidos: la sangre menstrual se espesa y retiene, generando pesadez, coágulos e hinchazón."
     ],
     "sequedad": [
       "La falta de Agua reseca y endurece los tejidos: hay rigidez, poca lubricación, flujo escaso y fatiga."

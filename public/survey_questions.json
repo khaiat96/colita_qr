@@ -1,8 +1,8 @@
 {
     "meta": {
-        "version": "survey_questions-final.json",
+        "version": "survey_questions-v7.json",
         "language": "es-MX",
-        "description": "Final validated survey - all QA issues resolved + menopause screening added",
+        "description": "Working Version",
         "est_duration_minutes": 3,
         "content_safety": {
             "blocklist": [
