@@ -1,4 +1,4 @@
-//Version 6.0- Everything works (but email pdf not sending)
+//Version 6.1- trying to format pdf
 
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
@@ -30,12 +30,55 @@ window.handleTextInput = function(qId, value) {
     window.updateNavigation();
 };
 
+// Generate PDF-ready HTML with inline styles
+function generatePDFHTML() {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard) return null;
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #134252; background: #FCFCF9; padding: 20px; }
+h2 { font-size: 28px; font-weight: 600; color: #134252; margin-bottom: 16px; text-align: center; border-bottom: 2px solid #21808D; padding-bottom: 12px; }
+h3 { font-size: 22px; font-weight: 600; color: #21808D; margin: 20px 0 12px 0; text-align: center; }
+h4 { font-size: 18px; font-weight: 600; color: #21808D; margin: 20px 0 10px 0; }
+h5 { font-size: 16px; font-weight: 600; color: #134252; margin: 16px 0 8px 0; }
+p { margin-bottom: 12px; color: #134252; }
+.pattern-description, .why-cluster, .recommendations, .cdr-section, .herbs-section, .unique-system, .phase-block { background: white; border: 1.5px solid rgba(94, 82, 64, 0.25); border-radius: 10px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid; }
+.pattern-explainer { font-size: 15px; font-style: italic; margin-bottom: 16px; }
+.characteristics, .recommendations-list, .herb-mechanisms { list-style: none; padding: 0; }
+.characteristics li { background: rgba(33, 128, 141, 0.08); padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid #21808D; }
+.recommendations-list li, .herb-mechanisms li { padding-left: 20px; margin-bottom: 10px; position: relative; }
+.recommendations-list li::before, .herb-mechanisms li::before { content: "•"; position: absolute; left: 0; color: #21808D; font-weight: bold; font-size: 18px; }
+.unique-item { background: rgba(33, 128, 141, 0.06); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+.unique-item h5 { margin: 0 0 6px 0; font-size: 15px; }
+.unique-item p { color: #626C71; font-size: 13px; margin: 0; }
+.phase-section { margin-top: 30px; }
+.phase-section h2 { color: #21808D; border-bottom: 2px solid rgba(33, 128, 141, 0.3); }
+.phase-block ul { list-style: none; padding: 0; margin: 8px 0; }
+.phase-block ul li { padding: 6px 0 6px 20px; position: relative; font-size: 13px; }
+.phase-block ul li::before { content: "·"; position: absolute; left: 6px; color: #21808D; font-size: 20px; }
+@media print { body { padding: 15px; } h2, h3, h4, h5 { page-break-after: avoid; } }
+</style>
+</head>
+<body>${resultsCard.innerHTML}</body>
+</html>`;
+
+  return html;
+}
+
 async function sendResponsesToGoogleSheet() {
   try {
+    const pdfHTML = generatePDFHTML();
+
     const payload = {
       session_id: sessionId,
       timestamp: new Date().toISOString(),
-      answers: answers
+      answers: answers,
+      results_html: pdfHTML
     };
 
     const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
@@ -48,7 +91,7 @@ async function sendResponsesToGoogleSheet() {
       throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
     }
 
-    console.log('✅ Survey responses sent to Google Sheets via Make webhook.');
+    console.log('✅ Survey responses with PDF HTML sent to Make webhook.');
   } catch (err) {
     console.error('❌ Failed to send survey data to Google Sheets:', err);
   }
