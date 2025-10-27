@@ -1840,6 +1840,10 @@ body {
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  .survey-navigation {
+    flex-direction: column-reverse; /* Siguiente on top */
+  }
+
     .hero-title {
         font-size: 2.2rem;
     }

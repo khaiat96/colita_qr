@@ -1057,12 +1057,13 @@ if (joinBtn) {
       console.log('✅ PDF request sent to Make.com for:', email);
       console.log('📧 Check your inbox (and spam folder) in a few moments');
 
-      // Re-enable after 3 seconds
+      // Re-enable after 1 second and clear email
       setTimeout(() => {
         sendResultsBtn.textContent = 'Enviar PDF';
         sendResultsBtn.disabled = false;
         sendResultsBtn.style.background = '';
-      }, 3000);
+        emailInput.value = ''; // Clear email field
+      }, 1000);
 
     } catch (err) {
       console.error('❌ Error:', err);
