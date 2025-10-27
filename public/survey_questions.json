@@ -387,6 +387,10 @@
                     "value": "no"
                 }
             ],
+                "validation": {
+                "minselected": 1,
+                "maxselected": 2
+            },
             "prompt": "Question P2_acne"
         },
         {

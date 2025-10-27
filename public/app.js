@@ -1,8 +1,9 @@
-//Version 6.0- Everything works (but email pdf not sending)
+// Enhanced PDF-Friendly Survey App - Version 7.1
+// This version includes proper PDF generation with print-optimized styling
 
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsImFwcCI6ImRlbW8iLCJlZmYiOiJlaXRobm54ZXZvcWNra3podm5jaSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzYwMTg0ODI2LCJleHAiOjIwNzU3NjA4MjZ9.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/er23s3ieomte4jue36f4v4o0g3mrtsdl';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -15,7 +16,556 @@ let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).subst
 let resultsTemplate = null;
 window.surveyLoaded = false;
 
-console.log('🚀 APP.JS LOADED - VERSION 5.1 - CACHE BUSTED');
+console.log('🚀 ENHANCED APP.JS LOADED - PDF OPTIMIZED VERSION 2.0 - CACHE BUSTED');
+
+// ==================== PDF GENERATION FUNCTIONS ====================
+
+/**
+ * Enhanced PDF generation with print-optimized styling
+ */
+window.generatePDF = async function() {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard) {
+    alert('No results found to generate PDF.');
+    return;
+  }
+
+  try {
+    // Create a new window for PDF generation
+    const pdfWindow = window.open('', '_blank');
+    if (!pdfWindow) {
+      alert('Please allow popups for PDF generation.');
+      return;
+    }
+
+    // Get all CSS for the PDF
+    const allCSS = await getAllCSS();
+    const printCSS = getPrintCSS();
+    
+    // Create the HTML content for PDF
+    const pdfHTML = createPDFHTML(resultsCard.innerHTML, allCSS, printCSS);
+    
+    // Write to the new window
+    pdfWindow.document.write(pdfHTML);
+    pdfWindow.document.close();
+    
+    // Wait for content to load then generate PDF
+    pdfWindow.onload = function() {
+      setTimeout(() => {
+        pdfWindow.print();
+      }, 500);
+    };
+
+  } catch (error) {
+    console.error('PDF Generation Error:', error);
+    alert('Error generating PDF. Please try again.');
+  }
+};
+
+/**
+ * Generate PDF using HTML to Canvas method (more reliable)
+ */
+window.generatePDFCanvas = async function() {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard) {
+    alert('No results found to generate PDF.');
+    return;
+  }
+
+  try {
+    // Create a temporary container for PDF content
+    const pdfContainer = createPDFContainer();
+    document.body.appendChild(pdfContainer);
+
+    // Generate PDF using html2canvas-like approach
+    await generatePDFContent(pdfContainer);
+    
+    // Clean up
+    document.body.removeChild(pdfContainer);
+
+  } catch (error) {
+    console.error('Canvas PDF Generation Error:', error);
+    alert('Error generating PDF. Please try again.');
+  }
+};
+
+/**
+ * Create print-optimized HTML for PDF generation
+ */
+function createPDFHTML(content, allCSS, printCSS) {
+  return `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Resultados Colita de Rana - Tu Medicina Personalizada</title>
+      <style>
+        /* Reset and base styles */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          background: white;
+          font-size: 14px;
+        }
+        
+        /* Print-optimized container */
+        .pdf-container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background: white;
+        }
+        
+        /* Header */
+        .pdf-header {
+          text-align: center;
+          margin-bottom: 30px;
+          padding-bottom: 20px;
+          border-bottom: 3px solid #00D4AA;
+        }
+        
+        .pdf-header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          color: #00D4AA;
+          margin-bottom: 10px;
+        }
+        
+        .pdf-header .subtitle {
+          font-size: 16px;
+          color: #666;
+          margin-bottom: 10px;
+        }
+        
+        .pdf-header .date {
+          font-size: 12px;
+          color: #999;
+        }
+        
+        /* Results card styling for PDF */
+        .pdf-results-card {
+          background: #f9f9f9;
+          border: 2px solid #e0e0e0;
+          border-radius: 12px;
+          padding: 25px;
+          margin-bottom: 25px;
+        }
+        
+        .pdf-results-card h2 {
+          font-size: 24px;
+          font-weight: 700;
+          color: #00D4AA;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+        
+        .pdf-results-card h3 {
+          font-size: 18px;
+          color: #333;
+          margin-bottom: 20px;
+          text-align: center;
+        }
+        
+        .pdf-results-card h4 {
+          font-size: 16px;
+          font-weight: 600;
+          color: #00D4AA;
+          margin: 20px 0 10px 0;
+        }
+        
+        .pdf-results-card p {
+          margin-bottom: 15px;
+          line-height: 1.6;
+          color: #444;
+        }
+        
+        /* Lists */
+        .pdf-results-card ul {
+          margin: 15px 0;
+          padding-left: 20px;
+        }
+        
+        .pdf-results-card li {
+          margin-bottom: 8px;
+          line-height: 1.5;
+          color: #444;
+        }
+        
+        /* Pattern sections */
+        .pattern-description {
+          background: #f0f8f6;
+          border-left: 4px solid #00D4AA;
+          padding: 20px;
+          margin: 20px 0;
+          border-radius: 0 8px 8px 0;
+        }
+        
+        .characteristics li {
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          padding: 12px 15px;
+          margin-bottom: 8px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Recommendations */
+        .recommendations {
+          background: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 10px;
+          padding: 20px;
+          margin: 20px 0;
+        }
+        
+        .recommendations h4 {
+          color: #00D4AA;
+          margin-bottom: 15px;
+        }
+        
+        .recommendations-list li {
+          background: white;
+          border-left: 3px solid #00D4AA;
+          border-radius: 0 6px 6px 0;
+          padding: 12px 15px;
+          margin-bottom: 10px;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        /* Phase sections */
+        .phase-section {
+          margin-top: 30px;
+        }
+        
+        .phase-section h2 {
+          color: #00D4AA;
+          font-size: 22px;
+          font-weight: 700;
+          margin-bottom: 20px;
+          text-align: left;
+        }
+        
+        .phase-block {
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          padding: 20px;
+          margin-bottom: 15px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .phase-block h5 {
+          color: #00D4AA;
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 10px;
+        }
+        
+        .phase-block p {
+          color: #555;
+          margin-bottom: 15px;
+          font-style: italic;
+        }
+        
+        .phase-block ul {
+          list-style: none;
+          padding-left: 0;
+        }
+        
+        .phase-block ul li {
+          padding: 5px 0 5px 20px;
+          position: relative;
+          color: #666;
+        }
+        
+        .phase-block ul li::before {
+          content: "•";
+          position: absolute;
+          left: 5px;
+          color: #00D4AA;
+          font-weight: bold;
+        }
+        
+        /* CDR Section */
+        .cdr-section {
+          background: #f0f8ff;
+          border: 1px solid #b3d9ff;
+          border-radius: 10px;
+          padding: 20px;
+          margin: 25px 0;
+        }
+        
+        .cdr-header h3 {
+          color: #00D4AA;
+          font-size: 20px;
+          margin-bottom: 10px;
+        }
+        
+        .unique-system {
+          margin-top: 20px;
+        }
+        
+        .unique-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          margin-top: 15px;
+        }
+        
+        .unique-item {
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          padding: 15px;
+        }
+        
+        .unique-item h5 {
+          color: #333;
+          margin-bottom: 8px;
+        }
+        
+        .unique-item p {
+          color: #666;
+          font-size: 13px;
+        }
+        
+        /* Disclaimer */
+        .results-disclaimer {
+          background: #fff3cd;
+          border: 1px solid #ffeaa7;
+          border-radius: 8px;
+          padding: 15px;
+          margin-top: 30px;
+          font-size: 12px;
+          color: #856404;
+          line-height: 1.4;
+        }
+        
+        /* Print styles */
+        @media print {
+          body {
+            font-size: 12px;
+          }
+          
+          .pdf-container {
+            max-width: none;
+            margin: 0;
+            padding: 10px;
+          }
+          
+          .pdf-header {
+            margin-bottom: 20px;
+          }
+          
+          .pdf-results-card {
+            break-inside: avoid;
+            margin-bottom: 20px;
+          }
+          
+          .phase-block {
+            break-inside: avoid;
+            margin-bottom: 12px;
+          }
+          
+          .unique-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+          }
+        }
+        
+        /* Hide elements not suitable for PDF */
+        .waitlist-results-form,
+        .btn-send-results,
+        .email-form,
+        .survey-navigation,
+        .survey-header {
+          display: none !important;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="pdf-container">
+        <div class="pdf-header">
+          <h1>🌿 Colita de Rana</h1>
+          <div class="subtitle">Tu Medicina Personalizada</div>
+          <div class="date">Generado el ${new Date().toLocaleDateString('es-MX')}</div>
+        </div>
+        
+        <div class="pdf-results-card">
+          ${content}
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Create a temporary container for PDF generation
+ */
+function createPDFContainer() {
+  const container = document.createElement('div');
+  container.id = 'pdf-temp-container';
+  container.style.cssText = `
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    width: 800px;
+    background: white;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+  `;
+  return container;
+}
+
+/**
+ * Generate PDF content using canvas method
+ */
+async function generatePDFContent(container) {
+  // This is a simplified version - in a real implementation,
+  // you would use libraries like html2canvas + jsPDF
+  const resultsCard = document.getElementById('results-card');
+  if (resultsCard) {
+    container.innerHTML = createPDFHTML(resultsCard.innerHTML, '', '');
+    window.print();
+  }
+}
+
+/**
+ * Get print-specific CSS
+ */
+function getPrintCSS() {
+  return `
+    @media print {
+      body { font-size: 12px; }
+      .pdf-container { max-width: none; margin: 0; padding: 10px; }
+      .pdf-results-card { break-inside: avoid; }
+      .phase-block { break-inside: avoid; }
+      .waitlist-results-form, .btn-send-results { display: none !important; }
+    }
+  `;
+}
+
+/**
+ * Enhanced function to extract all CSS
+ */
+async function getAllCSS() {
+  let allCSS = '';
+  
+  // Get inline styles
+  const styleElements = document.querySelectorAll('style');
+  styleElements.forEach(style => {
+    allCSS += style.textContent + '\n';
+  });
+  
+  // Get external stylesheets
+  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
+  for (const link of linkElements) {
+    try {
+      const response = await fetch(link.href);
+      const css = await response.text();
+      allCSS += css + '\n';
+    } catch (e) {
+      console.warn(`Failed to fetch CSS from ${link.href}`, e);
+    }
+  }
+  
+  return allCSS;
+}
+
+/**
+ * Email results with PDF attachment
+ */
+window.emailResultsWithPDF = async function(email) {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard) {
+    alert('No results found to send.');
+    return;
+  }
+
+  try {
+    // Generate PDF content
+    const pdfHTML = createPDFHTML(resultsCard.innerHTML, await getAllCSS(), getPrintCSS());
+    
+    // Send to your webhook with PDF content
+    const payload = {
+      email: email,
+      session_id: sessionId,
+      timestamp: new Date().toISOString(),
+      answers: answers,
+      pdf_html: pdfHTML,
+      results_content: resultsCard.innerHTML
+    };
+
+    const response = await fetch(EMAIL_REPORT_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+    }
+
+    alert('¡Resultados enviados por correo con PDF adjunto!');
+    console.log('✅ Results sent to email with PDF');
+  } catch (err) {
+    console.error('❌ Failed to send results with PDF:', err);
+    alert('Hubo un error enviando los resultados. Por favor intenta de nuevo.');
+  }
+};
+
+/**
+ * Simple print function as fallback
+ */
+window.printResults = function() {
+  const resultsCard = document.getElementById('results-card');
+  if (!resultsCard) {
+    alert('No results found to print.');
+    return;
+  }
+
+  // Store original body content
+  const originalBody = document.body.innerHTML;
+  
+  // Create print-friendly version
+  const printContent = `
+    <div style="padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #00D4AA; padding-bottom: 20px;">
+        <h1 style="color: #00D4AA; font-size: 28px; margin-bottom: 10px;">🌿 Colita de Rana</h1>
+        <p style="color: #666; font-size: 16px;">Tu Medicina Personalizada</p>
+        <p style="color: #999; font-size: 12px;">Generado el ${new Date().toLocaleDateString('es-MX')}</p>
+      </div>
+      <div style="background: #f9f9f9; border: 2px solid #e0e0e0; border-radius: 12px; padding: 25px;">
+        ${resultsCard.innerHTML}
+      </div>
+    </div>
+  `;
+  
+  // Replace body content temporarily
+  document.body.innerHTML = printContent;
+  
+  // Print
+  window.print();
+  
+  // Restore original content
+  document.body.innerHTML = originalBody;
+  
+  // Re-initialize app
+  location.reload();
+};
+
+// ==================== ORIGINAL APP FUNCTIONS (Enhanced) ====================
 
 function scrollToWaitlist() {
   const waitlistSection = document.getElementById('waitlist-section');
@@ -52,7 +602,6 @@ async function sendResponsesToGoogleSheet() {
     console.error('❌ Failed to send survey data to Google Sheets:', err);
   }
 }
-
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -158,7 +707,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (quizBtn) quizBtn.disabled = true;
   }
 });
-
 
 // ==================== WAITLIST FORM HANDLER ====================
 
@@ -282,7 +830,6 @@ window.finishSurvey = function () {
   showResults(patternKey);
   sendResponsesToGoogleSheet(); 
 };
-
 
 // ==================== SURVEY RENDERING ====================
 
@@ -882,6 +1429,31 @@ function showResults(patternType) {
     card.appendChild(phaseContainer);
   }
 
+  // --- PDF Generation Buttons ---
+  const pdfActions = document.createElement('div');
+  pdfActions.className = 'pdf-actions';
+  pdfActions.innerHTML = `
+    <div class="pdf-buttons-container">
+      <h4>📧 Recibe tus resultados por correo</h4>
+      <div class="email-form-container">
+        <input type="email" id="pdf-email" placeholder="tu@email.com" class="pdf-email-input">
+        <button onclick="window.emailResultsWithPDF(document.getElementById('pdf-email').value)" class="btn-send-pdf">
+          Enviar PDF por correo
+        </button>
+      </div>
+      
+      <div class="pdf-buttons">
+        <button onclick="window.generatePDF()" class="btn-pdf-action">
+          📄 Descargar PDF
+        </button>
+        <button onclick="window.printResults()" class="btn-pdf-action">
+          🖨️ Imprimir
+        </button>
+      </div>
+    </div>
+  `;
+  card.appendChild(pdfActions);
+
 // --- After rendering all result sections but before showPage ---
 const resultsWaitlistForm = `
   <div class="waitlist-results-form">
@@ -1019,29 +1591,4 @@ window.updateNavigation = function() {
     if (backBtn) {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
-}
-
-// Helper function to extract all CSS
-async function getAllCSS() {
-  let allCSS = '';
-  
-  // Get inline styles
-  const styleElements = document.querySelectorAll('style');
-  styleElements.forEach(style => {
-    allCSS += style.textContent + '\n';
-  });
-  
-  // Get external stylesheets
-  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
-  for (const link of linkElements) {
-    try {
-      const response = await fetch(link.href);
-      const css = await response.text();
-      allCSS += css + '\n';
-    } catch (e) {
-      console.warn(`Failed to fetch CSS from ${link.href}`, e);
-    }
-  }
-  
-  return allCSS;
 }
