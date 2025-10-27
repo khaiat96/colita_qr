@@ -1343,7 +1343,6 @@ body {
 }
 
 .survey-navigation {
-  flex-direction: row; /* Desktop: side by side */
   display: flex;
   justify-content: space-between;
   margin-top: 40px;
@@ -1840,7 +1839,10 @@ body {
 }
 
 /* Mobile Responsiveness */
-
+@media (max-width: 768px) {
+  .survey-navigation {
+    flex-direction: column-reverse; /* Siguiente on top */
+  }
 
     .hero-title {
         font-size: 2.2rem;
@@ -2671,10 +2673,5 @@ canvas#radarChart {
     width: 100%;
     max-width: 280px;
     margin-top: 10px;
-  }
-
-  /* IMPORTANT: Siguiente button on TOP for mobile */
-  .survey-navigation {
-    flex-direction: column-reverse !important;
   }
 }
