@@ -4,7 +4,7 @@
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsImFwcCI6ImRlbW8iLCJlZmYiOiJlaXRobm54ZXZvcWNra3podm5jaSIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzYwMTg0ODI2LCJleHAiOjIwNzU3NjA4MjZ9.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
-const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/3zh4bd36iwjcy6qgrcf4psyryfg7kucv';
+const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/epjxwhxy1kyfikc75m6f8gw98iotjk20';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/er23s3ieomte4jue36f4v4o0g3mrtsdl';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1592,27 +1592,3 @@ window.updateNavigation = function() {
         backBtn.style.display = getPrevVisibleQuestionIndex(currentQuestionIndex) !== -1 ? 'block' : 'none';
     }
 }
-
-// ==================== DIAGNOSTIC FUNCTIONS ====================
-// Debug function to check if PDF libraries are loaded
-window.checkPDFLibraries = function() {
-console.log('🔍 PDF Libraries Status:');
-console.log('- jsPDF available:', typeof window.jsPDF !== 'undefined');
-console.log('- html2canvas available:', typeof window.html2canvas !== 'undefined');
-console.log('- generatePDF function:', typeof window.generatePDF);
-console.log('- emailResultsWithPDF function:', typeof window.emailResultsWithPDF);
-console.log('- printResults function:', typeof window.printResults);
-};
-// Check libraries when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-// Wait a bit for libraries to load
-setTimeout(() => {
-window.checkPDFLibraries();
-}, 1000);
-});
-// Enhanced error logging
-window.addEventListener('error', function(e) {
-console.error('🚨 JavaScript Error:', e.error);
-console.error('File:', e.filename);
-console.error('Line:', e.lineno);
-});
