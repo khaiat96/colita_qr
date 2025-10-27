@@ -1,4 +1,4 @@
-//Version 6.1- trying to format pdf
+//Version 6.2- adding send pdf button
 
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
@@ -982,6 +982,43 @@ if (joinBtn) {
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
 
+
+  
+  // Add "Send Results by Email" button
+  const sendResultsBtn = document.createElement('button');
+  sendResultsBtn.className = 'btn-primary btn-send-results';
+  sendResultsBtn.textContent = 'Enviar resultados por email';
+  sendResultsBtn.style.marginTop = '30px';
+  sendResultsBtn.style.display = 'block';
+  sendResultsBtn.style.maxWidth = '400px';
+  sendResultsBtn.style.marginLeft = 'auto';
+  sendResultsBtn.style.marginRight = 'auto';
+
+  sendResultsBtn.addEventListener('click', async () => {
+    sendResultsBtn.disabled = true;
+    sendResultsBtn.textContent = 'Enviando...';
+
+    try {
+      await sendResponsesToGoogleSheet();
+      sendResultsBtn.textContent = '✓ Enviado!';
+      sendResultsBtn.style.background = '#00D4AA';
+      setTimeout(() => {
+        sendResultsBtn.textContent = 'Enviar resultados por email';
+        sendResultsBtn.disabled = false;
+        sendResultsBtn.style.background = '';
+      }, 3000);
+    } catch (err) {
+      sendResultsBtn.textContent = '✗ Error - Intentar de nuevo';
+      sendResultsBtn.style.background = '#FF5459';
+      setTimeout(() => {
+        sendResultsBtn.textContent = 'Enviar resultados por email';
+        sendResultsBtn.disabled = false;
+        sendResultsBtn.style.background = '';
+      }, 3000);
+    }
+  });
+
+  card.appendChild(sendResultsBtn);
 
   showPage("results-page");
 }
