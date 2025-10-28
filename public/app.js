@@ -258,29 +258,55 @@ p { margin-bottom: 12px; color: #134252; }
 async function sendResponsesToGoogleSheet() {
   try {
     const pdfHTML = generatePDFHTML();
+    const userEmail = sessionStorage.getItem('user_email');
+
+    if (!userEmail) {
+      const manualEmail = prompt("Por favor ingresa tu correo electrónico para recibir tu reporte:");
+      if (!manualEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(manualEmail)) {
+        alert("Email inválido. No se pudo enviar el PDF.");
+        return;
+      }
+      sessionStorage.setItem('user_email', manualEmail);
+    }
+
+    const finalEmail = sessionStorage.getItem('user_email');
 
     const payload = {
       session_id: sessionId,
       timestamp: new Date().toISOString(),
       answers: answers,
-      results_html: pdfHTML
+      results_html: pdfHTML,
+      user_email: finalEmail
     };
 
-    const resp = await fetch(SAVE_RESPONSES, {
+    // 1. Save answers (optional)
+    const saveResp = await fetch(SAVE_RESPONSES, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+    if (!saveResp.ok) {
+      throw new Error(`SAVE_RESPONSES error: HTTP ${saveResp.status} - ${saveResp.statusText}`);
     }
 
-    console.log('✅ Survey responses with PDF HTML sent to Make webhook.');
+    // 2. Send PDF to email
+    const emailResp = await fetch(EMAIL_REPORT_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!emailResp.ok) {
+      throw new Error(`EMAIL_REPORT_WEBHOOK error: HTTP ${emailResp.status} - ${emailResp.statusText}`);
+    }
+
+    console.log('✅ PDF enviado exitosamente a:', finalEmail);
   } catch (err) {
-    console.error('❌ Failed to send survey data to Google Sheets:', err);
+    console.error('❌ Error al enviar resultados:', err);
   }
 }
+
 
 
 // ==================== WAITLIST FUNCTIONS ====================
@@ -402,7 +428,8 @@ document.addEventListener('DOMContentLoaded', function() {
         await fetch(WAITLIST_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, source: 'landing_page' })
+          body: JSON.stringify({ name, email, source: 'landing_page' }),
+          sessionStorage.setItem('user_email', email); //stores email for use later
         });
         alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
         mainWaitlistForm.reset();
