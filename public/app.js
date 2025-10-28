@@ -13,6 +13,7 @@ let questionOrder = [];
 let surveyQuestions = [];
 let answers = {};
 let currentQuestionIndex = 0;
+let calculatedPattern = null; // Store calculated pattern for webhooks
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let resultsTemplate = null;
 window.surveyLoaded = false;
@@ -322,10 +323,10 @@ function getPrevVisibleQuestionIndex(currentIndex) {
   return -1;
 }
 
-window.finishSurvey = function () {
-  const patternKey = calculateResults();
-  showResults(patternKey);
-  sendResponsesToGoogleSheet(); 
+window.finishSurvey = function() {
+  calculatedPattern = calculateResults();  // Store pattern globally
+  showResults(calculatedPattern);
+  sendResponsesToGoogleSheet();
 };
 
 
@@ -1040,6 +1041,7 @@ if (joinBtn) {
         answers: answers,
         results_html: pdfHTML,
         user_email: email
+        pattern: calculatedPattern  // ← ADD THIS
       };
 
       const resp = await fetch(SAVE_RESPONSES, {
