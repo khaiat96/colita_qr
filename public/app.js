@@ -5,6 +5,7 @@ const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/3zh4bd36iwjcy6qgrcf4psyryfg7kucv';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/x85saa0ur1u1fac79amcvmdjlbnpixaw';
+const SAVE_RESPONSES= 'https://hook.us2.make.com/2ch4ogn553iy5e5s6bmavtg28f7s5u6o';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
@@ -1041,7 +1042,7 @@ if (joinBtn) {
         user_email: email
       };
 
-      const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
+      const resp = await fetch(SAVE_RESPONSES, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
