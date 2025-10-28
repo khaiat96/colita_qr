@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, source: 'landing_page' })
         });
-        
+
         // Store email in sessionStorage AFTER successful fetch
         sessionStorage.setItem('user_email', email);
 
@@ -1239,6 +1239,7 @@ if (joinBtn) {
 
   sendResultsBtn.addEventListener('click', async () => {
     const email = emailInput.value.trim();
+    sessionStorage.setItem('user_email', email); 
 
     if (!email || !emailInput.checkValidity()) {
       alert('Por favor ingresa un email válido');
