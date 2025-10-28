@@ -1040,8 +1040,8 @@ if (joinBtn) {
         timestamp: new Date().toISOString(),
         answers: answers,
         results_html: pdfHTML,
-        user_email: email
-        pattern: calculatedPattern  // ← ADD THIS
+        user_email: email,
+        pattern: calculatedPattern 
       };
 
       const resp = await fetch(SAVE_RESPONSES, {
