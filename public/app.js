@@ -308,7 +308,6 @@ async function sendResponsesToGoogleSheet() {
 }
 
 
-
 // ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
@@ -335,7 +334,7 @@ function showPage(pageId) {
   } else {
     console.error(`✗ Page not found: ${pageId}`);
   }
-}
+};
 
 window.startSurvey = function() {
   currentQuestionIndex = 0;
@@ -429,7 +428,7 @@ document.addEventListener('DOMContentLoaded', function() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, source: 'landing_page' }),
-          sessionStorage.setItem('user_email', email); //stores email for use later
+          sessionStorage.setItem('user_email', email) 
         });
         alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
         mainWaitlistForm.reset();
@@ -451,10 +450,10 @@ document.addEventListener('DOMContentLoaded', function() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, source: 'landing_page' })
         });
-        
+
         // ✅ Store user_email correctly after the request
         sessionStorage.setItem('user_email', email);
-        
+
         alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
         mainWaitlistForm.reset();
       } catch (error) {
