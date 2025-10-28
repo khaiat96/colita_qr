@@ -258,17 +258,6 @@ p { margin-bottom: 12px; color: #134252; }
 async function sendResponsesToGoogleSheet() {
   try {
     const pdfHTML = generatePDFHTML();
-    const userEmail = sessionStorage.getItem('user_email');
-
-    if (!userEmail) {
-      const manualEmail = prompt("Por favor ingresa tu correo electrónico para recibir tu reporte:");
-      if (!manualEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(manualEmail)) {
-        alert("Email inválido. No se pudo enviar el PDF.");
-        return;
-      }
-      sessionStorage.setItem('user_email', manualEmail);
-    }
-
     const finalEmail = sessionStorage.getItem('user_email');
 
     const payload = {
