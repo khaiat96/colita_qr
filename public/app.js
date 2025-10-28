@@ -1,5 +1,3 @@
-//Version 1: pdf correct format but wont send to email
-
 // Configuration  
 const SUPABASE_URL = 'https://eithnnxevoqckkzhvnci.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwiYXBwIjoiZGVtbyIsInJlZiI6ImVpdGhubnhldm9xY2tremh2bmNpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxODQ4MjYsImV4cCI6MjA3NTc2MDgyNn0.wEuqy7mtia_5KsCWwD83LXMgOyZ8nGHng7nMVxGp-Ig';
@@ -32,14 +30,14 @@ window.handleTextInput = function(qId, value) {
     window.updateNavigation();
 };
 
-// Generate PDF-ready HTML with inline styles - ENHANCED VERSION
+// Generate PDF-ready HTML with inline styles - CLEAN VERSION (NO EMOJIS, NO FORMS)
 function generatePDFHTML() {
   if (!resultsTemplate || !calculatedPattern) return null;
 
   const patternKey = calculatedPattern;
   const result = resultsTemplate;
   
-  // Get all template sections
+  // Get all template sections (NO EMOJIS)
   const summary = result.summary?.by_pattern?.[patternKey]?.[0] || '';
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
   const patternCard = result.pattern_card?.by_pattern?.[patternKey] || [];
@@ -224,17 +222,15 @@ p { margin-bottom: 12px; color: #134252; }
 .phase-block ul li { padding: 6px 0 6px 20px; position: relative; font-size: 13px; }
 .phase-block ul li::before { content: "·"; position: absolute; left: 6px; color: #21808D; font-size: 20px; }
 .advisories ul li { background: rgba(255, 107, 107, 0.1); padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid #FF6B6B; position: relative; }
-.advisories ul li::before { content: "⚠️"; position: absolute; left: -5px; top: 10px; }
+.advisories ul li::before { content: "!"; position: absolute; left: -5px; top: 10px; }
 @media print { body { padding: 15px; } h2, h3, h4, h5 { page-break-after: avoid; } }
 </style>
 </head>
 <body>
   <h2>${element}</h2>
   <h3>${summary}</h3>
-  
+
   ${energeticStateHTML}
-  
-  <div class="element-badge">${element}</div>
   
   ${patternCardHTML}
   
@@ -249,6 +245,10 @@ p { margin-bottom: 12px; color: #134252; }
   ${uniqueSystemHTML}
   
   ${advisoriesHTML}
+
+    <div class="disclaimer">
+    <p><em>Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.</em></p>
+  </div>
 </body>
 </html>`;
 
@@ -306,7 +306,6 @@ async function sendResponsesToGoogleSheet() {
     console.error('❌ Error al enviar resultados:', err);
   }
 }
-
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -955,7 +954,7 @@ function renderCareTips(patternKey) {
   const items = tips.map(t => `<li>${t}</li>`).join('');
   return `
     <section class="care-tips">
-      <h4>🌸 Mini-hábitos para tu patrón</h4>
+      <h4> Mini-hábitos para tu patrón</h4>
       <ul>${items}</ul>
     </section>
   `;
@@ -996,7 +995,7 @@ function renderHowHerbsWork(patternKey) {
   const logic = sec.combo_logic ? `<p class="herb-logic">${sec.combo_logic}</p>` : '';
   return `
     <section class="herbs-section">
-      <h4>🌿 ¿Qué incluiría tu medicina personalizada?</h4>
+      <h4> ¿Qué incluiría tu medicina personalizada?</h4>
       <ul>${mech}</ul>
       ${logic}
     </section>
