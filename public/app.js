@@ -1246,7 +1246,6 @@ if (joinBtn) {
 
 // ✅ Store the email in session storage
 sessionStorage.setItem('user_email', email);
-console.log('📤 Sending payload:', payload);
 
 
     if (!email || !emailInput.checkValidity()) {
