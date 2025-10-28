@@ -449,10 +449,14 @@ document.addEventListener('DOMContentLoaded', function() {
         await fetch(WAITLIST_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, source: 'results_page' })
+          body: JSON.stringify({ name, email, source: 'landing_page' })
         });
+        
+        // ✅ Store user_email correctly after the request
+        sessionStorage.setItem('user_email', email);
+        
         alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
-        resultsWaitlistForm.reset();
+        mainWaitlistForm.reset();
       } catch (error) {
         console.error('Error joining waitlist:', error);
         alert('Hubo un error. Por favor intenta de nuevo.');
