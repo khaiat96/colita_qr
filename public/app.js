@@ -277,9 +277,7 @@ async function sendResponsesToGoogleSheet() {
       answers: answers,
       results_html: pdfHTML,
       user_email: finalEmail,
-      pattern: calculatedPattern,
-      result_title: resultTitle,
-      result_subtitle: resultSubtitle
+      pattern: calculatedPattern
     };
 
     // 1. Save answers (optional)
