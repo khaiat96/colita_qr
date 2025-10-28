@@ -427,9 +427,12 @@ document.addEventListener('DOMContentLoaded', function() {
         await fetch(WAITLIST_WEBHOOK, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, source: 'landing_page' }),
-          sessionStorage.setItem('user_email', email) 
+          body: JSON.stringify({ name, email, source: 'landing_page' })
         });
+        
+        // Store email in sessionStorage AFTER successful fetch
+        sessionStorage.setItem('user_email', email);
+
         alert('¡Gracias por unirte! Te notificaremos cuando lancemos.');
         mainWaitlistForm.reset();
       } catch (error) {
