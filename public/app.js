@@ -83,7 +83,7 @@ async function sendResponsesToGoogleSheet() {
       results_html: pdfHTML
     };
 
-    const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
+    const resp = await fetch(SAVE_RESPONSES, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -1044,7 +1044,7 @@ if (joinBtn) {
         pattern: calculatedPattern 
       };
 
-      const resp = await fetch(SAVE_RESPONSES, {
+      const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
