@@ -276,7 +276,10 @@ async function sendResponsesToGoogleSheet() {
       timestamp: new Date().toISOString(),
       answers: answers,
       results_html: pdfHTML,
-      user_email: finalEmail
+      user_email: finalEmail,
+      pattern: calculatedPattern,
+      result_title: resultTitle,
+      result_subtitle: resultSubtitle
     };
 
     // 1. Save answers (optional)
@@ -539,7 +542,7 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 }
 
 window.finishSurvey = function() {
-  calculatedPattern = calculateResults();  // Store pattern globally
+  calculatedPattern = calculateResults();  
   showResults(calculatedPattern);
   sendResponsesToGoogleSheet();
 };
