@@ -1237,8 +1237,17 @@ if (joinBtn) {
   sendResultsBtn.style.padding = '14px 24px';
 
   sendResultsBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    sessionStorage.setItem('user_email', email); 
+  const email = emailInput.value.trim();
+    
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Por favor ingresa un email válido');
+    return;
+  }
+
+// ✅ Store the email in session storage
+sessionStorage.setItem('user_email', email);
+console.log('📤 Sending payload:', payload);
+
 
     if (!email || !emailInput.checkValidity()) {
       alert('Por favor ingresa un email válido');
@@ -1250,6 +1259,12 @@ if (joinBtn) {
 
     try {
         const pdfHTML = generatePDFHTML();
+if (!pdfHTML) {
+  alert("Hubo un error generando el PDF. Por favor intenta de nuevo.");
+  sendResultsBtn.disabled = false;
+  sendResultsBtn.textContent = 'Enviar PDF';
+  return;
+}
 
         // Extract title and subtitle from results for Google Sheets
         const resultsCard = document.getElementById('results-card');
@@ -1274,6 +1289,8 @@ if (joinBtn) {
         result_title: resultTitle,
         result_subtitle: resultSubtitle
       };
+
+      console.log("📤 Payload enviado:", payload);
 
       const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
         method: 'POST',
