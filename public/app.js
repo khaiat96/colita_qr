@@ -41,7 +41,7 @@ function generatePDFHTML() {
   const labelTop = patternKey; // optionally use a friendlier label
   const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
-  const patternCard = result.pattern_card?.by_pattern?.[patternKey] || [];
+  let patternCardHTML = '';
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
   const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
   const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
@@ -49,9 +49,35 @@ function generatePDFHTML() {
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
 
   // -- Render sections --
-  const patternCardHTML = patternCard.length
-    ? `<section class="card"><h3>Tu patrón menstrual se caracteriza por:</h3><ul>${patternCard.map(p => `<li>${p}</li>`).join('')}</ul></section>` : '';
-
+  if (patternKey.includes('+')) {
+  const subPatterns = patternKey.split('+');
+  const parts = subPatterns.map(key => {
+    const data = result.pattern_card?.single?.[key];
+    if (!data) return '';
+    return `
+      <section class="card">
+        <h3>Tu patrón menstrual: ${key}</h3>
+        <p>${data.pattern_explainer}</p>
+        <ul>
+          ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
+        </ul>
+      </section>
+    `;
+  });
+  patternCardHTML = parts.join('');
+} else {
+  const data = result.pattern_card?.single?.[patternKey];
+  if (data) {
+    patternCardHTML = `
+      <section class="card">
+        <h3>Tu patrón menstrual se caracteriza por:</h3>
+        <p>${data.pattern_explainer}</p>
+        <ul>
+          ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
+        </ul>
+      </section>`;
+  }
+}
   const careTipsHTML = careTips.length
     ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
 
@@ -68,8 +94,8 @@ function generatePDFHTML() {
     if (!result.phase?.generic) return '';
     const genericPhases = result.phase.generic;
     let html = `<section class="card"><h3>${result.phase.title}</h3>`;
-    for (const [key, p] of Object.entries(genericPhases)) {
-      let about = p.about || '';
+    for (const [key, orig] of Object.entries(genericPhases)) {
+    const p = { ...orig }; // clone phase to prevent mutation      let about = p.about || '';
       const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
       const merge = (a = [], b = []) => [...a, ...(b || [])];
       if (overrides) {
@@ -104,7 +130,8 @@ function generatePDFHTML() {
   <link rel="stylesheet" href="https://yourdomain.com/style.css" />
   <style>
     @font-face {
-      font-family: 'FKGroteskNeue';
+      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
+      background: #FCFCF9;;
       src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
     }
     body {
