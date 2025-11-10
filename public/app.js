@@ -38,7 +38,8 @@ function generatePDFHTML() {
   const result = resultsTemplate;
 
   // Extract relevant sections
-  const summary = result.summary?.by_pattern?.[patternKey]?.[0] || '';
+  const labelTop = patternKey; // optionally use a friendlier label
+  const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
   const patternCard = result.pattern_card?.by_pattern?.[patternKey] || [];
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
@@ -46,7 +47,6 @@ function generatePDFHTML() {
   const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
   const uniqueSystem = result.unique_system;
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
-  const energeticState = result.energetic_state?.by_pattern?.[patternKey] || {};
 
   // -- Render sections --
   const patternCardHTML = patternCard.length
@@ -63,22 +63,6 @@ function generatePDFHTML() {
 
   const advisoriesHTML = advisories.length
     ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
-
-  const energeticStateHTML = Object.keys(energeticState).length
-    ? `<section class="card"><h3>Tu estado energético</h3><div>${['temperatura', 'humedad', 'tono'].map(k => {
-      if (!energeticState[k]) return '';
-      const value = energeticState[k];
-      const label = energeticState[`${k}_desc`] || (value > 50 ? 'Alto' : 'Bajo');
-      const color = k === 'temperatura' ? '#FF6B6B' : k === 'humedad' ? '#45B7D1' : '#6C5CE7';
-      return `
-        <div>
-          <h4>${k[0].toUpperCase() + k.slice(1)}</h4>
-          <div style="background:#eee;height:10px;border-radius:6px;overflow:hidden;">
-            <div style="height:10px;width:${value}%;background:${color}"></div>
-          </div>
-          <p style="font-style:italic;">${label}</p>
-        </div>`;
-    }).join('')}</div></section>` : '';
 
   const phaseHTML = (() => {
     if (!result.phase?.generic) return '';
@@ -172,13 +156,12 @@ function generatePDFHTML() {
 <body>
   <main class="container">
     <div class="brand-name">🌿 Colita de Rana</div>
-    <div class="element-badge">${element}</div>
-    <section class="card"><h3>${summary}</h3></section>
-    ${whyClusterHTML}
+    <div class="element-badge">${summary}</div>
+    <section class="card"><h3>${element}</h3></section>
     ${patternCardHTML}
+    ${whyClusterHTML}
     ${careTipsHTML}
     ${herbsHTML}
-    ${energeticStateHTML}
     ${uniqueSystemHTML}
     ${phaseHTML}
     ${advisoriesHTML}

@@ -27,19 +27,6 @@
     "tension_tendency_label": "Tendencia a tensión",
     "mixed_id_template": "{{label_top_1}}_{{label_top_2}}"
   },
-  "energetic_state": {
-  "title": "Estado energético de tu ciclo:",
-  "intro": "Tu cuerpo se equilibra a través de tres ejes naturales: temperatura, humedad y tono. El punto que ves refleja hacia qué lado tiende tu energía en este momento.",
-  "axes": {
-    "temperature": "🔥 Calor ↔ ❄️ Frío",
-    "moisture": "💧 Humedad ↔ 🌵 Sequedad",
-    "tone": "🌬️ Tensión ↔ 🌾 Relajación"
-  },
-  "legend": {
-    "excess": "Exceso",
-    "deficiency": "Deficiencia"
-  }
-  },
   "element": {
   "title": "Elemento predominante:",
   "by_pattern": {
@@ -138,6 +125,116 @@
     ]
   }
   }, 
+  "care_tips": {
+    "title": "Mini-hábitos por patrón",
+    "render_rules": {
+      "merge_strategy": "primary_then_secondary_then_mixed",
+      "if_mixed_use": "label_top_1_first_then_label_top_2",
+      "dedupe_arrays": true,
+      "max_items_per_list": 3
+    },
+    "by_pattern": {
+      "tension": [
+        "Respiración diafragmática 5-7 min/día para activar nervio vago",
+        "Movilidad pélvica y estiramientos de psoas",
+        "Limitar cafeína después de las 2 PM"
+      ],
+      "calor": [
+        "Hidratación con electrolitos naturales",
+        "Evitar picantes, alcohol y alimentos procesados",
+        "Dormir en ambiente fresco y bien ventilado"
+      ],
+      "frio": [
+        "Caldos minerales y tés herbales",
+        "Calor local suave (compresa, baño tibio)",
+        "Evitar bebidas frías y alimentos crudos en exceso"
+      ],
+      "humedad": [
+        "Movimiento cada hora para activar drenaje linfático",
+        "Vegetales amargos y fibra para depuración",
+        "Elevar piernas 10-15 min si hay retención"
+      ],
+      "sequedad": [
+        "Hidratación frecuente con electrolitos",
+        "Grasas omega-3 de calidad (pescado, semillas)",
+        "Descanso temprano para regeneración celular"
+      ],
+      "relajacion": [
+      "Caminar o moverse 20-30 min diarios para activar tono sin agotar",
+      "Evitar comidas muy pesadas o prolongar ayunos",
+      "Masaje seco o cepillado corporal para estimular circulación"
+      ]
+    }
+  },
+  "how_herbs_work": {
+    "title": "¿Qué incluiría tu medicina personalizada?",
+    "by_pattern": {
+      "tension": {
+        "mechanism": [
+          "Hierbas Antiespasmódicas → relajan músculo liso uterino",
+          "Hierbas Nervinas suaves → bajan reactividad y mejoran el descanso"
+        ],
+        "combo_logic": "Objetivo: Relajar + calmar; Permite que la sangre fluya sin nudos."
+      },
+      "calor": {
+        "mechanism": [
+          "Hierbas Enfriantes/Antiinflamatorias → moderan calor tisular",
+          "Hierbas Astringentes → fortalecen tono vascular"
+        ],
+        "combo_logic": "Objetivo: Enfriar + tonificar vasculatura; Estabiliza la intensidad."
+      },
+      "frio": {
+        "mechanism": [
+          "Hierbas Calentadoras → activan microcirculación pélvica",
+          "Hierbas Circulatorias → mueven estasis sin sobreestimular"
+        ],
+        "combo_logic": "Objetivo: Templar + mover; Reduce dolor por contracciones frías."
+      },
+      "humedad": {
+        "mechanism": [
+          "Hierbas Drenantes/Linfáticas → movilizan líquidos",
+          "Hierbas Digestivas Suaves → mejoran tránsito de grasas/residuos"
+        ],
+        "combo_logic": "Objetivo: Drenar + activar digestión; Aligera pesadez y coágulos."
+      },
+      "sequedad": {
+        "mechanism": [
+          "Hierbas Demulcentes → hidratan mucosas",
+          "Hierbas Nutritivas → reponen ‘jugos’ tisulares"
+        ],
+        "combo_logic": "Objetivo: Humectar + nutrir; Restaura reservas y regulariza el flujo."
+      },
+      "relajacion": {
+      "mechanism": [
+        "Hierbas Tonificantes → fortalecen tejidos y circulación suave",
+        "Hierbas Digestivas y Amargas suaves → estimulan metabolismo sin irritar",
+        "Hierbas Adaptógenas ligeras → restauran energía sostenida"
+      ],
+      "combo_logic": "Objetivo: Tonificar y templar sin sobrecalentar; Mejora el tono y vitalidad general."
+      }
+    }
+  },
+  "unique_system": {
+    "title": "🧬 ¿Qué hace único nuestro sistema?",
+    "differentiators": [
+      {
+        "title": "Basado en herbología tradicional",
+        "description": "Integramos energética vitalista con lectura de cómo los elementos se manifiestan en tu cuerpo."
+      },
+      {
+        "title": "Personalización elemental",
+        "description": "Ajustamos las hierbas medicinales al patrón exacto de cada persona."
+      },
+      {
+        "title": "Sinergias transparentes",
+        "description": "Explicamos la lógica de nuestra evaluación y formulaciones."
+      },
+      {
+        "title": "Ajustes mensuales",
+        "description": "Tu plan evoluciona contigo según estaciones y cambios."
+      }
+    ]
+  },
   "phase": {
     "title": "Tips de cuidado personalizados, por fase del ciclo",
     "render_rules": {
@@ -572,95 +669,6 @@
       }
     }
   },
-  "care_tips": {
-    "title": "Mini-hábitos por patrón",
-    "render_rules": {
-      "merge_strategy": "primary_then_secondary_then_mixed",
-      "if_mixed_use": "label_top_1_first_then_label_top_2",
-      "dedupe_arrays": true,
-      "max_items_per_list": 3
-    },
-    "by_pattern": {
-      "tension": [
-        "Respiración diafragmática 5-7 min/día para activar nervio vago",
-        "Movilidad pélvica y estiramientos de psoas",
-        "Limitar cafeína después de las 2 PM"
-      ],
-      "calor": [
-        "Hidratación con electrolitos naturales",
-        "Evitar picantes, alcohol y alimentos procesados",
-        "Dormir en ambiente fresco y bien ventilado"
-      ],
-      "frio": [
-        "Caldos minerales y tés herbales",
-        "Calor local suave (compresa, baño tibio)",
-        "Evitar bebidas frías y alimentos crudos en exceso"
-      ],
-      "humedad": [
-        "Movimiento cada hora para activar drenaje linfático",
-        "Vegetales amargos y fibra para depuración",
-        "Elevar piernas 10-15 min si hay retención"
-      ],
-      "sequedad": [
-        "Hidratación frecuente con electrolitos",
-        "Grasas omega-3 de calidad (pescado, semillas)",
-        "Descanso temprano para regeneración celular"
-      ],
-      "relajacion": [
-      "Caminar o moverse 20-30 min diarios para activar tono sin agotar",
-      "Evitar comidas muy pesadas o prolongar ayunos",
-      "Masaje seco o cepillado corporal para estimular circulación"
-      ]
-    }
-  },
-  "how_herbs_work": {
-    "title": "¿Qué incluiría tu medicina personalizada?",
-    "by_pattern": {
-      "tension": {
-        "mechanism": [
-          "Hierbas Antiespasmódicas → relajan músculo liso uterino",
-          "Hierbas Nervinas suaves → bajan reactividad y mejoran el descanso"
-        ],
-        "combo_logic": "Objetivo: Relajar + calmar; Permite que la sangre fluya sin nudos."
-      },
-      "calor": {
-        "mechanism": [
-          "Hierbas Enfriantes/Antiinflamatorias → moderan calor tisular",
-          "Hierbas Astringentes → fortalecen tono vascular"
-        ],
-        "combo_logic": "Objetivo: Enfriar + tonificar vasculatura; Estabiliza la intensidad."
-      },
-      "frio": {
-        "mechanism": [
-          "Hierbas Calentadoras → activan microcirculación pélvica",
-          "Hierbas Circulatorias → mueven estasis sin sobreestimular"
-        ],
-        "combo_logic": "Objetivo: Templar + mover; Reduce dolor por contracciones frías."
-      },
-      "humedad": {
-        "mechanism": [
-          "Hierbas Drenantes/Linfáticas → movilizan líquidos",
-          "Hierbas Digestivas Suaves → mejoran tránsito de grasas/residuos"
-        ],
-        "combo_logic": "Objetivo: Drenar + activar digestión; Aligera pesadez y coágulos."
-      },
-      "sequedad": {
-        "mechanism": [
-          "Hierbas Demulcentes → hidratan mucosas",
-          "Hierbas Nutritivas → reponen ‘jugos’ tisulares"
-        ],
-        "combo_logic": "Objetivo: Humectar + nutrir; Restaura reservas y regulariza el flujo."
-      },
-      "relajacion": {
-      "mechanism": [
-        "Hierbas Tonificantes → fortalecen tejidos y circulación suave",
-        "Hierbas Digestivas y Amargas suaves → estimulan metabolismo sin irritar",
-        "Hierbas Adaptógenas ligeras → restauran energía sostenida"
-      ],
-      "combo_logic": "Objetivo: Tonificar y templar sin sobrecalentar; Mejora el tono y vitalidad general."
-      }
-    }
-  },
   "advisories": {
     "title": "Notas de seguridad",
     "items": [
@@ -683,27 +691,6 @@
           "equals": "No tengo sangrado actualmente"
         },
         "show": "Si llevas ≥6 meses sin sangrado, considera revisión médica o de laboratorio."
-      }
-    ]
-  },
-  "unique_system": {
-    "title": "🧬 ¿Qué hace único nuestro sistema?",
-    "differentiators": [
-      {
-        "title": "Basado en herbología tradicional",
-        "description": "Integramos energética vitalista con lectura de cómo los elementos se manifiestan en tu cuerpo."
-      },
-      {
-        "title": "Personalización elemental",
-        "description": "Ajustamos las hierbas medicinales al patrón exacto de cada persona."
-      },
-      {
-        "title": "Sinergias transparentes",
-        "description": "Explicamos la lógica de nuestra evaluación y formulaciones."
-      },
-      {
-        "title": "Ajustes mensuales",
-        "description": "Tu plan evoluciona contigo según estaciones y cambios."
       }
     ]
   },
