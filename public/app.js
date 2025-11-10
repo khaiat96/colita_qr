@@ -37,10 +37,9 @@ function generatePDFHTML() {
   const patternKey = calculatedPattern;
   const result = resultsTemplate;
   
-  // Get all template sections
+  // Get all template sections (NO EMOJIS)
   const summary = result.summary?.by_pattern?.[patternKey]?.[0] || '';
-  let element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
-  if (patternKey === 'tension') element = '🌬️ Aire'; 
+  const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
   const patternCard = result.pattern_card?.by_pattern?.[patternKey] || [];
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
   const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
@@ -225,44 +224,11 @@ p { margin-bottom: 12px; color: #134252; }
 .advisories ul li { background: rgba(255, 107, 107, 0.1); padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid #FF6B6B; position: relative; }
 .advisories ul li::before { content: "!"; position: absolute; left: -5px; top: 10px; }
 @media print { body { padding: 15px; } h2, h3, h4, h5 { page-break-after: avoid; } }
-.first-page {
-  page-break-after: always;
-}
-
-.element-title {
-  font-size: 40px;
-  font-weight: bold;
-  color: #134252;
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.first-page h2 {
-  font-size: 28px;
-  color: #21808D;
-  margin-top: 30px;
-  text-align: center;
-}
-
-.first-page p {
-  font-size: 16px;
-  margin: 12px auto;
-  max-width: 700px;
-  text-align: center;
-}
 </style>
 </head>
-
 <body>
-<div class="first-page">
-  <h1 class="element-title">${element}</h1>
-  <div class="why-cluster">
-    <h2>¿Por qué se agrupan tus síntomas?</h2>
-    <p>${whyCluster}</p>
-  </div>
-  ${careTipsHTML}
-</div>
-
+  <h2>${element}</h2>
+  <h3>${summary}</h3>
 
   ${energeticStateHTML}
   
@@ -292,7 +258,6 @@ p { margin-bottom: 12px; color: #134252; }
 async function sendResponsesToGoogleSheet() {
   try {
     const pdfHTML = generatePDFHTML();
-
     const finalEmail = sessionStorage.getItem('user_email');
 
     const payload = {
