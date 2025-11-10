@@ -70,7 +70,7 @@ function generatePDFHTML() {
   if (data) {
     patternCardHTML = `
       <section class="card">
-        <h3>Tu patrón menstrual se caracteriza por:</h3>
+        <h3>Caracterizticas de tu Patrón</h3>
         <p>${data.pattern_explainer}</p>
         <ul>
           ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
@@ -90,35 +90,41 @@ function generatePDFHTML() {
   const advisoriesHTML = advisories.length
     ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
 
-  const phaseHTML = (() => {
-    if (!result.phase?.generic) return '';
-    const genericPhases = result.phase.generic;
-    let html = `<section class="card"><h3>${result.phase.title}</h3>`;
-    for (const [key, orig] of Object.entries(genericPhases)) {
-      const p = { ...orig }; // clone phase to prevent mutation
-      let about = p.about || ''; // ✅ declare it right away
-      const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
-      const merge = (a = [], b = []) => [...a, ...(b || [])];
+const phaseHTML = (() => {
+  if (!result.phase?.generic) return '';
+  const genericPhases = result.phase.generic;
+  let html = '';
 
-      if (overrides) {
-        if (overrides.about_add) about += ' ' + overrides.about_add;
-        p.do = merge(p.do, overrides.do_add);
-        p.foods = merge(p.foods, overrides.foods_add);
-        p.avoid = merge(p.avoid, overrides.avoid_add);
-        p.movement = merge(p.movement, overrides.movement_add);
-        p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
-      }
+  for (const [key, orig] of Object.entries(genericPhases)) {
+    const p = { ...orig }; // clone to prevent data mutation
+    let about = p.about || '';
 
-      html += `<div><h4>${p.label}</h4><p>${about}</p>
-        ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
-        ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
-        ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
-        ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
-        ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
-      </div>`;
+    const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
+    const merge = (a = [], b = []) => [...a, ...(b || [])];
+
+    if (overrides) {
+      if (overrides.about_add) about += ' ' + overrides.about_add;
+      p.do = merge(p.do, overrides.do_add);
+      p.foods = merge(p.foods, overrides.foods_add);
+      p.avoid = merge(p.avoid, overrides.avoid_add);
+      p.movement = merge(p.movement, overrides.movement_add);
+      p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
     }
-    return html + '</section>';
-  })();
+
+    html += `<section class="card">
+      <h3>${p.label}</h3>
+      <p>${about}</p>
+      ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+      ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+      ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+      ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+      ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
+    </section>`;
+  }
+
+  return html;
+})();
+
 
   const whyClusterHTML = whyCluster
     ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
@@ -133,7 +139,7 @@ function generatePDFHTML() {
   <link rel="stylesheet" href="https://yourdomain.com/style.css" />
   <style>
     @font-face {
-      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
+    font-family: 'FKGroteskNeue', 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
       background: #FCFCF9;;
       src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
     }
@@ -202,6 +208,10 @@ function generatePDFHTML() {
 </body>
 </html>`;
 }
+
+
+
+
 
 async function sendResponsesToGoogleSheet() {
   try {
