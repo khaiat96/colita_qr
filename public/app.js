@@ -95,9 +95,11 @@ function generatePDFHTML() {
     const genericPhases = result.phase.generic;
     let html = `<section class="card"><h3>${result.phase.title}</h3>`;
     for (const [key, orig] of Object.entries(genericPhases)) {
-    const p = { ...orig }; // clone phase to prevent mutation      let about = p.about || '';
+      const p = { ...orig }; // clone phase to prevent mutation
+      let about = p.about || ''; // ✅ declare it right away
       const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
       const merge = (a = [], b = []) => [...a, ...(b || [])];
+
       if (overrides) {
         if (overrides.about_add) about += ' ' + overrides.about_add;
         p.do = merge(p.do, overrides.do_add);
@@ -106,6 +108,7 @@ function generatePDFHTML() {
         p.movement = merge(p.movement, overrides.movement_add);
         p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
       }
+
       html += `<div><h4>${p.label}</h4><p>${about}</p>
         ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
