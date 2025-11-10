@@ -36,8 +36,8 @@ function generatePDFHTML() {
 
   const patternKey = calculatedPattern;
   const result = resultsTemplate;
-  
-  // Get all template sections (NO EMOJIS)
+
+  // Extract relevant sections
   const summary = result.summary?.by_pattern?.[patternKey]?.[0] || '';
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
   const patternCard = result.pattern_card?.by_pattern?.[patternKey] || [];
@@ -48,211 +48,146 @@ function generatePDFHTML() {
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
   const energeticState = result.energetic_state?.by_pattern?.[patternKey] || {};
 
-  // Generate Energetic State visualization
-  let energeticStateHTML = '';
-  if (energeticState && Object.keys(energeticState).length > 0) {
-    energeticStateHTML = `
-      <div class="energetic-state">
-        <h3>Tu estado energético</h3>
-        <div class="state-axes">
-          ${energeticState.temperatura ? `
-          <div class="state-axis">
-            <h4>Temperatura</h4>
-            <div class="axis-bar">
-              <div class="axis-fill" style="width: ${energeticState.temperatura}; background: ${energeticState.temperatura > 50 ? '#FF6B6B' : '#4ECDC4'}"></div>
-            </div>
-            <p>${energeticState.temperatura_desc || (energeticState.temperatura > 50 ? 'Caliente' : 'Frío')}</p>
-          </div>` : ''}
-          ${energeticState.humedad ? `
-          <div class="state-axis">
-            <h4>Humedad</h4>
-            <div class="axis-bar">
-              <div class="axis-fill" style="width: ${energeticState.humedad}; background: ${energeticState.humedad > 50 ? '#45B7D1' : '#96CEB4'}"></div>
-            </div>
-            <p>${energeticState.humedad_desc || (energeticState.humedad > 50 ? 'Húmedo' : 'Seco')}</p>
-          </div>` : ''}
-          ${energeticState.tono ? `
-          <div class="state-axis">
-            <h4>Tono</h4>
-            <div class="axis-bar">
-              <div class="axis-fill" style="width: ${energeticState.tono}; background: ${energeticState.tono > 50 ? '#6C5CE7' : '#FD79A8'}"></div>
-            </div>
-            <p>${energeticState.tono_desc || (energeticState.tono > 50 ? 'Tenso' : 'Relajado')}</p>
-          </div>` : ''}
-        </div>
-      </div>
-    `;
-  }
+  // -- Render sections --
+  const patternCardHTML = patternCard.length
+    ? `<section class="card"><h3>Tu patrón menstrual se caracteriza por:</h3><ul>${patternCard.map(p => `<li>${p}</li>`).join('')}</ul></section>` : '';
 
-  // Generate Pattern Card
-  let patternCardHTML = '';
-  if (patternCard.length > 0) {
-    const bullets = patternCard.map(p => `<li>${p}</li>`).join('');
-    patternCardHTML = `
-      <div class="pattern-card">
-        <h3>Tu patrón menstrual se caracteriza por:</h3>
-        <ul>${bullets}</ul>
-      </div>
-    `;
-  }
+  const careTipsHTML = careTips.length
+    ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
 
-  // Generate Care Tips
-  let careTipsHTML = '';
-  if (careTips.length > 0) {
-    const items = careTips.map(t => `<li>${t}</li>`).join('');
-    careTipsHTML = `
-      <div class="care-tips">
-        <h3>Mini-hábitos para tu patrón</h3>
-        <ul>${items}</ul>
-      </div>
-    `;
-  }
+  const herbsHTML = herbs
+    ? `<section class="card"><h3>¿Qué incluiría tu medicina personalizada?</h3><ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}</section>` : '';
 
-  // Generate Herbs section
-  let herbsHTML = '';
-  if (herbs) {
-    const mech = (herbs.mechanism || []).map(m => `<li>${m}</li>`).join('');
-    const logic = herbs.combo_logic ? `<p class="herb-logic">${herbs.combo_logic}</p>` : '';
-    herbsHTML = `
-      <div class="herbs-section">
-        <h3>¿Qué incluiría tu medicina personalizada?</h3>
-        <ul>${mech}</ul>
-        ${logic}
-      </div>
-    `;
-  }
+  const uniqueSystemHTML = uniqueSystem?.differentiators?.length
+    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}</div></section>` : '';
 
-  // Generate Unique System
-  let uniqueSystemHTML = '';
-  if (uniqueSystem?.differentiators?.length) {
-    const items = uniqueSystem.differentiators
-      .map(d => `<div class="unique-item"><h4>${d.title}</h4><p>${d.description}</p></div>`)
-      .join('');
-    uniqueSystemHTML = `
-      <div class="unique-system">
-        <h3>${uniqueSystem.title}</h3>
-        <div class="unique-grid">${items}</div>
-      </div>
-    `;
-  }
+  const advisoriesHTML = advisories.length
+    ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
 
-  // Generate Advisories
-  let advisoriesHTML = '';
-  if (advisories.length > 0) {
-    const items = advisories.map(a => `<li>${a}</li>`).join('');
-    advisoriesHTML = `
-      <div class="advisories">
-        <h3>Advertencias importantes</h3>
-        <ul>${items}</ul>
-      </div>
-    `;
-  }
-
-  // Generate Phase sections (reusing existing function)
-  const phaseHTML = (() => {
-    if (!result.phase || !result.phase.generic) return '';
-    
-    let html = `<h2>${result.phase.title}</h2>`;
-    const genericPhases = result.phase.generic;
-    
-    for (const [phaseKey, phaseInfo] of Object.entries(genericPhases)) {
-      let about = phaseInfo.about || "";
-      let doList = [...(phaseInfo.do || [])];
-      let foods = [...(phaseInfo.foods || [])];
-      let avoid = [...(phaseInfo.avoid || [])];
-      let movement = [...(phaseInfo.movement || [])];
-      let vibe = phaseInfo.vibe || "";
-
-      const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[phaseKey];
-      if (overrides) {
-        if (overrides.about_add) about += " " + overrides.about_add;
-        if (overrides.do_add) doList.push(...overrides.do_add);
-        if (overrides.foods_add) foods.push(...overrides.foods_add);
-        if (overrides.avoid_add) avoid.push(...overrides.avoid_add);
-        if (overrides.movement_add) movement.push(...overrides.movement_add);
-        if (overrides.vibe_add) vibe += " " + overrides.vibe_add;
-      }
-
-      html += `
-        <div class="phase-block">
-          <h4>${phaseInfo.label}</h4>
-          <p>${about}</p>
-          ${foods.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${foods.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
-          ${doList.length ? `<p><strong>Qué hacer:</strong></p><ul>${doList.map(d => `<li>${d}</li>`).join("")}</ul>` : ""}
-          ${avoid.length ? `<p><strong>Evita:</strong></p><ul>${avoid.map(a => `<li>${a}</li>`).join("")}</ul>` : ""}
-          ${movement.length ? `<p><strong>Movimiento:</strong></p><ul>${movement.map(m => `<li>${m}</li>`).join("")}</ul>` : ""}
-          ${vibe ? `<p><strong>Vibra:</strong> ${vibe}</p>` : ""}
+  const energeticStateHTML = Object.keys(energeticState).length
+    ? `<section class="card"><h3>Tu estado energético</h3><div>${['temperatura', 'humedad', 'tono'].map(k => {
+      if (!energeticState[k]) return '';
+      const value = energeticState[k];
+      const label = energeticState[`${k}_desc`] || (value > 50 ? 'Alto' : 'Bajo');
+      const color = k === 'temperatura' ? '#FF6B6B' : k === 'humedad' ? '#45B7D1' : '#6C5CE7';
+      return `
+        <div>
+          <h4>${k[0].toUpperCase() + k.slice(1)}</h4>
+          <div style="background:#eee;height:10px;border-radius:6px;overflow:hidden;">
+            <div style="height:10px;width:${value}%;background:${color}"></div>
+          </div>
+          <p style="font-style:italic;">${label}</p>
         </div>`;
+    }).join('')}</div></section>` : '';
+
+  const phaseHTML = (() => {
+    if (!result.phase?.generic) return '';
+    const genericPhases = result.phase.generic;
+    let html = `<section class="card"><h3>${result.phase.title}</h3>`;
+    for (const [key, p] of Object.entries(genericPhases)) {
+      let about = p.about || '';
+      const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
+      const merge = (a = [], b = []) => [...a, ...(b || [])];
+      if (overrides) {
+        if (overrides.about_add) about += ' ' + overrides.about_add;
+        p.do = merge(p.do, overrides.do_add);
+        p.foods = merge(p.foods, overrides.foods_add);
+        p.avoid = merge(p.avoid, overrides.avoid_add);
+        p.movement = merge(p.movement, overrides.movement_add);
+        p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
+      }
+      html += `<div><h4>${p.label}</h4><p>${about}</p>
+        ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+        ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+        ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+        ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+        ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
+      </div>`;
     }
-    
-    return html;
+    return html + '</section>';
   })();
 
-  const html = `<!DOCTYPE html>
+  const whyClusterHTML = whyCluster
+    ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
+
+  // 🔐 Guard: prevent malformed HTML
+  if (!element || !summary) return null;
+
+  return `<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; color: #134252; background: #FCFCF9; padding: 20px; }
-h2 { font-size: 28px; font-weight: 600; color: #134252; margin-bottom: 16px; text-align: center; border-bottom: 2px solid #21808D; padding-bottom: 12px; }
-h3 { font-size: 22px; font-weight: 600; color: #21808D; margin: 20px 0 12px 0; text-align: center; }
-h4 { font-size: 18px; font-weight: 600; color: #21808D; margin: 20px 0 10px 0; }
-h5 { font-size: 16px; font-weight: 600; color: #134252; margin: 16px 0 8px 0; }
-p { margin-bottom: 12px; color: #134252; }
-.pattern-description, .pattern-card, .energetic-state, .care-tips, .herbs-section, .unique-system, .advisories, .why-cluster, .phase-block { background: white; border: 1.5px solid rgba(94, 82, 64, 0.25); border-radius: 10px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid; }
-.pattern-explainer { font-size: 15px; font-style: italic; margin-bottom: 16px; }
-.characteristics, .recommendations-list, .herb-mechanisms { list-style: none; padding: 0; }
-.characteristics li { background: rgba(33, 128, 141, 0.08); padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid #21808D; }
-.recommendations-list li, .herb-mechanisms li { padding-left: 20px; margin-bottom: 10px; position: relative; }
-.recommendations-list li::before, .herb-mechanisms li::before { content: "•"; position: absolute; left: 0; color: #21808D; font-weight: bold; font-size: 18px; }
-.unique-item { background: rgba(33, 128, 141, 0.06); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
-.unique-item h4 { margin: 0 0 6px 0; font-size: 15px; color: #21808D; }
-.unique-item p { color: #626C71; font-size: 13px; margin: 0; }
-.element-badge { background: #21808D; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; text-align: center; margin-bottom: 16px; }
-.state-axes { display: grid; grid-template-columns: 1fr; gap: 16px; }
-.state-axis { background: rgba(33, 128, 141, 0.05); padding: 16px; border-radius: 8px; }
-.state-axis h4 { margin: 0 0 8px 0; color: #21808D; font-size: 14px; }
-.axis-bar { background: rgba(33, 128, 141, 0.1); height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
-.axis-fill { height: 100%; border-radius: 10px; transition: width 0.3s ease; }
-.state-axis p { margin: 0; font-size: 13px; color: #626C71; font-style: italic; }
-.phase-section { margin-top: 30px; }
-.phase-section h2 { color: #21808D; border-bottom: 2px solid rgba(33, 128, 141, 0.3); }
-.phase-block ul { list-style: none; padding: 0; margin: 8px 0; }
-.phase-block ul li { padding: 6px 0 6px 20px; position: relative; font-size: 13px; }
-.phase-block ul li::before { content: "·"; position: absolute; left: 6px; color: #21808D; font-size: 20px; }
-.advisories ul li { background: rgba(255, 107, 107, 0.1); padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; border-left: 3px solid #FF6B6B; position: relative; }
-.advisories ul li::before { content: "!"; position: absolute; left: -5px; top: 10px; }
-@media print { body { padding: 15px; } h2, h3, h4, h5 { page-break-after: avoid; } }
-</style>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://yourdomain.com/style.css" />
+  <style>
+    @font-face {
+      font-family: 'FKGroteskNeue';
+      src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
+    }
+    body {
+      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
+      background: #FCFCF9;
+      color: #134252;
+      padding: 20px;
+    }
+    h1, h2, h3, h4 {
+      color: #21808D;
+    }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .brand-name {
+      font-size: 28px;
+      font-weight: 600;
+      color: #21808D;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .element-badge {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+      background: #21808D;
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      margin: 0 auto 20px;
+    }
+    .card {
+      background: white;
+      border: 1px solid rgba(94, 82, 64, 0.2);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+    @media print {
+      h2, h3, h4 { page-break-after: avoid; }
+    }
+  </style>
 </head>
 <body>
-  <h2>${element}</h2>
-  <h3>${summary}</h3>
-
-  ${energeticStateHTML}
-  
-  ${patternCardHTML}
-  
-  ${whyCluster ? `<div class="why-cluster"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></div>` : ''}
-  
-  ${phaseHTML}
-  
-  ${careTipsHTML}
-  
-  ${herbsHTML}
-  
-  ${uniqueSystemHTML}
-  
-  ${advisoriesHTML}
-
-    <div class="disclaimer">
-    <p><em>Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.</em></p>
-  </div>
+  <main class="container">
+    <div class="brand-name">🌿 Colita de Rana</div>
+    <div class="element-badge">${element}</div>
+    <section class="card"><h3>${summary}</h3></section>
+    ${whyClusterHTML}
+    ${patternCardHTML}
+    ${careTipsHTML}
+    ${herbsHTML}
+    ${energeticStateHTML}
+    ${uniqueSystemHTML}
+    ${phaseHTML}
+    ${advisoriesHTML}
+    <section class="card">
+      <p><em>Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.</em></p>
+    </section>
+  </main>
 </body>
 </html>`;
-
-  return html;
 }
 
 async function sendResponsesToGoogleSheet() {
