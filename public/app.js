@@ -1207,30 +1207,13 @@ sessionStorage.setItem('user_email', email);
     sendResultsBtn.textContent = 'Enviando...';
 
     try {
-      
-// 🆕 NEW DOM SNAPSHOT METHOD
-const resultsCard = document.getElementById('results-card');
-if (!resultsCard) {
-  alert("No se encontró el contenedor de resultados.");
+        const pdfHTML = generatePDFHTML();
+if (!pdfHTML) {
+  alert("Hubo un error generando el PDF. Por favor intenta de nuevo.");
   sendResultsBtn.disabled = false;
   sendResultsBtn.textContent = 'Enviar PDF';
   return;
 }
-
-const cssText = await getAllCSS(); // helper already defined at bottom of your file
-const pdfHTML = `
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <style>${cssText}</style>
-</head>
-<body>
-  ${resultsCard.outerHTML}
-</body>
-</html>
-`;
-
 
         // Extract title and subtitle from results for Google Sheets
         const resultsCard = document.getElementById('results-card');
@@ -1249,7 +1232,7 @@ const pdfHTML = `
         session_id: sessionId,
         timestamp: new Date().toISOString(),
         answers: answers,
-        results_html: pdfHTML, // 👈 your new HTML snapshot
+        results_html: pdfHTML,
         user_email: email,
         pattern: calculatedPattern,
         result_title: resultTitle,
