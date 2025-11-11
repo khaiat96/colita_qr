@@ -37,163 +37,182 @@ function generatePDFHTML() {
   const patternKey = calculatedPattern;
   const result = resultsTemplate;
 
-  // Extract relevant sections
-  const labelTop = patternKey; // optionally use a friendlier label
+  const labelTop = patternKey;
   const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
-  let patternCardHTML = '';
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
   const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
   const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
   const uniqueSystem = result.unique_system;
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
 
-  // -- Render sections --
+  let patternCardHTML = '';
   if (patternKey.includes('+')) {
-  const subPatterns = patternKey.split('+');
-  const parts = subPatterns.map(key => {
-    const data = result.pattern_card?.single?.[key];
-    if (!data) return '';
-    return `
-      <section class="card">
-        <h3>Tu patrón menstrual: ${key}</h3>
-        <p>${data.pattern_explainer}</p>
-        <ul>
-          ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
-        </ul>
-      </section>
-    `;
-  });
-  patternCardHTML = parts.join('');
-} else {
-  const data = result.pattern_card?.single?.[patternKey];
-  if (data) {
-    patternCardHTML = `
-      <section class="card">
-        <h3>Caracterizticas de tu Patrón</h3>
-        <p>${data.pattern_explainer}</p>
-        <ul>
-          ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
-        </ul>
-      </section>`;
+    const subPatterns = patternKey.split('+');
+    patternCardHTML = subPatterns.map(key => {
+      const data = result.pattern_card?.single?.[key];
+      if (!data) return '';
+      return `
+        <section class="card">
+          <h3>Tu patrón menstrual: ${key}</h3>
+          <p>${data.pattern_explainer}</p>
+          <ul>${data.characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
+        </section>
+      `;
+    }).join('');
+  } else {
+    const data = result.pattern_card?.single?.[patternKey];
+    if (data) {
+      patternCardHTML = `
+        <section class="card">
+          <h3>Características de tu Patrón</h3>
+          <p>${data.pattern_explainer}</p>
+          <ul>${data.characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
+        </section>`;
+    }
   }
-}
+
   const careTipsHTML = careTips.length
     ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card"><h3>¿Qué incluiría tu medicina personalizada?</h3><ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}</section>` : '';
+    ? `<section class="card"><h3>¿Qué incluiría tu medicina personalizada?</h3>
+       <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
+       ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
+     </section>` : '';
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
-    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}</div></section>` : '';
+    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>
+        ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
+      </div></section>` : '';
 
   const advisoriesHTML = advisories.length
     ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
 
-const phaseHTML = (() => {
-  if (!result.phase?.generic) return '';
-  const genericPhases = result.phase.generic;
-  let html = '';
+  const phaseHTML = (() => {
+    if (!result.phase?.generic) return '';
+    const genericPhases = result.phase.generic;
+    let html = '';
+    for (const [key, orig] of Object.entries(genericPhases)) {
+      const p = { ...orig };
+      let about = p.about || '';
+      const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
+      const merge = (a = [], b = []) => [...a, ...(b || [])];
 
-  for (const [key, orig] of Object.entries(genericPhases)) {
-    const p = { ...orig }; // clone to prevent data mutation
-    let about = p.about || '';
+      if (overrides) {
+        if (overrides.about_add) about += ' ' + overrides.about_add;
+        p.do = merge(p.do, overrides.do_add);
+        p.foods = merge(p.foods, overrides.foods_add);
+        p.avoid = merge(p.avoid, overrides.avoid_add);
+        p.movement = merge(p.movement, overrides.movement_add);
+        p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
+      }
 
-    const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
-    const merge = (a = [], b = []) => [...a, ...(b || [])];
-
-    if (overrides) {
-      if (overrides.about_add) about += ' ' + overrides.about_add;
-      p.do = merge(p.do, overrides.do_add);
-      p.foods = merge(p.foods, overrides.foods_add);
-      p.avoid = merge(p.avoid, overrides.avoid_add);
-      p.movement = merge(p.movement, overrides.movement_add);
-      p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
+      html += `<section class="card">
+        <h3>${p.label}</h3>
+        <p>${about}</p>
+        ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+        ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+        ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+        ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+        ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
+      </section>`;
     }
-
-    html += `<section class="card">
-      <h3>${p.label}</h3>
-      <p>${about}</p>
-      ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
-      ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
-      ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
-      ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
-      ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
-    </section>`;
-  }
-
-  return html;
-})();
-
+    return html;
+  })();
 
   const whyClusterHTML = whyCluster
     ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
-
-  // 🔐 Guard: prevent malformed HTML
-  if (!element || !summary) return null;
 
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://yourdomain.com/style.css" />
   <style>
-    @font-face {
-    font-family: 'FKGroteskNeue', 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-      background: #FCFCF9;;
-      src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
+    :root {
+      --color-background: #FCFCF9;
+      --color-surface: #FFFEFD;
+      --color-text: #134252;
+      --color-primary: #21808D;
+      --color-border: rgba(94, 82, 64, 0.2);
     }
+
+    @font-face {
+      font-family: 'FKGroteskNeue';
+      src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+    }
+
     body {
-      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
-      background: #FCFCF9;
-      color: #134252;
+      font-family: 'FKGroteskNeue', 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+      background: var(--color-background, #FCFCF9);
+      color: var(--color-text, #134252);
       padding: 20px;
     }
+
     h1, h2, h3, h4 {
-      color: #21808D;
+      color: var(--color-primary, #21808D);
     }
-    ul { padding-left: 20px; }
-    li { margin-bottom: 8px; }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
     .container {
       max-width: 800px;
       margin: 0 auto;
     }
+
     .brand-name {
       font-size: 28px;
       font-weight: 600;
-      color: #21808D;
+      color: var(--color-primary, #21808D);
       text-align: center;
       margin-bottom: 20px;
     }
+
     .element-badge {
       text-align: center;
       font-size: 18px;
       font-weight: 600;
       color: white;
-      background: #21808D;
+      background: var(--color-primary, #21808D);
       display: inline-block;
       padding: 8px 16px;
       border-radius: 20px;
       margin: 0 auto 20px;
     }
+
     .card {
-      background: white;
-      border: 1px solid rgba(94, 82, 64, 0.2);
+      background: var(--color-surface, #FFFEFD);
+      border: 1px solid var(--color-border, rgba(94, 82, 64, 0.2));
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
       page-break-inside: avoid;
     }
+
     @media print {
-      h2, h3, h4 { page-break-after: avoid; }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
     }
   </style>
 </head>
 <body>
   <main class="container">
-    <div class="brand-name">🌿 Colita de Rana</div>
+    <div class="brand-name">
+      <img src="https://yourdomain.com/emojis/leaf.svg" alt="Colita de Rana" style="width: 1.2em; vertical-align: middle;" /> Colita de Rana
+    </div>
     <div class="element-badge">${summary}</div>
-    <section class="card"><h3>${element}</h3></section>
+    <section class="card">
+      <h3><img src="https://yourdomain.com/emojis/fire.svg" alt="Elemento" style="width: 1em; vertical-align: middle;"> ${element}</h3>
+    </section>
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
@@ -208,10 +227,6 @@ const phaseHTML = (() => {
 </body>
 </html>`;
 }
-
-
-
-
 
 async function sendResponsesToGoogleSheet() {
   try {
