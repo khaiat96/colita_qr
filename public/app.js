@@ -45,54 +45,36 @@ function generatePDFHTML() {
   const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
   const uniqueSystem = result.unique_system;
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
-
-  let patternCardHTML = '';
-  if (patternKey.includes('+')) {
-    const subPatterns = patternKey.split('+');
-    patternCardHTML = subPatterns.map(key => {
-      const data = result.pattern_card?.single?.[key];
-      if (!data) return '';
-      return `
-        <section class="card">
-          <h3>Tu patrón menstrual: ${key}</h3>
-          <p>${data.pattern_explainer}</p>
-          <ul>${data.characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
-        </section>
-      `;
-    }).join('');
-  } else {
-    const data = result.pattern_card?.single?.[patternKey];
-    if (data) {
-      patternCardHTML = `
-        <section class="card">
-          <h3>Características de tu Patrón</h3>
-          <p>${data.pattern_explainer}</p>
-          <ul>${data.characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
-        </section>`;
-    }
-  }
+  const patternData = result.pattern_card?.single?.[patternKey];
+  const patternExplainer = patternData?.pattern_explainer || '';
+  const characteristics = patternData?.characteristics || [];
 
   const careTipsHTML = careTips.length
-    ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
+    ? `<section class="card"><h3><img src="https://yourdomain.com/emojis/sprout.svg" alt="🌿" style="width: 1em; vertical-align: middle;"> Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card"><h3>¿Qué incluiría tu medicina personalizada?</h3>
-       <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
-       ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
-     </section>` : '';
+    ? `<section class="card"><h3><img src="https://yourdomain.com/emojis/fire.svg" alt="🔥" style="width: 1em; vertical-align: middle;"> ¿Qué incluiría tu medicina personalizada?</h3><ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}</section>` : '';
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
-    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>
-        ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
-      </div></section>` : '';
+    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}</div></section>` : '';
 
   const advisoriesHTML = advisories.length
     ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
+
+  const patternCardHTML = characteristics.length
+    ? `<section class="card">
+         <h3>Características de tu patrón</h3>
+         <ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
+       </section>` : '';
+
+  const whyClusterHTML = whyCluster
+    ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
 
   const phaseHTML = (() => {
     if (!result.phase?.generic) return '';
     const genericPhases = result.phase.generic;
     let html = '';
+
     for (const [key, orig] of Object.entries(genericPhases)) {
       const p = { ...orig };
       let about = p.about || '';
@@ -118,16 +100,16 @@ function generatePDFHTML() {
         ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
       </section>`;
     }
+
     return html;
   })();
 
-  const whyClusterHTML = whyCluster
-    ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
+  if (!element || !summary) return null;
 
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <style>
     :root {
       --color-background: #FCFCF9;
@@ -135,13 +117,6 @@ function generatePDFHTML() {
       --color-text: #134252;
       --color-primary: #21808D;
       --color-border: rgba(94, 82, 64, 0.2);
-    }
-
-    @font-face {
-      font-family: 'FKGroteskNeue';
-      src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
-      font-weight: 400;
-      font-style: normal;
     }
 
     body {
@@ -155,13 +130,8 @@ function generatePDFHTML() {
       color: var(--color-primary, #21808D);
     }
 
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 8px;
-    }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
 
     .container {
       max-width: 800px;
@@ -185,7 +155,7 @@ function generatePDFHTML() {
       display: inline-block;
       padding: 8px 16px;
       border-radius: 20px;
-      margin: 0 auto 20px;
+      margin: 0 auto 10px;
     }
 
     .card {
@@ -212,6 +182,7 @@ function generatePDFHTML() {
     <div class="element-badge">${summary}</div>
     <section class="card">
       <h3><img src="https://yourdomain.com/emojis/fire.svg" alt="Elemento" style="width: 1em; vertical-align: middle;"> ${element}</h3>
+      ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
     ${patternCardHTML}
     ${whyClusterHTML}
