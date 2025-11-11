@@ -38,46 +38,20 @@ function generatePDFHTML() {
   const result = resultsTemplate;
 
   // Extract relevant sections
-  const labelTop = patternKey; // optionally use a friendlier label
-  const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
+  const summary = result.summary?.by_pattern?.[patternKey]?.[0] || '';
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
-  let patternCardHTML = '';
+  const patternCard = result.pattern_card?.by_pattern?.[patternKey] || [];
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
   const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
   const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
   const uniqueSystem = result.unique_system;
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
+  const energeticState = result.energetic_state?.by_pattern?.[patternKey] || {};
 
-  // -- Render sections --
-  if (patternKey.includes('+')) {
-  const subPatterns = patternKey.split('+');
-  const parts = subPatterns.map(key => {
-    const data = result.pattern_card?.single?.[key];
-    if (!data) return '';
-    return `
-      <section class="card">
-        <h3>Tu patrón menstrual: ${key}</h3>
-        <p>${data.pattern_explainer}</p>
-        <ul>
-          ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
-        </ul>
-      </section>
-    `;
-  });
-  patternCardHTML = parts.join('');
-} else {
-  const data = result.pattern_card?.single?.[patternKey];
-  if (data) {
-    patternCardHTML = `
-      <section class="card">
-        <h3>Caracterizticas de tu Patrón</h3>
-        <p>${data.pattern_explainer}</p>
-        <ul>
-          ${data.characteristics.map(p => `<li>${p}</li>`).join('')}
-        </ul>
-      </section>`;
-  }
-}
+  // --- Section Rendering ---
+  const patternCardHTML = patternCard.length
+    ? `<section class="card"><h3>Tu patrón menstrual se caracteriza por:</h3><ul>${patternCard.map(p => `<li>${p}</li>`).join('')}</ul></section>` : '';
+
   const careTipsHTML = careTips.length
     ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
 
@@ -90,62 +64,76 @@ function generatePDFHTML() {
   const advisoriesHTML = advisories.length
     ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
 
-const phaseHTML = (() => {
-  if (!result.phase?.generic) return '';
-  const genericPhases = result.phase.generic;
-  let html = '';
+  const energeticStateHTML = Object.keys(energeticState).length
+    ? `<section class="card"><h3>Tu estado energético</h3><div>${['temperatura', 'humedad', 'tono'].map(k => {
+      if (!energeticState[k]) return '';
+      const value = energeticState[k];
+      const label = energeticState[`${k}_desc`] || (value > 50 ? 'Alto' : 'Bajo');
+      const color = k === 'temperatura' ? '#FF6B6B' : k === 'humedad' ? '#45B7D1' : '#6C5CE7';
+      return `
+        <div>
+          <h4>${k[0].toUpperCase() + k.slice(1)}</h4>
+          <div style="background:#eee;height:10px;border-radius:6px;overflow:hidden;">
+            <div style="height:10px;width:${value}%;background:${color}"></div>
+          </div>
+          <p style="font-style:italic;">${label}</p>
+        </div>`;
+    }).join('')}</div></section>` : '';
 
-  for (const [key, orig] of Object.entries(genericPhases)) {
-    const p = { ...orig }; // clone to prevent data mutation
-    let about = p.about || '';
-
-    const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
-    const merge = (a = [], b = []) => [...a, ...(b || [])];
-
-    if (overrides) {
-      if (overrides.about_add) about += ' ' + overrides.about_add;
-      p.do = merge(p.do, overrides.do_add);
-      p.foods = merge(p.foods, overrides.foods_add);
-      p.avoid = merge(p.avoid, overrides.avoid_add);
-      p.movement = merge(p.movement, overrides.movement_add);
-      p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
+  const phaseHTML = (() => {
+    if (!result.phase?.generic) return '';
+    const genericPhases = result.phase.generic;
+    let html = `<section class="card"><h3>${result.phase.title}</h3>`;
+    for (const [key, p] of Object.entries(genericPhases)) {
+      let about = p.about || '';
+      const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
+      const merge = (a = [], b = []) => [...a, ...(b || [])];
+      if (overrides) {
+        if (overrides.about_add) about += ' ' + overrides.about_add;
+        p.do = merge(p.do, overrides.do_add);
+        p.foods = merge(p.foods, overrides.foods_add);
+        p.avoid = merge(p.avoid, overrides.avoid_add);
+        p.movement = merge(p.movement, overrides.movement_add);
+        p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
+      }
+      html += `<div><h4>${p.label}</h4><p>${about}</p>
+        ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+        ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+        ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+        ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+        ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
+      </div>`;
     }
-
-    html += `<section class="card">
-      <h3>${p.label}</h3>
-      <p>${about}</p>
-      ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
-      ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
-      ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
-      ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
-      ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
-    </section>`;
-  }
-
-  return html;
-})();
-
+    return html + '</section>';
+  })();
 
   const whyClusterHTML = whyCluster
     ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
 
-  // 🔐 Guard: prevent malformed HTML
-  if (!element || !summary) return null;
+  // Fallback if critical data missing
+  if (!element || !summary) {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head><meta charset="UTF-8"><title>Error</title></head>
+        <body><h2>Error generando resultados para el patrón: ${patternKey}</h2></body>
+      </html>`;
+  }
 
+  // ✅ FINAL HTML OUTPUT
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <link rel="stylesheet" href="https://yourdomain.com/style.css" />
   <style>
     @font-face {
-    font-family: 'FKGroteskNeue', 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
-      background: #FCFCF9;;
+      font-family: 'FKGroteskNeue';
       src: url('https://yourdomain.com/fonts/FKGroteskNeue.woff2') format('woff2');
     }
-    body {
+    html, body {
       font-family: 'FKGroteskNeue', 'Inter', sans-serif;
-      background: #FCFCF9;
+      background-color: #FCFCF9 !important;
       color: #134252;
       padding: 20px;
     }
@@ -184,20 +172,28 @@ const phaseHTML = (() => {
       margin-bottom: 20px;
       page-break-inside: avoid;
     }
+    img.emoji {
+      height: 1em;
+      width: 1em;
+      margin: 0 .05em 0 .1em;
+      vertical-align: -0.1em;
+    }
     @media print {
       h2, h3, h4 { page-break-after: avoid; }
     }
   </style>
+  <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"></script>
 </head>
 <body>
   <main class="container">
     <div class="brand-name">🌿 Colita de Rana</div>
-    <div class="element-badge">${summary}</div>
-    <section class="card"><h3>${element}</h3></section>
-    ${patternCardHTML}
+    <div class="element-badge">${element}</div>
+    <section class="card"><h3>${summary}</h3></section>
     ${whyClusterHTML}
+    ${patternCardHTML}
     ${careTipsHTML}
     ${herbsHTML}
+    ${energeticStateHTML}
     ${uniqueSystemHTML}
     ${phaseHTML}
     ${advisoriesHTML}
@@ -205,6 +201,12 @@ const phaseHTML = (() => {
       <p><em>Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.</em></p>
     </section>
   </main>
+  <script>
+    twemoji.parse(document.body, {
+      folder: 'svg',
+      ext: '.svg'
+    });
+  </script>
 </body>
 </html>`;
 }
