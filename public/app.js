@@ -39,42 +39,44 @@ function generatePDFHTML() {
 
   const labelTop = patternKey;
   const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
+  const cleanSummary = summary.replace(/Colita de Rana:? ?/gi, '').trim();
   const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
+  const patternData = result.pattern_card?.single?.[patternKey] || {};
+  const patternExplainer = patternData.pattern_explainer || '';
+  const characteristics = patternData.characteristics || [];
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
   const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
   const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
   const uniqueSystem = result.unique_system;
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
-  const patternData = result.pattern_card?.single?.[patternKey];
-  const patternExplainer = patternData?.pattern_explainer || '';
-  const characteristics = patternData?.characteristics || [];
-
-  const careTipsHTML = careTips.length
-    ? `<section class="card"><h3><img src="https://yourdomain.com/emojis/sprout.svg" alt="🌿" style="width: 1em; vertical-align: middle;"> Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
-
-  const herbsHTML = herbs
-    ? `<section class="card"><h3><img src="https://yourdomain.com/emojis/fire.svg" alt="🔥" style="width: 1em; vertical-align: middle;"> ¿Qué incluiría tu medicina personalizada?</h3><ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}</section>` : '';
-
-  const uniqueSystemHTML = uniqueSystem?.differentiators?.length
-    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}</div></section>` : '';
-
-  const advisoriesHTML = advisories.length
-    ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
 
   const patternCardHTML = characteristics.length
     ? `<section class="card">
-         <h3>Características de tu patrón</h3>
-         <ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
+        <h3>Características de tu patrón</h3>
+        <ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
+      </section>` : '';
+
+  const careTipsHTML = careTips.length
+    ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
+
+  const herbsHTML = herbs
+    ? `<section class="card"><h3>¿Qué incluiría tu medicina personalizada?</h3>
+         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
+         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
        </section>` : '';
 
-  const whyClusterHTML = whyCluster
-    ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
+  const uniqueSystemHTML = uniqueSystem?.differentiators?.length
+    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>
+        ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
+      </div></section>` : '';
+
+  const advisoriesHTML = advisories.length
+    ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
 
   const phaseHTML = (() => {
     if (!result.phase?.generic) return '';
     const genericPhases = result.phase.generic;
     let html = '';
-
     for (const [key, orig] of Object.entries(genericPhases)) {
       const p = { ...orig };
       let about = p.about || '';
@@ -100,11 +102,11 @@ function generatePDFHTML() {
         ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
       </section>`;
     }
-
     return html;
   })();
 
-  if (!element || !summary) return null;
+  const whyClusterHTML = whyCluster
+    ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -120,7 +122,7 @@ function generatePDFHTML() {
     }
 
     body {
-      font-family: 'FKGroteskNeue', 'Inter', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
       background: var(--color-background, #FCFCF9);
       color: var(--color-text, #134252);
       padding: 20px;
@@ -139,7 +141,7 @@ function generatePDFHTML() {
     }
 
     .brand-name {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 600;
       color: var(--color-primary, #21808D);
       text-align: center;
@@ -147,15 +149,14 @@ function generatePDFHTML() {
     }
 
     .element-badge {
-      text-align: center;
       font-size: 18px;
       font-weight: 600;
-      color: white;
       background: var(--color-primary, #21808D);
+      color: white;
       display: inline-block;
       padding: 8px 16px;
       border-radius: 20px;
-      margin: 0 auto 10px;
+      margin-bottom: 10px;
     }
 
     .card {
@@ -176,14 +177,9 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-    <div class="brand-name">
-      <img src="https://yourdomain.com/emojis/leaf.svg" alt="Colita de Rana" style="width: 1.2em; vertical-align: middle;" /> Colita de Rana
-    </div>
-    <div class="element-badge">${summary}</div>
-    <section class="card">
-      <h3><img src="https://yourdomain.com/emojis/fire.svg" alt="Elemento" style="width: 1em; vertical-align: middle;"> ${element}</h3>
-      ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
-    </section>
+    <div class="brand-name">Colita de Rana: Quiz del Ciclo Menstrual</div>
+    <div class="element-badge">${element}</div>
+    ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
@@ -198,6 +194,7 @@ function generatePDFHTML() {
 </body>
 </html>`;
 }
+
 
 async function sendResponsesToGoogleSheet() {
   try {
