@@ -42,10 +42,10 @@ function generatePDFHTML() {
   const cleanSummary = summary.replace(/Colita de Rana:? ?/gi, '').trim();
 
   const elementRaw = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
-  const element = elementRaw.replace(/[\u{1F300}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, '').trim();
+  const element = (result.element?.by_pattern?.[patternKey]?.[0] || patternKey).replace(/[\u{1F300}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}|\u{1F1E6}-\u{1F1FF}]/gu, '');
 
   const patternData = result.pattern_card?.single?.[patternKey] || {};
-  const patternExplainer = patternData.pattern_explainer || '';
+  const patternExplainer = (patternData.pattern_explainer || '').replace(/[\u{1F300}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}|\u{1F1E6}-\u{1F1FF}]/gu, '');
   const characteristics = patternData.characteristics || [];
   const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
   const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
@@ -128,14 +128,21 @@ function generatePDFHTML() {
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+ <style>
+ @font-face {
+font-family: 'FKGroteskNeue';
+src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2') format('woff2');
+font-display: swap;
+   }
+ </style>
   <style>
-    :root {
-      --color-background: #0a1f1c;
-      --color-surface: #1a2a3a;
-      --color-text: #ffffff;
-      --color-primary: #00D4AA;
-      --color-border: rgba(255, 255, 255, 0.2);
-    }
+  :root {
+    --color-background: rgba(252, 252, 249, 1);
+    --color-surface: rgba(255, 255, 253, 1);
+    --color-text: rgba(19, 52, 59, 1);
+    --color-primary: rgba(33, 128, 141, 1);
+    --color-border: rgba(94, 82, 64, 0.2);
+  }
 
     body {
       font-family: 'FKGroteskNeue', 'Inter', sans-serif;
