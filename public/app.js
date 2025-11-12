@@ -40,7 +40,10 @@ function generatePDFHTML() {
   const labelTop = patternKey;
   const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
   const cleanSummary = summary.replace(/Colita de Rana:? ?/gi, '').trim();
-  const element = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
+
+  const elementRaw = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
+  const element = elementRaw.replace(/[\u{1F300}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, '').trim();
+
   const patternData = result.pattern_card?.single?.[patternKey] || {};
   const patternExplainer = patternData.pattern_explainer || '';
   const characteristics = patternData.characteristics || [];
@@ -57,21 +60,37 @@ function generatePDFHTML() {
       </section>` : '';
 
   const careTipsHTML = careTips.length
-    ? `<section class="card"><h3>Mini-hábitos para tu patrón</h3><ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul></section>` : '';
+    ? `<section class="card">
+        <h3>Mini-hábitos para tu patrón</h3>
+        <ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul>
+      </section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card"><h3>¿Qué incluiría tu medicina personalizada?</h3>
-         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
-         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
-       </section>` : '';
+    ? `<section class="card">
+        <h3>¿Qué incluiría tu medicina personalizada?</h3>
+        <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
+        ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
+      </section>` : '';
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
-    ? `<section class="card"><h3>${uniqueSystem.title}</h3><div>
-        ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
-      </div></section>` : '';
+    ? `<section class="card">
+        <h3>${uniqueSystem.title}</h3>
+        <div>
+          ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
+        </div>
+      </section>` : '';
 
   const advisoriesHTML = advisories.length
-    ? `<section class="card"><h3>Advertencias importantes</h3><ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul></section>` : '';
+    ? `<section class="card">
+        <h3>Advertencias importantes</h3>
+        <ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul>
+      </section>` : '';
+
+  const whyClusterHTML = whyCluster
+    ? `<section class="card">
+        <h3>¿Por qué se agrupan tus síntomas?</h3>
+        <p>${whyCluster}</p>
+      </section>` : '';
 
   const phaseHTML = (() => {
     if (!result.phase?.generic) return '';
@@ -105,31 +124,28 @@ function generatePDFHTML() {
     return html;
   })();
 
-  const whyClusterHTML = whyCluster
-    ? `<section class="card"><h3>¿Por qué se agrupan tus síntomas?</h3><p>${whyCluster}</p></section>` : '';
-
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <style>
     :root {
-      --color-background: #FCFCF9;
-      --color-surface: #FFFEFD;
-      --color-text: #134252;
-      --color-primary: #21808D;
-      --color-border: rgba(94, 82, 64, 0.2);
+      --color-background: #0a1f1c;
+      --color-surface: #1a2a3a;
+      --color-text: #ffffff;
+      --color-primary: #00D4AA;
+      --color-border: rgba(255, 255, 255, 0.2);
     }
 
     body {
       font-family: 'FKGroteskNeue', 'Inter', sans-serif;
-      background: var(--color-background, #FCFCF9);
-      color: var(--color-text, #134252);
+      background: var(--color-background);
+      color: var(--color-text);
       padding: 20px;
     }
 
     h1, h2, h3, h4 {
-      color: var(--color-primary, #21808D);
+      color: var(--color-primary);
     }
 
     ul { padding-left: 20px; }
@@ -140,28 +156,9 @@ function generatePDFHTML() {
       margin: 0 auto;
     }
 
-    .brand-name {
-      font-size: 24px;
-      font-weight: 600;
-      color: var(--color-primary, #21808D);
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .element-badge {
-      font-size: 18px;
-      font-weight: 600;
-      background: var(--color-primary, #21808D);
-      color: white;
-      display: inline-block;
-      padding: 8px 16px;
-      border-radius: 20px;
-      margin-bottom: 10px;
-    }
-
     .card {
-      background: var(--color-surface, #FFFEFD);
-      border: 1px solid var(--color-border, rgba(94, 82, 64, 0.2));
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
@@ -177,9 +174,10 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-    <div class="brand-name">Colita de Rana: Quiz del Ciclo Menstrual</div>
-    <div class="element-badge">${element}</div>
-    ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
+    <section class="card">
+      <h2>Tu tipo de ciclo: ${element}</h2>
+      ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
+    </section>
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
@@ -194,6 +192,7 @@ function generatePDFHTML() {
 </body>
 </html>`;
 }
+
 
 
 async function sendResponsesToGoogleSheet() {
