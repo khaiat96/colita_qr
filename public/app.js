@@ -209,22 +209,25 @@ async function sendResponsesToGoogleSheet() {
       pattern: calculatedPattern
     };
 
-    // 1. Save answers (optional)
+    // 👇 CloudConvert requires this wrapper
+    const wrappedPayload = { data: payload };
+
+    // 1. Save answers (optional) — also wrapped
     const saveResp = await fetch(SAVE_RESPONSES, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(wrappedPayload)
     });
 
     if (!saveResp.ok) {
       throw new Error(`SAVE_RESPONSES error: HTTP ${saveResp.status} - ${saveResp.statusText}`);
     }
 
-    // 2. Send PDF to email
+    // 2. Send PDF to email — wrapped too
     const emailResp = await fetch(EMAIL_REPORT_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(wrappedPayload)
     });
 
     if (!emailResp.ok) {
@@ -236,6 +239,7 @@ async function sendResponsesToGoogleSheet() {
     console.error('❌ Error al enviar resultados:', err);
   }
 }
+
 
 
 // ==================== EMAIL GATE ====================
