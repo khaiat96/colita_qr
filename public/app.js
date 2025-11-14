@@ -237,6 +237,8 @@ async function sendResponsesToGoogleSheet() {
   }
 }
 
+
+// ==================== EMAIL GATE ====================
 window.submitEmailGate = async function () {
   const emailInput = document.getElementById('email-gate-email');
   const email = emailInput?.value?.trim();
@@ -246,14 +248,39 @@ window.submitEmailGate = async function () {
     return;
   }
 
+  // Save for webhook + PDF send
   sessionStorage.setItem('user_email', email);
 
   try {
-    await sendResponsesToGoogleSheet(); // uses your existing function
-    showPage('results-page'); // show results page
+    // 1️⃣ Calculate your pattern BEFORE showing results
+calculatedPattern = calculateResults().toLowerCase();
+
+    // 2️⃣ Render the results on screen
+    showResults(calculatedPattern);
+
+    // 3️⃣ Send to Make.com → FIXED with the required "data" wrapper
+    await fetch(EMAIL_REPORT_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        data: {
+          session_id: sessionId,
+          timestamp: new Date().toISOString(),
+          answers: answers,
+          pattern: calculatedPattern,
+          user_email: email,
+          results_html: sanitizeHTML(generatePDFHTML())        }
+      })
+    });
+
+    console.log("📨 Email + results sent to Make.com:", email);
+
+    // 4️⃣ Show the results page
+    showPage('results-page');
+
   } catch (err) {
-    console.error('❌ Error al enviar resultados:', err);
-    alert('Hubo un error. Por favor intenta de nuevo.');
+    console.error('❌ Error en email gate:', err);
+    alert('Hubo un error enviando tus resultados. Intenta de nuevo.');
   }
 };
 
@@ -799,6 +826,13 @@ function calculateResults() {
   });
 
   return dominantPattern;
+}
+
+function sanitizeHTML(html) {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, '')    // Remove scripts
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')    // Remove iframes
+    .replace(/[\u{1F3E0}-\u{1F9FF}|\u{2600}-\u{27BF}]/gu, ''); // Remove emojis
 }
 
 // ==================== DETAILED RESULTS RENDERING ====================
