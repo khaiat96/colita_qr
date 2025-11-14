@@ -223,9 +223,9 @@ async function sendResponsesToGoogleSheet() {
     const emailResp = await fetch(EMAIL_REPORT_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: payload }) 
+      body: JSON.stringify(wrappedPayload)
     });
-    
+
     if (!emailResp.ok) {
       throw new Error(`EMAIL_REPORT_WEBHOOK error: HTTP ${emailResp.status} - ${emailResp.statusText}`);
     }
