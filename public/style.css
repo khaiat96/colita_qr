@@ -2696,3 +2696,16 @@ canvas#radarChart {
 .results-actions-stack button {
   margin-top: 16px;
 }
+
+
+.btn-primary {
+  background-color: #21808D;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #1b6d75;
+}

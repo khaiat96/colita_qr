@@ -472,36 +472,64 @@ window.finishSurvey = function () {
   showPage('email-gate-page');
 };
 
-// ==================== EMAIL GATE ====================
-window.submitEmailGate = async function () {
-  const name = document.getElementById('email-gate-name').value.trim();
-  const email = document.getElementById('email-gate-email').value.trim();
 
-  // Validate fields
-  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Por favor ingresa un nombre y un email válido.");
-    return;
-  }
+// ==================== EMAIL GATE PAGE ====================
+<div id="email-gate-page" class="page">
+  <main class="results-container">
+    <div class="email-pdf-section" style="
+      margin-top: 40px;
+      padding: 24px;
+      background: rgba(33, 128, 141, 0.08);
+      border-radius: 12px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+      <h2 style="
+        text-align: center;
+        margin-bottom: 16px;
+        color: #21808D;
+      ">¿Quieres ver tus resultados?</h2>
 
-  // Save email for PDF and Google Sheet webhook
-  sessionStorage.setItem('user_email', email);
+      <p style="
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 20px;
+      ">
+        Ingresa tu correo electrónico y <strong>recibirás tus resultados personalizados por email</strong>.
+      </p>
 
-  // Optional: also send to waitlist webhook
-  try {
-    await fetch(WAITLIST_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, source: "email_gate" })
-    });
-  } catch (err) {
-    console.error("❌ Error sending to waitlist:", err);
-  }
+      <input
+        type="email"
+        id="email-gate-email"
+        required
+        placeholder="tu@email.com"
+        style="
+          width: 100%;
+          padding: 12px 16px;
+          font-size: 16px;
+          border: 1px solid rgba(94, 82, 64, 0.3);
+          border-radius: 8px;
+          margin-bottom: 16px;
+        "
+      />
 
-  // Continue with result calculation and send to webhook
-  calculatedPattern = calculateResults();
-  showResults(calculatedPattern);
-  sendResponsesToGoogleSheet();
-};
+      <button
+        class="btn btn-block btn-primary"
+        onclick="submitEmailGate()"
+        style="
+          width: 100%;
+          padding: 14px 24px;
+          font-size: 16px;
+        "
+      >
+        Ver resultados
+      </button>
+    </div>
+  </main>
+</div>
+
+
 
 
 // ==================== SURVEY RENDERING ====================
@@ -985,6 +1013,11 @@ function pickRitmoStateFromAnswers() {
   return "regular";
 }
 
+function capitalize(str) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 // === MAIN RESULTS RENDERING ===
 function showResults(patternType) {
   if (!resultsTemplate) {
@@ -1009,8 +1042,7 @@ function showResults(patternType) {
   const subtitleText =
     (result.summary?.single || "Tu tipo de ciclo: {{label_top}}").replace(
       "{{label_top}}",
-      result.labels?.[patternType] || patternType
-    );
+    capitalize(result.labels?.[patternType] || patternType)    );
   const subtitle = document.createElement("h3");
   subtitle.className = "results-subtitle";
   subtitle.textContent = subtitleText;
@@ -1157,7 +1189,6 @@ if (joinBtn) {
   });
 }
 
-
     // Disclaimer
   const disclaimer = document.createElement("p");
   disclaimer.className = "results-disclaimer";
@@ -1166,143 +1197,9 @@ if (joinBtn) {
     "Esta información es educativa y no sustituye atención médica.";
   card.appendChild(disclaimer);
 
-
-  
-  // Add email form for PDF delivery
-  const emailFormSection = document.createElement('div');
-  emailFormSection.className = 'email-pdf-section';
-  emailFormSection.style.marginTop = '40px';
-  emailFormSection.style.padding = '24px';
-  emailFormSection.style.background = 'rgba(33, 128, 141, 0.08)';
-  emailFormSection.style.borderRadius = '12px';
-  emailFormSection.style.maxWidth = '500px';
-  emailFormSection.style.marginLeft = 'auto';
-  emailFormSection.style.marginRight = 'auto';
-
-  const emailFormTitle = document.createElement('h4');
-  emailFormTitle.textContent = 'Recibe tus resultados por email';
-  emailFormTitle.style.textAlign = 'center';
-  emailFormTitle.style.marginBottom = '16px';
-  emailFormTitle.style.color = '#21808D';
-
-  const emailInput = document.createElement('input');
-  emailInput.type = 'email';
-  emailInput.placeholder = 'tu@email.com';
-  emailInput.required = true;
-  emailInput.style.width = '100%';
-  emailInput.style.padding = '12px 16px';
-  emailInput.style.fontSize = '16px';
-  emailInput.style.border = '1px solid rgba(94, 82, 64, 0.3)';
-  emailInput.style.borderRadius = '8px';
-  emailInput.style.marginBottom = '12px';
-
-  const sendResultsBtn = document.createElement('button');
-  sendResultsBtn.className = 'btn-primary';
-  sendResultsBtn.textContent = 'Enviar PDF';
-  sendResultsBtn.style.width = '100%';
-  sendResultsBtn.style.padding = '14px 24px';
-
-  sendResultsBtn.addEventListener('click', async () => {
-  const email = emailInput.value.trim();
-    
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert('Por favor ingresa un email válido');
-    return;
-  }
-
-// ✅ Store the email in session storage
-sessionStorage.setItem('user_email', email);
-
-
-    if (!email || !emailInput.checkValidity()) {
-      alert('Por favor ingresa un email válido');
-      return;
-    }
-
-    sendResultsBtn.disabled = true;
-    sendResultsBtn.textContent = 'Enviando...';
-
-    try {
-        const pdfHTML = generatePDFHTML();
-if (!pdfHTML) {
-  alert("Hubo un error generando el PDF. Por favor intenta de nuevo.");
-  sendResultsBtn.disabled = false;
-  sendResultsBtn.textContent = 'Enviar PDF';
-  return;
 }
-
-        // Extract title and subtitle from results for Google Sheets
-        const resultsCard = document.getElementById('results-card');
-        let resultTitle = '';
-        let resultSubtitle = '';
-
-        if (resultsCard) {
-          const titleElem = resultsCard.querySelector('h2.results-main-title');
-          const subtitleElem = resultsCard.querySelector('h3.results-subtitle');
-
-          if (titleElem) resultTitle = titleElem.textContent.trim();
-          if (subtitleElem) resultSubtitle = subtitleElem.textContent.trim();
-        }
-
-      const payload = {
-        session_id: sessionId,
-        timestamp: new Date().toISOString(),
-        answers: answers,
-        results_html: pdfHTML,
-        user_email: email,
-        pattern: calculatedPattern,
-        result_title: resultTitle,
-        result_subtitle: resultSubtitle
-      };
-
-      console.log("📤 Payload enviado:", payload);
-
-      const resp = await fetch(EMAIL_REPORT_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!resp.ok) {
-        throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
-      }
-
-      sendResultsBtn.textContent = '✓ Enviado a ' + email;
-      sendResultsBtn.style.background = '#00D4AA';
-    
-
-      console.log('✅ PDF request sent to Make.com for:', email);
-      console.log('📧 Check your inbox (and spam folder) in a few moments');
-
-      // Re-enable after 1 second and clear email
-      setTimeout(() => {
-        sendResultsBtn.textContent = 'Enviar PDF';
-        sendResultsBtn.disabled = false;
-        sendResultsBtn.style.background = '';
-        emailInput.value = ''; // Clear email field
-      }, 1000);
-
-    } catch (err) {
-      console.error('❌ Error:', err);
-      sendResultsBtn.textContent = '✗ Error - Intentar de nuevo';
-      sendResultsBtn.style.background = '#FF5459';
-      setTimeout(() => {
-        sendResultsBtn.textContent = 'Enviar PDF';
-        sendResultsBtn.disabled = false;
-        sendResultsBtn.style.background = '';
-      }, 3000);
-    }
-  });
-
-  emailFormSection.appendChild(emailFormTitle);
-  emailFormSection.appendChild(emailInput);
-  emailFormSection.appendChild(sendResultsBtn);
-  card.appendChild(emailFormSection);
-
-  showPage("results-page");
-}
-
 window.showResults = showResults;
+
 
 
 // ==================== PROGRESS BAR ====================
