@@ -30,78 +30,94 @@ window.handleTextInput = function(qId, value) {
     window.updateNavigation();
 };
 
+// Generate PDF-ready HTML with inline styles - CLEAN VERSION (NO EMOJIS, NO FORMS)
 function generatePDFHTML() {
-  if (!resultsTemplate || !calculatedPattern) {
-    console.error("❌ Missing data to generate PDF.");
-    return '';
+  if (!resultsTemplate || !calculatedPattern) return null;
+
+  const result = resultsTemplate;
+  const pattern = calculatedPattern;
+  const labelTop = result.labels?.[pattern] || pattern;
+  const patternDisplay = labelTop.charAt(0).toUpperCase() + labelTop.slice(1);
+
+  const title = result.element?.by_pattern?.[pattern]?.[0] || pattern;
+  const summary = (result.summary?.single || "Tu tipo de ciclo: {{label_top}}").replace("{{label_top}}", patternDisplay);
+
+  const patternData = result.pattern_card?.single?.[pattern];
+  const why = result.why_cluster?.by_pattern?.[pattern]?.[0];
+  const habits = result.care_tips?.by_pattern?.[pattern] || [];
+  const herbs = result.how_herbs_work?.by_pattern?.[pattern];
+  const diff = result.unique_system?.differentiators || [];
+
+  let html = `
+    <div style="font-family: sans-serif; padding: 24px; line-height: 1.5; color: #222;">
+      <h2 style="font-size: 24px; color: #21808D;">${title}</h2>
+      <h3 style="font-size: 20px; margin-top: 8px; color: #5E5240;">${summary}</h3>
+  `;
+
+  if (patternData) {
+    html += `
+      <section style="margin-top: 48px;">
+        <p style="margin-bottom: 16px;">${patternData.pattern_explainer || ""}</p>
+        <ul style="padding-left: 20px;">
+          ${(patternData.characteristics || []).map(c => `<li>${c}</li>`).join("")}
+        </ul>
+      </section>
+    `;
   }
 
-  const pattern = calculatedPattern;
-  const label = resultsTemplate.labels?.[pattern] || pattern;
-  const elementTitle = resultsTemplate.element?.by_pattern?.[pattern]?.[0] || '';
-  const explainer = resultsTemplate.pattern_card?.single?.[pattern]?.pattern_explainer || '';
-  const characteristics = resultsTemplate.pattern_card?.single?.[pattern]?.characteristics || [];
-  const whyCluster = resultsTemplate.why_cluster?.by_pattern?.[pattern]?.[0] || '';
-  const careTips = resultsTemplate.care_tips?.by_pattern?.[pattern] || [];
-  const herbData = resultsTemplate.how_herbs_work?.by_pattern?.[pattern];
-  const uniqueSystem = resultsTemplate.unique_system;
+  if (why) {
+    html += `
+      <section style="margin-top: 48px;">
+        <h4 style="color: #21808D;">¿Por qué se agrupan tus síntomas?</h4>
+        <p>${why}</p>
+      </section>
+    `;
+  }
 
-  return `
-    <div style="font-family: 'Helvetica Neue', sans-serif; padding: 40px; font-size: 16px; line-height: 1.6; color: #333;">
-      <h1 style="color: #21808D; font-size: 32px;">${elementTitle}</h1>
-      <h2 style="margin-top: 4px; font-size: 20px;">Tu Tipo de Ciclo: ${label}</h2>
-
-      <p style="margin-top: 32px;">${explainer}</p>
-
-      ${characteristics.length ? `
-        <ul style="margin-top: 16px; padding-left: 20px;">
-          ${characteristics.map(c => `<li>${c}</li>`).join('')}
+  if (habits.length) {
+    html += `
+      <section style="margin-top: 48px;">
+        <h4 style="color: #21808D;">🌸 Mini-hábitos para tu patrón</h4>
+        <ul style="padding-left: 20px;">
+          ${habits.map(h => `<li>${h}</li>`).join("")}
         </ul>
-      ` : ''}
+      </section>
+    `;
+  }
 
-      ${whyCluster ? `
-        <div style="margin-top: 40px;">
-          <h3 style="font-size: 20px;">¿Por qué se agrupan tus síntomas?</h3>
-          <p>${whyCluster}</p>
-        </div>
-      ` : ''}
+  if (herbs) {
+    html += `
+      <section style="margin-top: 48px;">
+        <h4 style="color: #21808D;">¿Qué incluiría tu medicina personalizada?</h4>
+        <ul style="padding-left: 20px;">
+          ${herbs.mechanism.map(m => `<li>${m}</li>`).join("")}
+        </ul>
+        <p style="margin-top: 16px;">${herbs.combo_logic}</p>
+      </section>
+    `;
+  }
 
-      ${careTips.length ? `
-        <div style="margin-top: 40px;">
-          <h3 style="font-size: 20px;">🌸 Mini-hábitos para tu patrón</h3>
-          <ul style="padding-left: 20px;">
-            ${careTips.map(tip => `<li>${tip}</li>`).join('')}
-          </ul>
+  if (diff.length) {
+    html += `
+      <section style="margin-top: 48px;">
+        <h4 style="color: #21808D;">¿Qué hace único nuestro sistema?</h4>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px;">
+          ${diff.map(d => `
+            <div style="border: 1px solid #ccc; border-radius: 8px; padding: 16px;">
+              <h5 style="margin: 0 0 8px 0; color: #5E5240;">${d.title}</h5>
+              <p style="margin: 0;">${d.description}</p>
+            </div>
+          `).join("")}
         </div>
-      ` : ''}
+      </section>
+    `;
+  }
 
-      ${herbData ? `
-        <div style="margin-top: 80px;">
-          <h2 style="font-size: 22px; color: #333;">¿Qué incluiría tu medicina personalizada?</h2>
-          <ul style="margin-top: 16px; padding-left: 20px;">
-            ${herbData.mechanism.map(m => `<li>${m}</li>`).join('')}
-          </ul>
-          <p style="margin-top: 16px;">${herbData.combo_logic}</p>
-        </div>
-      ` : ''}
+  // Don't include disclaimer in PDF (you mentioned that)
+  html += `</div>`;
 
-      ${uniqueSystem?.differentiators?.length ? `
-        <div style="margin-top: 64px;">
-          <h2 style="font-size: 22px; color: #333;">${uniqueSystem.title}</h2>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
-            ${uniqueSystem.differentiators.map(d => `
-              <div>
-                <h4 style="margin-bottom: 4px;">${d.title}</h4>
-                <p style="margin: 0;">${d.description}</p>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-    </div>
-  `;
+  return html;
 }
-
 
 async function sendResponsesToGoogleSheet() {
   try {
