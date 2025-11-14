@@ -29,7 +29,7 @@
           Estamos desarrollando el primer sistema de medicina herbal personalizada para la salud menstrual en México.
           Cada mujer tiene un patrón único de síntomas que merece una medicina única.
         </p>
-        <button class="btn-primary" onclick="scrollToWaitlist()">Llévame a la lista de espera!</button>
+        <button class="btn-primary" onclick="scrollToWaitlist()"> Llévame a la lista de espera!</button>
       </section>
 
       <!-- LOGO BETWEEN SECTIONS -->
@@ -152,19 +152,59 @@
 <!-- === Email Gate Page === -->
 <div id="email-gate-page" class="page">
   <main class="results-container">
-    <div class="results-actions-stack">
-      <h2>¿Quieres ver tus resultados?</h2>
-      <p>Ingresa tu nombre y correo electrónico y <strong>recibirás tus resultados personalizados por email</strong>.</p>
+    <div class="email-pdf-section" style="
+      margin-top: 40px;
+      padding: 24px;
+      background: rgba(33, 128, 141, 0.08);
+      border-radius: 12px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    ">
+      <h2 style="
+        text-align: center;
+        margin-bottom: 16px;
+        color: #21808D;
+      ">¿Quieres ver tus resultados?</h2>
 
-      <input type="text" id="email-gate-name" class="form-control" placeholder="Tu nombre" required />
-      <input type="email" id="email-gate-email" class="form-control" placeholder="tu@email.com" required />
+      <p style="
+        text-align: center;
+        font-size: 16px;
+        margin-bottom: 20px;
+      ">
+        Ingresa tu correo electrónico y <strong>recibirás tus resultados personalizados por email</strong>.
+      </p>
 
-      <button class="btn btn-block btn-primary" onclick="submitEmailGate()">Ver resultados</button>
+      <input
+        type="email"
+        id="email-gate-email"
+        required
+        placeholder="tu@email.com"
+        style="
+          width: 100%;
+          padding: 12px 16px;
+          font-size: 16px;
+          border: 1px solid rgba(94, 82, 64, 0.3);
+          border-radius: 8px;
+          margin-bottom: 16px;
+        "
+      />
+
+      <button
+        class="btn btn-block btn-primary"
+        onclick="submitEmailGate()"
+        style="
+          width: 100%;
+          padding: 14px 24px;
+          font-size: 16px;
+        "
+      >
+        Ver resultados
+      </button>
     </div>
   </main>
 </div>
 
- 
   <!-- === Results Page Display === -->
 <div id="results-page" class="page">
   <header class="app-header">

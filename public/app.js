@@ -237,6 +237,27 @@ async function sendResponsesToGoogleSheet() {
   }
 }
 
+window.submitEmailGate = async function () {
+  const emailInput = document.getElementById('email-gate-email');
+  const email = emailInput?.value?.trim();
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert('Por favor ingresa un correo válido.');
+    return;
+  }
+
+  sessionStorage.setItem('user_email', email);
+
+  try {
+    await sendResponsesToGoogleSheet(); // uses your existing function
+    showPage('results-page'); // show results page
+  } catch (err) {
+    console.error('❌ Error al enviar resultados:', err);
+    alert('Hubo un error. Por favor intenta de nuevo.');
+  }
+};
+
+
 // ==================== WAITLIST FUNCTIONS ====================
 
 window.scrollToWaitlist = function() {
@@ -471,65 +492,6 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 window.finishSurvey = function () {
   showPage('email-gate-page');
 };
-
-
-// ==================== EMAIL GATE PAGE ====================
-<div id="email-gate-page" class="page">
-  <main class="results-container">
-    <div class="email-pdf-section" style="
-      margin-top: 40px;
-      padding: 24px;
-      background: rgba(33, 128, 141, 0.08);
-      border-radius: 12px;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    ">
-      <h2 style="
-        text-align: center;
-        margin-bottom: 16px;
-        color: #21808D;
-      ">¿Quieres ver tus resultados?</h2>
-
-      <p style="
-        text-align: center;
-        font-size: 16px;
-        margin-bottom: 20px;
-      ">
-        Ingresa tu correo electrónico y <strong>recibirás tus resultados personalizados por email</strong>.
-      </p>
-
-      <input
-        type="email"
-        id="email-gate-email"
-        required
-        placeholder="tu@email.com"
-        style="
-          width: 100%;
-          padding: 12px 16px;
-          font-size: 16px;
-          border: 1px solid rgba(94, 82, 64, 0.3);
-          border-radius: 8px;
-          margin-bottom: 16px;
-        "
-      />
-
-      <button
-        class="btn btn-block btn-primary"
-        onclick="submitEmailGate()"
-        style="
-          width: 100%;
-          padding: 14px 24px;
-          font-size: 16px;
-        "
-      >
-        Ver resultados
-      </button>
-    </div>
-  </main>
-</div>
-
-
 
 
 // ==================== SURVEY RENDERING ====================
