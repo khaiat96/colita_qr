@@ -22,8 +22,8 @@
     }
   },
   "summary": {
-    "single": "Tu tipo de ciclo: {{label_top}}",
-    "mixed": "Tu tipo de ciclo: {{label_top_1}} + {{label_top_2}}",
+    "single": "Tu Tipo de Ciclo: {{label_top}}",
+    "mixed": "Tu Tipo de Ciclo: {{label_top_1}} + {{label_top_2}}",
     "tension_tendency_label": "Tendencia a tensión",
     "mixed_id_template": "{{label_top_1}}_{{label_top_2}}"
   },
