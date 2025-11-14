@@ -149,22 +149,20 @@
     </div>
   </div>
 
- <!-- === Email Gate Page === -->
-   <header class="app-header">
-     <h1 class="brand-name">🌿 Colita de Rana</h1>
-   </header>
+<!-- === Email Gate Page === -->
+<div id="email-gate-page" class="page">
+  <main class="results-container">
+    <div class="results-actions-stack">
+      <h2>¿Quieres ver tus resultados?</h2>
+      <p>Ingresa tu nombre y correo electrónico y <strong>recibirás tus resultados personalizados por email</strong>.</p>
 
-<main class="results-container">
-  <div class="results-actions-stack">
-    <h2>¿Quieres ver tus resultados?</h2>
-    <p>Ingresa tu nombre y correo electrónico y <strong>recibirás tus resultados personalizados por email</strong>.</p>
+      <input type="text" id="email-gate-name" class="form-control" placeholder="Tu nombre" required />
+      <input type="email" id="email-gate-email" class="form-control" placeholder="tu@email.com" required />
 
-    <input type="text" id="email-gate-name" class="form-control" placeholder="Tu nombre" required />
-    <input type="email" id="email-gate-email" class="form-control" placeholder="tu@email.com" required />
-
-    <button class="btn btn-block btn-primary" onclick="submitEmailGate()">Ver resultados</button>
-  </div>
-</main>
+      <button class="btn btn-block btn-primary" onclick="submitEmailGate()">Ver resultados</button>
+    </div>
+  </main>
+</div>
 
  
   <!-- === Results Page Display === -->

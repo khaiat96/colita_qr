@@ -469,7 +469,6 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 }
 
 window.finishSurvey = function () {
-  // Redirect to email gate screen before showing results
   showPage('email-gate-page');
 };
 
