@@ -24,16 +24,16 @@
   "summary": {
     "single": "Tu Tipo de Ciclo: {{label_top}}",
     "mixed": "Tu Tipo de Ciclo: {{label_top_1}} + {{label_top_2}}",
-    "tension_tendency_label": "Tendencia a tensión",
+    "tension_tendency_label": "Tendencia a Tensión",
     "mixed_id_template": "{{label_top_1}}_{{label_top_2}}"
   },
   "element": {
-  "title": "Elemento predominante:",
+  "title": "Elemento Predominante:",
   "by_pattern": {
     "calor": ["🔥 Fuego"],
-    "frio": [" ❄️ Fuego deficiente + Tierra"],
+    "frio": [" ❄️ Fuego Deficiente + Tierra"],
     "humedad": ["💧 Agua + Tierra"],
-    "sequedad": ["❄️ Fuego deficiente + 🌬️ Aire "],
+    "sequedad": ["❄️ Fuego Deficiente + 🌬️ Aire "],
     "tension": ["🌬️ Aire"],
     "relajacion": ["💧 Agua"]
   }

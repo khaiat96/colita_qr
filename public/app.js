@@ -37,7 +37,7 @@ function generatePDFHTML() {
   const patternKey = calculatedPattern;
   const result = resultsTemplate;
 
-  const labelTop = patternKey;
+  const labelTop = patternKey.toUpperCase();
   const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
   const cleanSummary = summary.replace(/Colita de Rana:? ?/gi, '').trim();
 
@@ -66,11 +66,12 @@ function generatePDFHTML() {
       </section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card">
+    ? `<section class="card" style="margin-top: 100px;">
         <h3>¿Qué incluiría tu medicina personalizada?</h3>
         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
       </section>` : '';
+  
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
     ? `<section class="card">
@@ -187,9 +188,6 @@ function generatePDFHTML() {
     ${uniqueSystemHTML}
     ${phaseHTML}
     ${advisoriesHTML}
-    <section class="card">
-      <p><em>Esta información es educativa y no sustituye consejo médico. Si tus síntomas te preocupan o estás embarazada, consulta a un profesional.</em></p>
-    </section>
   </main>
 </body>
 </html>`;
@@ -206,7 +204,8 @@ async function sendResponsesToGoogleSheet() {
       answers: answers,
       results_html: pdfHTML,
       user_email: finalEmail,
-      pattern: calculatedPattern
+      pattern: calculatedPattern,
+      disclaimer: "Esta información es educativa y no sustituye consejo médico."
     };
 
     // 👇 CloudConvert requires this wrapper
