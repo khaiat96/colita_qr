@@ -174,10 +174,10 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-    <section class="card">
-     <h1>Colita de Rana Club</h1>
-     <h3>Tipo de ciclo: ${labelTop}</h3>
-     <h2>Elemento: ${element}</h2>
+     <h1>Colita de Rana</h1>
+     <h2>Tipo de ciclo: ${labelTop}</h2>
+     <section class="card">
+       <h3>Elemento: ${element}</h3>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
     ${patternCardHTML}
