@@ -174,10 +174,10 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-     <h1>Colita de Rana</h1>
-     <h2>Tipo de ciclo: ${labelTop}</h2>
+     <h1>Colita de Rana Club</h1>
+     <h2>Tu Tipo de Ciclo: ${labelTop}</h2>
      <section class="card">
-       <h3>Elemento: ${element}</h3>
+       <h3>Elemento Predominante: ${element}</h3>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
     ${patternCardHTML}
@@ -194,8 +194,6 @@ function generatePDFHTML() {
 </body>
 </html>`;
 }
-
-
 
 async function sendResponsesToGoogleSheet() {
   try {
@@ -260,7 +258,7 @@ function showPage(pageId) {
   if (targetPage) {
     targetPage.classList.add('active');
     targetPage.style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+ window.scrollTo({ top: 0, behavior: 'instant' });
     console.log(`✓ Switched to page: ${pageId}`);
   } else {
     console.error(`✗ Page not found: ${pageId}`);
@@ -470,8 +468,38 @@ function getPrevVisibleQuestionIndex(currentIndex) {
   return -1;
 }
 
-window.finishSurvey = function() {
-  calculatedPattern = calculateResults();  
+window.finishSurvey = function () {
+  // Redirect to email gate screen before showing results
+  showPage('email-gate-page');
+};
+
+// ==================== EMAIL GATE ====================
+window.submitEmailGate = async function () {
+  const name = document.getElementById('email-gate-name').value.trim();
+  const email = document.getElementById('email-gate-email').value.trim();
+
+  // Validate fields
+  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Por favor ingresa un nombre y un email válido.");
+    return;
+  }
+
+  // Save email for PDF and Google Sheet webhook
+  sessionStorage.setItem('user_email', email);
+
+  // Optional: also send to waitlist webhook
+  try {
+    await fetch(WAITLIST_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, source: "email_gate" })
+    });
+  } catch (err) {
+    console.error("❌ Error sending to waitlist:", err);
+  }
+
+  // Continue with result calculation and send to webhook
+  calculatedPattern = calculateResults();
   showResults(calculatedPattern);
   sendResponsesToGoogleSheet();
 };
@@ -767,7 +795,7 @@ function calculateResults() {
 
   let maxScore = 0;
   let dominantPattern = 'sequedad';
-  ['tension', 'calor', 'frio', 'humedad', 'sequedad'].forEach(pattern => {
+  ['Tension', 'Calor', 'Frio', 'Humedad', 'Sequedad'].forEach(pattern => {
     if (scores[pattern] > maxScore) {
       maxScore = scores[pattern];
       dominantPattern = pattern;

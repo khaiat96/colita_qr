@@ -149,7 +149,25 @@
     </div>
   </div>
 
-<!-- === Results Page (replaced content) === -->
+<!-- === Results Page Start === -->
+ <div id="email-gate-page" class="page">
+ <!-- === Email Gate Page === -->
+   <header class="app-header">
+     <h1 class="brand-name">🌿 Colita de Rana</h1>
+   </header>
+
+   <main class="results-container">
+     <div class="email-gate-card">
+       <h2>¿Quieres ver tus resultados?</h2>
+       <p>Ingresa tu correo para continuar.</p>
+       <input type="text" id="email-gate-name" placeholder="Tu nombre" required />
+       <input type="email" id="email-gate-email" placeholder="tu@email.com" required />
+       <button class="btn-primary" onclick="submitEmailGate()">Ver resultados</button>
+     </div>
+   </main>
+ </div>
+ 
+  <!-- === Results Page Display === -->
 <div id="results-page" class="page">
   <header class="app-header">
     <h1 class="brand-name">🌿 Colita de Rana</h1>
