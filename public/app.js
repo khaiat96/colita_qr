@@ -1036,7 +1036,7 @@ function showResults(patternType) {
 
   // --- Subtitle ---
   const subtitleText =
-    (result.summary?.single || "Tu tipo de ciclo: {{label_top}}").replace(
+    (result.summary?.single || "Tu Tipo de Ciclo: {{label_top}}").replace(
       "{{label_top}}",
     capitalize(result.labels?.[patternType] || patternType)    );
   const subtitle = document.createElement("h3");
