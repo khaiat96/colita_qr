@@ -509,7 +509,14 @@ window.submitEmailGate = async function () {
 
 function renderQuestion() {
     let qId = questionOrder[currentQuestionIndex];
+
+    // ✅ SCROLL TO TOP after the DOM updates
+    setTimeout(() => {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }, 0);
     let question = getQuestionById(qId);
+
 
     // Guard for undefined question
     if (!question) {
