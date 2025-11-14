@@ -60,13 +60,13 @@ function generatePDFHTML() {
       </section>` : '';
 
   const careTipsHTML = careTips.length
-    ? `<section class="card" style="margin-top: 50px;">
+    ? `<section class="card">
         <h3>Mini-hábitos para tu patrón</h3>
         <ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul>
       </section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card" style="margin-top: 50px;">
+    ? `<section class="card" style="margin-top: 100px;">
         <h3 style="margin-top: 80px;">¿Qué incluiría tu medicina personalizada?</h3>
         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
@@ -74,7 +74,7 @@ function generatePDFHTML() {
   
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
-    ? `<section class="card" style="margin-top: 50px;">
+    ? `<section class="card">
         <h3>${uniqueSystem.title}</h3>
         <div>
           ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
@@ -204,15 +204,17 @@ async function sendResponsesToGoogleSheet() {
       answers: answers,
       results_html: pdfHTML,
       user_email: finalEmail,
-      pattern: calculatedPattern
+      pattern: calculatedPattern,
     };
 
+    // 👇 CloudConvert requires this wrapper
+    const wrappedPayload = { data: payload };
 
     // 1. Save answers (optional) — also wrapped
     const saveResp = await fetch(SAVE_RESPONSES, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: payload })
+      body: JSON.stringify(wrappedPayload)
     });
 
     if (!saveResp.ok) {
@@ -254,7 +256,7 @@ window.submitEmailGate = async function () {
   try {
   // 1️⃣ Calculate your pattern BEFORE showing results
   calculatedPattern = calculateResults();
-  sendResponsesToGoogleSheet(); // Fire and forget
+
     // 2️⃣ Render the results on screen
     showResults(calculatedPattern);
 
