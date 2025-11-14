@@ -67,7 +67,7 @@ function generatePDFHTML() {
 
   const herbsHTML = herbs
     ? `<section class="card" style="margin-top: 100px;">
-        <h3 style="margin-top: 80px;">¿Qué incluiría tu medicina personalizada?</h3>
+        <h3>¿Qué incluiría tu medicina personalizada?</h3>
         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
       </section>` : '';
@@ -175,7 +175,7 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-     <h1>Guía Personal de tu Ciclo: Elementos, Ritmos y Equilibrio</h1>
+     <h1>Colita de Rana Club</h1>
      <h2>Tu Tipo de Ciclo: ${labelTop}</h2>
      <section class="card">
        <h3>Elemento Predominante: ${element}</h3>
@@ -205,6 +205,7 @@ async function sendResponsesToGoogleSheet() {
       results_html: pdfHTML,
       user_email: finalEmail,
       pattern: calculatedPattern,
+      disclaimer: "Esta información es educativa y no sustituye consejo médico."
     };
 
     // 👇 CloudConvert requires this wrapper
@@ -1186,6 +1187,15 @@ if (joinBtn) {
     }
   });
 }
+
+    // Disclaimer
+  const disclaimer = document.createElement("p");
+  disclaimer.className = "results-disclaimer";
+  disclaimer.textContent =
+    result.meta?.disclaimer ||
+    "Esta información es educativa y no sustituye atención médica.";
+  card.appendChild(disclaimer);
+
 }
 window.showResults = showResults;
 
