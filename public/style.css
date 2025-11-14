@@ -2681,3 +2681,18 @@ canvas#radarChart {
     flex-direction: column-reverse !important;
   }
 }
+
+.form-control {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.results-actions-stack button {
+  margin-top: 16px;
+}
