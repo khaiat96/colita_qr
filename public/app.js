@@ -252,8 +252,8 @@ window.submitEmailGate = async function () {
   sessionStorage.setItem('user_email', email);
 
   try {
-    // 1️⃣ Calculate your pattern BEFORE showing results
-calculatedPattern = calculateResults().toLowerCase();
+  // 1️⃣ Calculate your pattern BEFORE showing results
+  calculatedPattern = calculateResults();
 
     // 2️⃣ Render the results on screen
     showResults(calculatedPattern);
@@ -818,7 +818,7 @@ function calculateResults() {
 
   let maxScore = 0;
   let dominantPattern = 'sequedad';
-  ['Tension', 'Calor', 'Frio', 'Humedad', 'Sequedad'].forEach(pattern => {
+  ['tension', 'calor', 'frio', 'humedad', 'sequedad'].forEach(pattern => {
     if (scores[pattern] > maxScore) {
       maxScore = scores[pattern];
       dominantPattern = pattern;
