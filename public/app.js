@@ -34,89 +34,163 @@ window.handleTextInput = function(qId, value) {
 function generatePDFHTML() {
   if (!resultsTemplate || !calculatedPattern) return null;
 
+  const patternKey = calculatedPattern;
   const result = resultsTemplate;
-  const pattern = calculatedPattern;
-  const labelTop = result.labels?.[pattern] || pattern;
-  const patternDisplay = labelTop.charAt(0).toUpperCase() + labelTop.slice(1);
 
-  const title = result.element?.by_pattern?.[pattern]?.[0] || pattern;
-  const summary = (result.summary?.single || "Tu tipo de ciclo: {{label_top}}").replace("{{label_top}}", patternDisplay);
+  const labelTop = patternKey.toUpperCase();
+  const summary = result.summary?.single?.replace('{{label_top}}', labelTop) || '';
+  const cleanSummary = summary.replace(/Colita de Rana:? ?/gi, '').trim();
 
-  const patternData = result.pattern_card?.single?.[pattern];
-  const why = result.why_cluster?.by_pattern?.[pattern]?.[0];
-  const habits = result.care_tips?.by_pattern?.[pattern] || [];
-  const herbs = result.how_herbs_work?.by_pattern?.[pattern];
-  const diff = result.unique_system?.differentiators || [];
+  const elementRaw = result.element?.by_pattern?.[patternKey]?.[0] || patternKey;
+  const element = elementRaw.replace(/[\u{1F300}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}]/gu, '').trim();
 
-  let html = `
-    <div style="font-family: sans-serif; padding: 24px; line-height: 1.5; color: #222;">
-      <h2 style="font-size: 24px; color: #21808D;">${title}</h2>
-      <h3 style="font-size: 20px; margin-top: 8px; color: #5E5240;">${summary}</h3>
-  `;
+  const patternData = result.pattern_card?.single?.[patternKey] || {};
+  const patternExplainer = patternData.pattern_explainer || '';
+  const characteristics = patternData.characteristics || [];
+  const whyCluster = result.why_cluster?.by_pattern?.[patternKey]?.[0] || '';
+  const careTips = result.care_tips?.by_pattern?.[patternKey] || [];
+  const herbs = result.how_herbs_work?.by_pattern?.[patternKey];
+  const uniqueSystem = result.unique_system;
+  const advisories = result.advisories?.by_pattern?.[patternKey] || [];
 
-  if (patternData) {
-    html += `
-      <section style="margin-top: 48px;">
-        <p style="margin-bottom: 16px;">${patternData.pattern_explainer || ""}</p>
-        <ul style="padding-left: 20px;">
-          ${(patternData.characteristics || []).map(c => `<li>${c}</li>`).join("")}
-        </ul>
-      </section>
-    `;
-  }
+  const patternCardHTML = characteristics.length
+    ? `<section class="card">
+        <h3>Características de tu patrón</h3>
+        <ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
+      </section>` : '';
 
-  if (why) {
-    html += `
-      <section style="margin-top: 48px;">
-        <h4 style="color: #21808D;">¿Por qué se agrupan tus síntomas?</h4>
-        <p>${why}</p>
-      </section>
-    `;
-  }
+  const careTipsHTML = careTips.length
+    ? `<section class="card" style="margin-top: 50px;">
+        <h3>Mini-hábitos para tu patrón</h3>
+        <ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul>
+      </section>` : '';
 
-  if (habits.length) {
-    html += `
-      <section style="margin-top: 48px;">
-        <h4 style="color: #21808D;">🌸 Mini-hábitos para tu patrón</h4>
-        <ul style="padding-left: 20px;">
-          ${habits.map(h => `<li>${h}</li>`).join("")}
-        </ul>
-      </section>
-    `;
-  }
+  const herbsHTML = herbs
+    ? `<section class="card" style="margin-top: 50px;">
+        <h3 style="margin-top: 80px;">¿Qué incluiría tu medicina personalizada?</h3>
+        <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
+        ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
+      </section>` : '';
+  
 
-  if (herbs) {
-    html += `
-      <section style="margin-top: 48px;">
-        <h4 style="color: #21808D;">¿Qué incluiría tu medicina personalizada?</h4>
-        <ul style="padding-left: 20px;">
-          ${herbs.mechanism.map(m => `<li>${m}</li>`).join("")}
-        </ul>
-        <p style="margin-top: 16px;">${herbs.combo_logic}</p>
-      </section>
-    `;
-  }
-
-  if (diff.length) {
-    html += `
-      <section style="margin-top: 48px;">
-        <h4 style="color: #21808D;">¿Qué hace único nuestro sistema?</h4>
-        <div style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 16px;">
-          ${diff.map(d => `
-            <div style="border: 1px solid #ccc; border-radius: 8px; padding: 16px;">
-              <h5 style="margin: 0 0 8px 0; color: #5E5240;">${d.title}</h5>
-              <p style="margin: 0;">${d.description}</p>
-            </div>
-          `).join("")}
+  const uniqueSystemHTML = uniqueSystem?.differentiators?.length
+    ? `<section class="card" style="margin-top: 50px;">
+        <h3>${uniqueSystem.title}</h3>
+        <div>
+          ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
         </div>
-      </section>
-    `;
-  }
+      </section>` : '';
 
-  // Don't include disclaimer in PDF (you mentioned that)
-  html += `</div>`;
+  const advisoriesHTML = advisories.length
+    ? `<section class="card">
+        <h3>Advertencias importantes</h3>
+        <ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul>
+      </section>` : '';
 
-  return html;
+  const whyClusterHTML = whyCluster
+    ? `<section class="card">
+        <h3>¿Por qué se agrupan tus síntomas?</h3>
+        <p>${whyCluster}</p>
+      </section>` : '';
+
+  const phaseHTML = (() => {
+    if (!result.phase?.generic) return '';
+    const genericPhases = result.phase.generic;
+    let html = '';
+    for (const [key, orig] of Object.entries(genericPhases)) {
+      const p = { ...orig };
+      let about = p.about || '';
+      const overrides = result.phase.overrides_by_pattern?.[patternKey]?.[key];
+      const merge = (a = [], b = []) => [...a, ...(b || [])];
+
+      if (overrides) {
+        if (overrides.about_add) about += ' ' + overrides.about_add;
+        p.do = merge(p.do, overrides.do_add);
+        p.foods = merge(p.foods, overrides.foods_add);
+        p.avoid = merge(p.avoid, overrides.avoid_add);
+        p.movement = merge(p.movement, overrides.movement_add);
+        p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
+      }
+
+      html += `<section class="card">
+        <h3>${p.label}</h3>
+        <p>${about}</p>
+        ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+        ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
+        ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+        ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
+        ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
+      </section>`;
+    }
+    return html;
+  })();
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    :root {
+      --color-background: #0a1f1c;
+      --color-surface: #1a2a3a;
+      --color-text: #ffffff;
+      --color-primary: #00D4AA;
+      --color-border: rgba(255, 255, 255, 0.2);
+    }
+
+    body {
+      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
+      background: var(--color-background);
+      color: var(--color-text);
+      padding: 20px;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--color-primary);
+    }
+
+    ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+
+    @media print {
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+     <h1>Guía Personal de tu Ciclo: Elementos, Ritmos y Equilibrio</h1>
+     <h2>Tu Tipo de Ciclo: ${labelTop}</h2>
+     <section class="card">
+       <h3>Elemento Predominante: ${element}</h3>
+      ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
+    </section>
+    ${patternCardHTML}
+    ${whyClusterHTML}
+    ${careTipsHTML}
+    ${herbsHTML}
+    ${uniqueSystemHTML}
+    ${phaseHTML}
+    ${advisoriesHTML}
+  </main>
+</body>
+</html>`;
 }
 
 async function sendResponsesToGoogleSheet() {
