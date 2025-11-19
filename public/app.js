@@ -132,7 +132,7 @@ body {
   font-family: 'Inter', 'Georgia', sans-serif;
   background: #fff;
   color: var(--color-text);
-  padding: 30px;
+  padding: 0;
   font-size: 16px;
   line-height: 1.7;
 }
@@ -140,6 +140,8 @@ body {
 .container {
   max-width: 850px; /* widened */
   margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 h1, h2, h3 {
@@ -170,7 +172,7 @@ li {
   background: var(--color-card-bg);
   border: 1px solid var(--color-border);
   border-radius: 10px;
-  padding: 20px; /* reduced from 24px */
+  padding: 18px; /* reduced from 24px */
   margin-bottom: 28px; /* tighter spacing */
   page-break-inside: avoid;
 }
