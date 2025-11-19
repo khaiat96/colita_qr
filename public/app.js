@@ -66,7 +66,7 @@ function generatePDFHTML() {
       </section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card" style="margin-top: 100px;">
+    ? `<section class="card" style="margin: 20px 0;">
         <h2>¿Qué incluiría tu medicina personalizada?</h2>
         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
@@ -195,12 +195,10 @@ function generatePDFHTML() {
       </h1>
     </section>
 
-<div style="text-align: center; margin-top: 0;">
-  <div class="card" style="margin-top: 0 !important;">
-    ${herbsHTML}
-  </div>
+
+  ${herbsHTML}
   ${uniqueSystemHTML}
-</div>
+
 
     ${phaseHTML}
     ${advisoriesHTML}
