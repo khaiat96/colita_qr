@@ -53,7 +53,7 @@ function generatePDFHTML() {
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
 
   const section = (title, body) =>
-    `<section class="card"><div class="section-pill">${title}</div>${body}</section>`;
+    `<section><div class="section-pill">${title}</div>${body}</section>`;
 
   const patternCardHTML = characteristics.length
     ? section('Características de tu patrón', `<ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>`)
@@ -119,12 +119,10 @@ function generatePDFHTML() {
   <meta charset="UTF-8" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Georgia&display=swap');
-
     :root {
       --color-primary: #00A8CC;
       --color-text: #222;
       --color-soft-bg: #fafafa;
-      --color-card-bg: #ffffff;
       --color-border: #e6e6e6;
       --color-pill: #E0F7F9;
     }
@@ -139,23 +137,26 @@ function generatePDFHTML() {
     }
 
     .container {
-      max-width: 900px; /* increased from 850px */
+      max-width: 960px;
       margin: 0 auto;
+      padding: 0 24px;
     }
 
-    .page-title {
+    h1, h2, h3 {
+      color: var(--color-primary);
+      font-family: 'Georgia', serif;
+    }
+
+    h1 {
       font-size: 32px;
       text-align: center;
       margin-bottom: 24px;
-      color: var(--color-primary);
-      font-family: 'Georgia', serif;
     }
 
     h2 {
       font-size: 22px;
       margin-top: 0;
       margin-bottom: 8px;
-      color: var(--color-primary);
     }
 
     ul {
@@ -169,12 +170,8 @@ function generatePDFHTML() {
       line-height: 1.5;
     }
 
-    .card {
-      background: var(--color-card-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 24px;
+    section {
+      margin-bottom: 28px;
       page-break-inside: avoid;
     }
 
@@ -202,37 +199,41 @@ function generatePDFHTML() {
     }
 
     @media print {
-      body {
-        color: #000;
-        background: #fff;
-      }
-
       h1, h2, h3 {
         color: #000;
         page-break-after: avoid;
       }
-
-      .card {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      ul, li {
+      ul, li, section {
         page-break-inside: avoid;
       }
-
       main {
         orphans: 3;
         widows: 3;
-      }
+      } 
+    .colita-club {
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      background-color: #f7fcfc;
+    }
+    .colita-club .section-header {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .colita-club .section-header h2 {
+      color: var(--color-primary);
+      font-size: 26px;
+      margin: 0;
+    }
     }
   </style>
 </head>
 <body>
   <main class="container">
-    <h1 class="page-title">Tu Tipo de Ciclo: ${labelTop}</h1>
+    <h1>Tu Tipo de Ciclo: ${labelTop}</h1>
 
-    <section class="card">
+    <section>
       <div class="section-pill">Elemento predominante</div>
       <h2>${element}</h2>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
@@ -242,12 +243,13 @@ function generatePDFHTML() {
     ${whyClusterHTML}
     ${careTipsHTML}
 
-    <div class="title-card">
-      <h1>🌿 Colita de Rana Club</h1>
-    </div>
-
-    ${herbsHTML}
-    ${uniqueSystemHTML}
+    <section class="colita-club">
+      <div class="section-header">
+        <h2> Colita de Rana Club</h2>
+      </div>
+      ${herbsHTML}
+      ${uniqueSystemHTML}
+    </section>
     ${phaseHTML}
     ${advisoriesHTML}
 
@@ -256,8 +258,6 @@ function generatePDFHTML() {
 </body>
 </html>`;
 }
-
-
 
 async function sendResponsesToGoogleSheet() {
   try {
@@ -305,7 +305,6 @@ async function sendResponsesToGoogleSheet() {
     console.error('❌ Error al enviar resultados:', err);
   }
 }
-
 
 
 // ==================== EMAIL GATE ====================
