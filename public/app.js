@@ -127,18 +127,80 @@ function generatePDFHTML() {
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Resultados PDF</title>
-  <link rel="stylesheet" href="/style.css" />
   <style>
-    /* Print-friendly styles */
+    :root {
+      --color-background: #ffffff;
+      --color-surface: #f9f9f9;
+      --color-text: #222222;
+      --color-heading: #00897b;
+      --color-border: #dddddd;
+    }
+
+    body {
+      font-family: 'Inter', 'Georgia', serif;
+      background: var(--color-background);
+      color: var(--color-text);
+      padding: 40px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--color-heading);
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-top: 0;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 24px;
+      margin: 32px 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .title-card {
+      text-align: center;
+      margin-top: 48px;
+      margin-bottom: 16px;
+    }
+
+    .title-card h1 {
+      color: var(--color-heading);
+      font-size: 30px;
+      margin: 0;
+    }
+
     @media print {
       body {
-        background: white;
-        color: black;
+        color: #000;
+        background: #fff;
       }
 
       h1, h2, h3, h4 {
-        color: black !important;
+        color: #000;
+        page-break-after: avoid;
       }
 
       .card {
@@ -149,31 +211,21 @@ function generatePDFHTML() {
       ul, li {
         page-break-inside: avoid;
       }
-    }
 
-    .title-card {
-      text-align: center;
-      margin-top: 64px;
-      margin-bottom: 32px;
-    }
-
-    .title-card h1 {
-      font-size: 2.5rem;
-      background: linear-gradient(135deg, #00D4AA 0%, #00A8CC 50%, #6B73FF 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      main {
+        orphans: 3;
+        widows: 3;
+      }
     }
   </style>
 </head>
 <body>
   <main class="container">
+    <h1>Tu Tipo de Ciclo: ${labelTop}</h1>
     <section class="card">
-      <h1 class="hero-title">Tu Tipo de Ciclo: ${labelTop}</h1>
-      <h2 class="element-pattern">Elemento Predominante: ${element}</h2>
+      <h2>Elemento Predominante: ${element}</h2>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
-
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
@@ -189,6 +241,7 @@ function generatePDFHTML() {
   </main>
 </body>
 </html>`;
+}
 
 async function sendResponsesToGoogleSheet() {
   try {
