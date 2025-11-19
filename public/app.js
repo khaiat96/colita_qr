@@ -175,7 +175,7 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-     <h1>Colita de Rana Club</h1>
+     <h1>Tu Ciclo Colita de Rana </h1>
      <h2>Tu Tipo de Ciclo: ${labelTop}</h2>
      <section class="card">
        <h3>Elemento Predominante: ${element}</h3>
@@ -184,8 +184,15 @@ function generatePDFHTML() {
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
+
+    <section class="card" style="text-align: center;">
+    <h3 style="text-align: center; color: var(--color-primary);">🌿 Colita de Rana Club</h3>
+    </section>
+    <div style="text-align: center; margin-top: 30px;">
     ${herbsHTML}
     ${uniqueSystemHTML}
+    </div>
+    
     ${phaseHTML}
     ${advisoriesHTML}
   </main>
@@ -210,6 +217,8 @@ async function sendResponsesToGoogleSheet() {
 
     // 👇 CloudConvert requires this wrapper
     const wrappedPayload = { data: payload };
+
+    console.log("Sending to Make:", { email, score, dominantElement, cyclePhase });
 
     // 1. Save answers (optional) — also wrapped
     const saveResp = await fetch(SAVE_RESPONSES, {
@@ -275,6 +284,8 @@ window.submitEmailGate = async function () {
           results_html: sanitizeHTML(generatePDFHTML())        }
       })
     });
+
+    await sendResponsesToGoogleSheet();  // <--- ADD THIS LINE
 
     console.log("📨 Email + results sent to Make.com:", email);
 
