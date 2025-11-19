@@ -107,15 +107,20 @@ function generatePDFHTML() {
         p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
       }
 
-      html += `<section class="phase-section">${section(p.label, `
+  html += `
+    <div class="phase-section" style="${first ? '' : 'page-break-before: always;'}">
+      <section>
+        <div class="section-pill">${p.label}</div>
         <p>${about}</p>
         ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
         ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
         ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
         ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
-      `)}</section>`;
-    }
+      </section>
+    </div>`;
+  first = false;
+}
     return html;
   })();
 
@@ -244,9 +249,14 @@ function generatePDFHTML() {
       line-height: 1.6;
     }
 
-    .phase-section {
-      page-break-inside: avoid;
-      break-inside: avoid;
+.phase-section,phase-section section {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+body, main {
+      margin-bottom: 0;
+      padding-bottom: 0;
     }
 
     @media print {
@@ -296,7 +306,6 @@ function generatePDFHTML() {
     ${phaseHTML}
     ${advisoriesHTML}
 
-    <p class="disclaimer">Esta información es educativa y no sustituye atención médica.</p>
   </main>
 </body>
 </html>`;
