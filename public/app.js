@@ -185,10 +185,10 @@ function generatePDFHTML() {
     ${whyClusterHTML}
     ${careTipsHTML}
 
-    <section class="card" style="text-align: center;">
-    <h3 style="text-align: center; color: var(--color-primary);">🌿 Colita de Rana Club</h3>
+    <section class="card" style="text-align: center; margin-top: 60px;">
+    <h3 style="text-align: center; color: var(--color-primary);"> Colita de Rana Club</h3>
     </section>
-    <div style="text-align: center; margin-top: 30px;">
+    <div style="text-align: center; margin-top: 10px;">
     ${herbsHTML}
     ${uniqueSystemHTML}
     </div>
@@ -217,8 +217,6 @@ async function sendResponsesToGoogleSheet() {
 
     // 👇 CloudConvert requires this wrapper
     const wrappedPayload = { data: payload };
-
-    console.log("Sending to Make:", { email, score, dominantElement, cyclePhase });
 
     // 1. Save answers (optional) — also wrapped
     const saveResp = await fetch(SAVE_RESPONSES, {
