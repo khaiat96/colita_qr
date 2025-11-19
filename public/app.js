@@ -219,21 +219,22 @@ async function sendResponsesToGoogleSheet() {
       disclaimer: "Esta información es educativa y no sustituye consejo médico."
     };
 
-    // 👇 CloudConvert requires this wrapper
-    const wrappedPayload = { data: payload };
-
-    // 1. Save answers (optional) — also wrapped
+     // 1. Save answers- Unwrapped payload here
     const saveResp = await fetch(SAVE_RESPONSES, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(wrappedPayload)
+      body: JSON.stringify(payload)  // ⬅️ unwrapped
     });
 
     if (!saveResp.ok) {
       throw new Error(`SAVE_RESPONSES error: HTTP ${saveResp.status} - ${saveResp.statusText}`);
     }
 
-    // 2. Send PDF to email — wrapped too
+    // 👇 CloudConvert requires this wrapper
+    const wrappedPayload = { data: payload };
+
+
+    // 2. Send PDF to email — wrapped
     const emailResp = await fetch(EMAIL_REPORT_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
