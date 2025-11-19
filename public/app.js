@@ -208,12 +208,14 @@ async function sendResponsesToGoogleSheet() {
       disclaimer: "Esta información es educativa y no sustituye consejo médico."
     };
 
+    // 👇 CloudConvert requires this wrapper
+    const wrappedPayload = { data: payload };
 
     // 1. Save answers (optional) — also wrapped
     const saveResp = await fetch(SAVE_RESPONSES, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: payload })
+      body: JSON.stringify(wrappedPayload)
     });
 
     if (!saveResp.ok) {
@@ -224,8 +226,9 @@ async function sendResponsesToGoogleSheet() {
     const emailResp = await fetch(EMAIL_REPORT_WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify( data: payload)
-    }); 
+      body: JSON.stringify(wrappedPayload)
+    });
+
     if (!emailResp.ok) {
       throw new Error(`EMAIL_REPORT_WEBHOOK error: HTTP ${emailResp.status} - ${emailResp.statusText}`);
     }
