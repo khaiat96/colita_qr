@@ -184,14 +184,18 @@ function generatePDFHTML() {
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
+  
+  <section class="card" style="text-align: center; margin-top: 80px; margin-bottom: 12px;">
+  <h3 style="text-align: center; color: var(--color-primary); margin-bottom: 8px;">
+    Colita de Rana Club
+  </h3>
+  </section>
 
-    <section class="card" style="text-align: center; margin-top: 60px;">
-    <h3 style="text-align: center; color: var(--color-primary);"> Colita de Rana Club</h3>
-    </section>
-    <div style="text-align: center; margin-top: 10px;">
-    ${herbsHTML}
-    ${uniqueSystemHTML}
-    </div>
+<!-- Reduce space before blocks -->
+<div style="text-align: center; margin-top: 0;">
+  ${herbsHTML}
+  ${uniqueSystemHTML}
+</div>
     
     ${phaseHTML}
     ${advisoriesHTML}
