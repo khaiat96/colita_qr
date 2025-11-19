@@ -55,19 +55,19 @@ function generatePDFHTML() {
 
   const patternCardHTML = characteristics.length
     ? `<section class="card">
-        <h3>Características de tu patrón</h3>
+        <h2>Características de tu patrón</h2>
         <ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
       </section>` : '';
 
   const careTipsHTML = careTips.length
     ? `<section class="card">
-        <h3>Mini-hábitos para tu patrón</h3>
+        <h2>Mini-hábitos para tu patrón</h2>
         <ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul>
       </section>` : '';
 
   const herbsHTML = herbs
     ? `<section class="card" style="margin-top: 100px;">
-        <h3>¿Qué incluiría tu medicina personalizada?</h3>
+        <h2>¿Qué incluiría tu medicina personalizada?</h2>
         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
       </section>` : '';
@@ -75,7 +75,7 @@ function generatePDFHTML() {
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
     ? `<section class="card">
-        <h3>${uniqueSystem.title}</h3>
+        <h2>${uniqueSystem.title}</h2>
         <div>
           ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
         </div>
@@ -89,7 +89,7 @@ function generatePDFHTML() {
 
   const whyClusterHTML = whyCluster
     ? `<section class="card">
-        <h3>¿Por qué se agrupan tus síntomas?</h3>
+        <h2>¿Por qué se agrupan tus síntomas?</h2>
         <p>${whyCluster}</p>
       </section>` : '';
 
@@ -166,19 +166,13 @@ function generatePDFHTML() {
       page-break-inside: avoid;
     }
 
-    @media print {
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
   </style>
 </head>
 <body>
   <main class="container">
-     <h1>Tu Ciclo Único </h1>
-     <h2>Tu Tipo de Ciclo: ${labelTop}</h2>
+     <h1>Tu Tipo de Ciclo: ${labelTop}</h1>
      <section class="card">
-       <h3>Elemento Predominante: ${element}</h3>
+       <h2>Elemento Predominante: ${element}</h2>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
     ${patternCardHTML}
