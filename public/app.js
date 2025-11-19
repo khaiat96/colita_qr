@@ -143,6 +143,8 @@ function generatePDFHTML() {
       background: var(--color-background);
       color: var(--color-text);
       padding: 20px;
+      font-size: 18px; 
+      line-height: 1.6; 
     }
 
     h1, h2, h3, h4 {
@@ -164,6 +166,12 @@ function generatePDFHTML() {
       padding: 20px;
       margin-bottom: 20px;
       page-break-inside: avoid;
+    }
+
+    @media print {
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
     }
 
   </style>
