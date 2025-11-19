@@ -107,14 +107,14 @@ function generatePDFHTML() {
         p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
       }
 
-      html += section(p.label, `
+      html += `<section class="phase-section">${section(p.label, `
         <p>${about}</p>
         ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
         ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
         ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
         ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
-      `);
+      `)}</section>`;
     }
     return html;
   })();
@@ -138,6 +138,7 @@ function generatePDFHTML() {
       background: #fff;
       color: var(--color-text);
       padding: 30px;
+      margin: 0;
       font-size: 16px;
       line-height: 1.7;
     }
@@ -200,7 +201,8 @@ function generatePDFHTML() {
     .disclaimer {
       font-size: 13px;
       text-align: center;
-      margin-top: 40px;
+      margin-top: 20px;
+      margin-bottom: 0;
       color: #777;
     }
 
@@ -211,43 +213,51 @@ function generatePDFHTML() {
       margin-bottom: 32px;
       background-color: #f7fcfc;
     }
+
     .colita-club .section-header {
       margin-bottom: 20px;
       text-align: center;
     }
+
     .colita-club .section-header h2 {
       color: var(--color-primary);
       font-size: 26px;
       margin: 0;
     }
-    
+
     .differentiators {
-    margin-top: 12px;
-  }
-  
-  .differentiator {
-    margin-bottom: 20px;
-  }
-  
-  .differentiator h4 {
-    margin-bottom: 6px;
-    font-size: 17px;
-    color: var(--color-text);
-  }
-  
-  .differentiator p {
-    margin: 0;
-  }
+      margin-top: 20px;
+    }
+
+    .differentiator {
+      margin-bottom: 24px;
+    }
+
+    .differentiator h4 {
+      margin-bottom: 6px;
+      font-size: 18px;
+      color: var(--color-text);
+    }
+
+    .differentiator p {
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .phase-section {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
 
     @media print {
       h1 {
-      color: var(--color-primary); /* keeps h1 blue */
-      page-break-after: avoid;
+        color: var(--color-primary);
+        page-break-after: avoid;
       }
 
       h2, h3 {
-      color: #000;
-      page-break-after: avoid;
+        color: #000;
+        page-break-after: avoid;
       }
 
       ul, li, section {
@@ -257,9 +267,8 @@ function generatePDFHTML() {
       main {
         orphans: 3;
         widows: 3;
-      } 
+      }
     }
-      
   </style>
 </head>
 <body>
@@ -283,13 +292,16 @@ function generatePDFHTML() {
       ${herbsHTML}
       ${uniqueSystemHTML}
     </section>
+
     ${phaseHTML}
     ${advisoriesHTML}
 
+    <p class="disclaimer">Esta información es educativa y no sustituye atención médica.</p>
   </main>
 </body>
 </html>`;
 }
+
 
 async function sendResponsesToGoogleSheet() {
   try {
