@@ -113,7 +113,7 @@ function generatePDFHTML() {
       }
 
       html += `<section class="card">
-        <h3>${p.label}</h3>
+        <h2>${p.label}</h2>
         <p>${about}</p>
         ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
@@ -144,6 +144,7 @@ function generatePDFHTML() {
       color: var(--color-text);
       padding: 20px;
       font-size: 16px; 
+      line-height: 1.4;
     }
 
     h1, h2, h3, h4 {
