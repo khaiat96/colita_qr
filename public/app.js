@@ -188,9 +188,9 @@ function generatePDFHTML() {
     <div style="page-break-before: always;"></div>
     
     <section class="card" style="margin-top: 80px; margin-bottom: 1px; text-align: center;">
-      <h2 style="color: var(--color-primary); margin: 0 0 1px 0;">
+      <h1 style="color: var(--color-primary); margin: 0 0 1px 0;">
         Colita de Rana Club
-      </h2>
+      </h1>
     
     <div style="text-align: center;">
       ${herbsHTML}
