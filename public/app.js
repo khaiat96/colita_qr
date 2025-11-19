@@ -52,44 +52,35 @@ function generatePDFHTML() {
   const uniqueSystem = result.unique_system;
   const advisories = result.advisories?.by_pattern?.[patternKey] || [];
 
+  const section = (title, body) =>
+    `<section class="card"><div class="section-pill">${title}</div>${body}</section>`;
+
   const patternCardHTML = characteristics.length
-    ? `<section class="card">
-        <h2>Características de tu patrón</h2>
-        <ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>
-      </section>` : '';
+    ? section('Características de tu patrón', `<ul>${characteristics.map(p => `<li>${p}</li>`).join('')}</ul>`)
+    : '';
 
   const careTipsHTML = careTips.length
-    ? `<section class="card">
-        <h2>Mini-hábitos para tu patrón</h2>
-        <ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul>
-      </section>` : '';
+    ? section('Mini-hábitos para tu patrón', `<ul>${careTips.map(t => `<li>${t}</li>`).join('')}</ul>`)
+    : '';
 
   const herbsHTML = herbs
-    ? `<section class="card">
-        <h2>¿Qué incluiría tu medicina personalizada?</h2>
-        <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
-        ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
-      </section>` : '';
+    ? section('¿Qué incluiría tu medicina personalizada?',
+      `<ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
+       ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}`)
+    : '';
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
-    ? `<section class="card">
-        <h2>${uniqueSystem.title}</h2>
-        <div>
-          ${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}
-        </div>
-      </section>` : '';
+    ? section(uniqueSystem.title,
+      `<div>${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}</div>`)
+    : '';
 
   const advisoriesHTML = advisories.length
-    ? `<section class="card">
-        <h3>Advertencias importantes</h3>
-        <ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul>
-      </section>` : '';
+    ? section('Advertencias importantes', `<ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul>`)
+    : '';
 
   const whyClusterHTML = whyCluster
-    ? `<section class="card">
-        <h2>¿Por qué se agrupan tus síntomas?</h2>
-        <p>${whyCluster}</p>
-      </section>` : '';
+    ? section('¿Por qué se agrupan tus síntomas?', `<p>${whyCluster}</p>`)
+    : '';
 
   const phaseHTML = (() => {
     if (!result.phase?.generic) return '';
@@ -110,15 +101,14 @@ function generatePDFHTML() {
         p.vibe = (p.vibe || '') + (overrides.vibe_add || '');
       }
 
-      html += `<section class="card">
-        <h2>${p.label}</h2>
+      html += section(p.label, `
         <p>${about}</p>
         ${p.foods?.length ? `<p><strong>Comidas sugeridas:</strong></p><ul>${p.foods.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
         ${p.do?.length ? `<p><strong>Qué hacer:</strong></p><ul>${p.do.map(d => `<li>${d}</li>`).join('')}</ul>` : ''}
         ${p.avoid?.length ? `<p><strong>Evita:</strong></p><ul>${p.avoid.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
         ${p.movement?.length ? `<p><strong>Movimiento:</strong></p><ul>${p.movement.map(m => `<li>${m}</li>`).join('')}</ul>` : ''}
         ${p.vibe ? `<p><strong>Vibra:</strong> ${p.vibe}</p>` : ''}
-      </section>`;
+      `);
     }
     return html;
   })();
@@ -128,120 +118,106 @@ function generatePDFHTML() {
 <head>
   <meta charset="UTF-8" />
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Georgia&display=swap');
     :root {
-      --color-background: #ffffff;
-      --color-surface: #f9f9f9;
-      --color-text: #222222;
-      --color-heading: #00897b;
-      --color-border: #dddddd;
+      --color-accent: #FF7A59;
+      --color-primary: #00A8CC;
+      --color-text: #222;
+      --color-soft-bg: #fafafa;
+      --color-card-bg: #ffffff;
+      --color-border: #e6e6e6;
+      --color-pill: #f0f0f0;
     }
-
     body {
-      font-family: 'Inter', 'Georgia', serif;
-      background: var(--color-background);
+      font-family: 'Inter', 'Georgia', sans-serif;
+      background: #fff;
       color: var(--color-text);
       padding: 40px;
       font-size: 16px;
-      line-height: 1.6;
+      line-height: 1.7;
     }
-
     .container {
       max-width: 750px;
       margin: 0 auto;
     }
-
-    h1, h2, h3, h4 {
-      color: var(--color-heading);
+    h1, h2, h3 {
+      color: var(--color-accent);
+      font-family: 'Georgia', serif;
+    }
+    h1 {
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    h2 {
+      font-size: 22px;
       margin-top: 0;
     }
-
-    h1 {
-      font-size: 28px;
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
     ul {
       padding-left: 20px;
-      margin-top: 0;
     }
-
     li {
       margin-bottom: 6px;
     }
-
     .card {
-      background: var(--color-surface);
+      background: var(--color-card-bg);
       border: 1px solid var(--color-border);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 24px;
-      margin: 32px 0;
+      margin-bottom: 32px;
       page-break-inside: avoid;
-      break-inside: avoid;
     }
-
     .title-card {
       text-align: center;
-      margin-top: 48px;
+      margin: 48px 0 24px;
+    }
+    .section-pill {
+      display: inline-block;
+      background: var(--color-pill);
+      color: var(--color-text);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
       margin-bottom: 16px;
+      font-size: 14px;
     }
-
-    .title-card h1 {
-      color: var(--color-heading);
-      font-size: 30px;
-      margin: 0;
-    }
-
-    @media print {
-      body {
-        color: #000;
-        background: #fff;
-      }
-
-      h1, h2, h3, h4 {
-        color: #000;
-        page-break-after: avoid;
-      }
-
-      .card {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      ul, li {
-        page-break-inside: avoid;
-      }
-
-      main {
-        orphans: 3;
-        widows: 3;
-      }
+    .disclaimer {
+      font-size: 13px;
+      text-align: center;
+      margin-top: 40px;
+      color: #777;
     }
   </style>
 </head>
 <body>
   <main class="container">
     <h1>Tu Tipo de Ciclo: ${labelTop}</h1>
+
     <section class="card">
-      <h2>Elemento Predominante: ${element}</h2>
+      <div class="section-pill">Elemento predominante</div>
+      <h2>${element}</h2>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
+
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
 
     <div class="title-card">
-      <h1>Colita de Rana Club</h1>
+      <h1>🌿 Colita de Rana Club</h1>
     </div>
 
     ${herbsHTML}
     ${uniqueSystemHTML}
     ${phaseHTML}
     ${advisoriesHTML}
+
+    <p class="disclaimer">Esta información es educativa y no sustituye atención médica.</p>
   </main>
 </body>
 </html>`;
 }
+
 
 async function sendResponsesToGoogleSheet() {
   try {
