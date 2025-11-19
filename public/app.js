@@ -120,73 +120,109 @@ function generatePDFHTML() {
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Georgia&display=swap');
     :root {
-      --color-accent: #FF7A59;
-      --color-primary: #00A8CC;
-      --color-text: #222;
-      --color-soft-bg: #fafafa;
-      --color-card-bg: #ffffff;
-      --color-border: #e6e6e6;
-      --color-pill: #f0f0f0;
-    }
-    body {
-      font-family: 'Inter', 'Georgia', sans-serif;
-      background: #fff;
-      color: var(--color-text);
-      padding: 40px;
-      font-size: 16px;
-      line-height: 1.7;
-    }
-    .container {
-      max-width: 750px;
-      margin: 0 auto;
-    }
-    h1, h2, h3 {
-      color: var(--color-accent);
-      font-family: 'Georgia', serif;
-    }
-    h1 {
-      font-size: 32px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    h2 {
-      font-size: 22px;
-      margin-top: 0;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    li {
-      margin-bottom: 6px;
-    }
-    .card {
-      background: var(--color-card-bg);
-      border: 1px solid var(--color-border);
-      border-radius: 10px;
-      padding: 24px;
-      margin-bottom: 32px;
-      page-break-inside: avoid;
-    }
-    .title-card {
-      text-align: center;
-      margin: 48px 0 24px;
-    }
-    .section-pill {
-      display: inline-block;
-      background: var(--color-pill);
-      color: var(--color-text);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      font-size: 14px;
-    }
-    .disclaimer {
-      font-size: 13px;
-      text-align: center;
-      margin-top: 40px;
-      color: #777;
-    }
+  --color-primary: #00A8CC;
+  --color-text: #222;
+  --color-soft-bg: #fafafa;
+  --color-card-bg: #ffffff;
+  --color-border: #e6e6e6;
+  --color-pill: #E0F7F9; /* Teal background */
+}
+
+body {
+  font-family: 'Inter', 'Georgia', sans-serif;
+  background: #fff;
+  color: var(--color-text);
+  padding: 30px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.container {
+  max-width: 850px; /* widened */
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  color: var(--color-primary);
+  font-family: 'Georgia', serif;
+}
+
+h1 {
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 22px;
+  margin-top: 0;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 20px; /* reduced from 24px */
+  margin-bottom: 28px; /* tighter spacing */
+  page-break-inside: avoid;
+}
+
+.section-pill {
+  display: inline-block;
+  background: var(--color-pill);
+  color: var(--color-primary); /* teal text */
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.title-card {
+  text-align: center;
+  margin: 48px 0 24px;
+}
+
+.disclaimer {
+  font-size: 13px;
+  text-align: center;
+  margin-top: 40px;
+  color: #777;
+}
+
+@media print {
+  body {
+    color: #000;
+    background: #fff;
+  }
+
+  h1, h2, h3 {
+    color: #000;
+    page-break-after: avoid;
+  }
+
+  .card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  ul, li {
+    page-break-inside: avoid;
+  }
+
+  main {
+    orphans: 3;
+    widows: 3;
+  }
+}
   </style>
 </head>
 <body>
