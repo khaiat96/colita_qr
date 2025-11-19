@@ -184,20 +184,20 @@ function generatePDFHTML() {
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
-  
-<section style="margin-top: 100px; margin-bottom: 0; text-align: center;">
-  <h3 style="color: var(--color-primary); margin: 0 0 8px 0;">
-    🌿 Colita de Rana Club
-  </h3>
-</section>
 
-<!-- Tighter spacing for the content blocks -->
-<div style="text-align: center; margin-top: 0px;">
-  ${herbsHTML}
-  ${uniqueSystemHTML}
-</div>
-
+    <div style="page-break-before: always;"></div>
     
+    <section class="card" style="margin-top: 100px; margin-bottom: 12px; text-align: center;">
+      <h3 style="color: var(--color-primary); margin: 0 0 12px 0;">
+        Colita de Rana Club
+      </h3>
+    </section>
+    
+    <div style="text-align: center; margin-top: 0;">
+      ${herbsHTML}
+      ${uniqueSystemHTML}
+    </div>
+
     ${phaseHTML}
     ${advisoriesHTML}
   </main>
