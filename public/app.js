@@ -143,7 +143,7 @@ function generatePDFHTML() {
       background: var(--color-background);
       color: var(--color-text);
       padding: 20px;
-      font-size: 18px; 
+      font-size: 16px; 
       line-height: 1.6; 
     }
 
