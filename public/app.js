@@ -1322,10 +1322,21 @@ async function getAllCSS() {
   return allCSS;
 }
 
-// ✅ Dev-only PDF preview
 const DEBUG = true;
 
 if (DEBUG) {
+  // Mock required data for PDF generation
+  window.labelTop = 'Energético';
+  window.element = 'Fuego';
+  window.patternExplainer = 'Tu ciclo está en modo fuego 🔥';
+  window.patternCardHTML = '<div class="card"><p>Mock pattern card</p></div>';
+  window.whyClusterHTML = '<div class="card"><p>Mock whyCluster</p></div>';
+  window.careTipsHTML = '<div class="card"><p>Mock care tips</p></div>';
+  window.herbsHTML = '<div class="card"><p>Mock herbs section</p></div>';
+  window.uniqueSystemHTML = '<div class="card"><p>Mock unique system</p></div>';
+  window.phaseHTML = '<div class="card"><p>Mock phase HTML</p></div>';
+  window.advisoriesHTML = '<div class="card"><p>Mock advisories</p></div>';
+
   const devButton = document.createElement('button');
   devButton.textContent = '🧪 Preview PDF (Dev)';
   devButton.style.position = 'fixed';
@@ -1337,9 +1348,12 @@ if (DEBUG) {
   devButton.style.border = 'none';
   devButton.style.borderRadius = '6px';
   devButton.style.zIndex = 9999;
+
   devButton.onclick = () => {
+    const html = generatePDFHTML();
     const win = window.open('', '_blank');
-    win.document.write(generatePDFHTML());
+    win.document.write(html || '<p>Error: no PDF HTML generated</p>');
   };
+
   document.body.appendChild(devButton);
 }
