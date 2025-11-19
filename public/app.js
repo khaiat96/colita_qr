@@ -216,21 +216,26 @@ function generatePDFHTML() {
     }
 
     @media print {
-      h1, h2, h3 {
-        color: #000;
-        page-break-after: avoid;
+      h1 {
+      color: var(--color-primary); /* keeps h1 blue */
+      page-break-after: avoid;
       }
+
+      h2, h3 {
+      color: #000;
+      page-break-after: avoid;
+      }
+
       ul, li, section {
         page-break-inside: avoid;
       }
+
       main {
         orphans: 3;
         widows: 3;
       } 
     }
-
-
-  
+      
   </style>
 </head>
 <body>
