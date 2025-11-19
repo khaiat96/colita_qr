@@ -144,7 +144,6 @@ function generatePDFHTML() {
       color: var(--color-text);
       padding: 20px;
       font-size: 16px; 
-      line-height: 1.6; 
     }
 
     h1, h2, h3, h4 {
