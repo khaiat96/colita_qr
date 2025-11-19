@@ -1321,3 +1321,25 @@ async function getAllCSS() {
   
   return allCSS;
 }
+
+// ✅ Dev-only PDF preview
+const DEBUG = true;
+
+if (DEBUG) {
+  const devButton = document.createElement('button');
+  devButton.textContent = '🧪 Preview PDF (Dev)';
+  devButton.style.position = 'fixed';
+  devButton.style.bottom = '20px';
+  devButton.style.right = '20px';
+  devButton.style.padding = '10px 16px';
+  devButton.style.background = '#00D4AA';
+  devButton.style.color = 'white';
+  devButton.style.border = 'none';
+  devButton.style.borderRadius = '6px';
+  devButton.style.zIndex = 9999;
+  devButton.onclick = () => {
+    const win = window.open('', '_blank');
+    win.document.write(generatePDFHTML());
+  };
+  document.body.appendChild(devButton);
+}
