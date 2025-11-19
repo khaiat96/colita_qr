@@ -198,18 +198,6 @@ function generatePDFHTML() {
       color: #777;
     }
 
-    @media print {
-      h1, h2, h3 {
-        color: #000;
-        page-break-after: avoid;
-      }
-      ul, li, section {
-        page-break-inside: avoid;
-      }
-      main {
-        orphans: 3;
-        widows: 3;
-      } 
     .colita-club {
       border: 1px solid var(--color-border);
       border-radius: 12px;
@@ -226,7 +214,23 @@ function generatePDFHTML() {
       font-size: 26px;
       margin: 0;
     }
+
+    @media print {
+      h1, h2, h3 {
+        color: #000;
+        page-break-after: avoid;
+      }
+      ul, li, section {
+        page-break-inside: avoid;
+      }
+      main {
+        orphans: 3;
+        widows: 3;
+      } 
     }
+
+
+  
   </style>
 </head>
 <body>
