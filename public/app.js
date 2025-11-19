@@ -30,7 +30,6 @@ window.handleTextInput = function(qId, value) {
     window.updateNavigation();
 };
 
-// Generate PDF-ready HTML with inline styles - CLEAN VERSION (NO EMOJIS, NO FORMS)
 function generatePDFHTML() {
   if (!resultsTemplate || !calculatedPattern) return null;
 
@@ -66,12 +65,11 @@ function generatePDFHTML() {
       </section>` : '';
 
   const herbsHTML = herbs
-    ? `<section class="card" style="margin: 20px 0;">
+    ? `<section class="card">
         <h2>¿Qué incluiría tu medicina personalizada?</h2>
         <ul>${(herbs.mechanism || []).map(m => `<li>${m}</li>`).join('')}</ul>
         ${herbs.combo_logic ? `<p>${herbs.combo_logic}</p>` : ''}
       </section>` : '';
-  
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
     ? `<section class="card">
@@ -131,76 +129,95 @@ function generatePDFHTML() {
   <meta charset="UTF-8" />
   <style>
     :root {
-      --color-background: #0a1f1c;
-      --color-surface: #1a2a3a;
-      --color-text: #ffffff;
-      --color-primary: #00D4AA;
-      --color-border: rgba(255, 255, 255, 0.2);
+      --color-background: #ffffff;
+      --color-surface: #ffffff;
+      --color-text: #222222;
+      --color-heading: #009688;
+      --color-border: #dddddd;
     }
 
     body {
-      font-family: 'FKGroteskNeue', 'Inter', sans-serif;
+      font-family: 'Inter', 'Georgia', serif;
       background: var(--color-background);
       color: var(--color-text);
-      padding: 20px;
-      font-size: 16px; 
-      line-height: 1.4;
+      padding: 40px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 0 auto;
     }
 
     h1, h2, h3, h4 {
-      color: var(--color-primary);
+      color: var(--color-heading);
+      margin-top: 0;
     }
 
-    ul { padding-left: 20px; }
-    li { margin-bottom: 8px; }
+    ul {
+      padding-left: 20px;
+      margin-top: 0;
+    }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    li {
+      margin-bottom: 6px;
     }
 
     .card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
+      border-radius: 6px;
+      padding: 24px;
+      margin: 24px 0;
       page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     @media print {
-      h2, h3, h4 {
+      body {
+        color: #000;
+        background: #fff;
+      }
+
+      h1, h2, h3, h4 {
+        color: #000;
         page-break-after: avoid;
       }
-    }
 
+      .card {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      ul, li {
+        page-break-inside: avoid;
+      }
+
+      main {
+        orphans: 3;
+        widows: 3;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="container">
-     <h1>Tu Tipo de Ciclo: ${labelTop}</h1>
-     <section class="card">
-       <h2>Elemento Predominante: ${element}</h2>
+    <h1>Tu Tipo de Ciclo: ${labelTop}</h1>
+    <section class="card">
+      <h2>Elemento Predominante: ${element}</h2>
       ${patternExplainer ? `<p>${patternExplainer}</p>` : ''}
     </section>
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
 
-    <div style="page-break-before: always;"></div>
-
-
-    <section class="card" style="margin-top: 80px; margin-bottom: 8px; text-align: center;">
-      <h1 style="color: var(--color-primary); margin: 0; font-size: 32px;">
-        Colita de Rana Club
-      </h1>
+    <section class="card" style="text-align: center;">
+      <h1 style="margin: 0; font-size: 28px;">Colita de Rana Club</h1>
     </section>
 
-
-  ${herbsHTML}
-  ${uniqueSystemHTML}
-
-
+    ${herbsHTML}
+    ${uniqueSystemHTML}
     ${phaseHTML}
     ${advisoriesHTML}
   </main>
