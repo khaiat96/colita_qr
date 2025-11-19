@@ -187,6 +187,7 @@ function generatePDFHTML() {
 
     <div style="page-break-before: always;"></div>
 
+
     <section class="card" style="margin-top: 80px; margin-bottom: 8px; text-align: center;">
       <h1 style="color: var(--color-primary); margin: 0; font-size: 32px;">
         Colita de Rana Club
@@ -194,10 +195,14 @@ function generatePDFHTML() {
     </section>
 
     <div style="text-align: center; margin-top: 0;">
-      ${herbsHTML}
-      ${uniqueSystemHTML}
+      <div class="card" style="margin-top: 0 !important;">
+        ${herbsHTML}
+      </div>
+      <div class="card">
+        ${uniqueSystemHTML}
+      </div>
     </div>
-    
+
     ${phaseHTML}
     ${advisoriesHTML}
   </main>
