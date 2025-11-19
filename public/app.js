@@ -130,9 +130,9 @@ function generatePDFHTML() {
   <style>
     :root {
       --color-background: #ffffff;
-      --color-surface: #ffffff;
+      --color-surface: #f9f9f9;
       --color-text: #222222;
-      --color-heading: #009688;
+      --color-heading: #00897b;
       --color-border: #dddddd;
     }
 
@@ -155,6 +155,12 @@ function generatePDFHTML() {
       margin-top: 0;
     }
 
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
     ul {
       padding-left: 20px;
       margin-top: 0;
@@ -167,11 +173,23 @@ function generatePDFHTML() {
     .card {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 24px;
-      margin: 24px 0;
+      margin: 32px 0;
       page-break-inside: avoid;
       break-inside: avoid;
+    }
+
+    .title-card {
+      text-align: center;
+      margin-top: 48px;
+      margin-bottom: 16px;
+    }
+
+    .title-card h1 {
+      color: var(--color-heading);
+      font-size: 30px;
+      margin: 0;
     }
 
     @media print {
@@ -212,9 +230,9 @@ function generatePDFHTML() {
     ${whyClusterHTML}
     ${careTipsHTML}
 
-    <section class="card" style="text-align: center;">
-      <h1 style="margin: 0; font-size: 28px;">Colita de Rana Club</h1>
-    </section>
+    <div class="title-card">
+      <h1>Colita de Rana Club</h1>
+    </div>
 
     ${herbsHTML}
     ${uniqueSystemHTML}
