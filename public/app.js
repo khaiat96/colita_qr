@@ -195,14 +195,12 @@ function generatePDFHTML() {
       </h1>
     </section>
 
-    <div style="text-align: center; margin-top: 0;">
-      <div class="card" style="margin-top: 0 !important;">
-        ${herbsHTML}
-      </div>
-      <div class="card">
-        ${uniqueSystemHTML}
-      </div>
-    </div>
+<div style="text-align: center; margin-top: 0;">
+  <div class="card" style="margin-top: 0 !important;">
+    ${herbsHTML}
+  </div>
+  ${uniqueSystemHTML}
+</div>
 
     ${phaseHTML}
     ${advisoriesHTML}
