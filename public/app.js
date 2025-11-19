@@ -71,8 +71,14 @@ function generatePDFHTML() {
 
   const uniqueSystemHTML = uniqueSystem?.differentiators?.length
     ? section(uniqueSystem.title,
-      `<div>${uniqueSystem.differentiators.map(d => `<div><h4>${d.title}</h4><p>${d.description}</p></div>`).join('')}</div>`)
-    : '';
+    `<div class="differentiators">
+      ${uniqueSystem.differentiators.map(d => `
+        <div class="differentiator">
+          <h4>${d.title}</h4>
+          <p>${d.description}</p>
+        </div>`).join('')}
+    </div>`)
+  : '';
 
   const advisoriesHTML = advisories.length
     ? section('Advertencias importantes', `<ul>${advisories.map(a => `<li>${a}</li>`).join('')}</ul>`)
@@ -214,6 +220,24 @@ function generatePDFHTML() {
       font-size: 26px;
       margin: 0;
     }
+    
+    .differentiators {
+    margin-top: 12px;
+  }
+  
+  .differentiator {
+    margin-bottom: 20px;
+  }
+  
+  .differentiator h4 {
+    margin-bottom: 6px;
+    font-size: 17px;
+    color: var(--color-text);
+  }
+  
+  .differentiator p {
+    margin: 0;
+  }
 
     @media print {
       h1 {
@@ -262,7 +286,6 @@ function generatePDFHTML() {
     ${phaseHTML}
     ${advisoriesHTML}
 
-    <p class="disclaimer">Esta información es educativa y no sustituye atención médica.</p>
   </main>
 </body>
 </html>`;
