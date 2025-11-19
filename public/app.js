@@ -186,18 +186,18 @@ function generatePDFHTML() {
     ${careTipsHTML}
 
     <div style="page-break-before: always;"></div>
-    
-    <section class="card" style="margin-top: 80px; margin-bottom: 0px; text-align: center;">
-    <h1 style="color: var(--color-primary); margin: 0 0 0 0; font-size: 32px;">
+
+    <section class="card" style="margin-top: 80px; margin-bottom: 8px; text-align: center;">
+      <h1 style="color: var(--color-primary); margin: 0; font-size: 32px;">
         Colita de Rana Club
       </h1>
-    
-    <div style="text-align: center;">
+    </section>
+
+    <div style="text-align: center; margin-top: 0;">
       ${herbsHTML}
       ${uniqueSystemHTML}
     </div>
-    </section>
-
+    
     ${phaseHTML}
     ${advisoriesHTML}
   </main>
