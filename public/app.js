@@ -175,7 +175,7 @@ function generatePDFHTML() {
 </head>
 <body>
   <main class="container">
-     <h1>Tu Ciclo Colita de Rana </h1>
+     <h1>Tu Ciclo Único </h1>
      <h2>Tu Tipo de Ciclo: ${labelTop}</h2>
      <section class="card">
        <h3>Elemento Predominante: ${element}</h3>
@@ -187,8 +187,8 @@ function generatePDFHTML() {
 
     <div style="page-break-before: always;"></div>
     
-    <section class="card" style="margin-top: 80px; margin-bottom: 1px; text-align: center;">
-      <h1 style="color: var(--color-primary); margin: 0 0 1px 0;">
+    <section class="card" style="margin-top: 80px; margin-bottom: 0px; text-align: center;">
+    <h1 style="color: var(--color-primary); margin: 0 0 0 0; font-size: 32px;">
         Colita de Rana Club
       </h1>
     
