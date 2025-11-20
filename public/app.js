@@ -92,6 +92,7 @@ function generatePDFHTML() {
     if (!result.phase?.generic) return '';
     const genericPhases = result.phase.generic;
     let html = '';
+    let first = true;  
     for (const [key, orig] of Object.entries(genericPhases)) {
       const p = { ...orig };
       let about = p.about || '';
