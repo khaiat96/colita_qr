@@ -1423,36 +1423,3 @@ async function getAllCSS() {
   return allCSS;
 }
 
-const DEBUG = true;
-
-if (DEBUG) {
-  calculatedPattern = 'calor'; // or any valid key from your template
-
-  // Load template JSON directly
-  fetch('results_template.json')
-    .then(r => r.json())
-    .then(template => {
-      resultsTemplate = template;
-
-      const devButton = document.createElement('button');
-      devButton.textContent = '🧪 Preview PDF (Dev)';
-      devButton.style.position = 'fixed';
-      devButton.style.bottom = '20px';
-      devButton.style.right = '20px';
-      devButton.style.padding = '10px 16px';
-      devButton.style.background = '#00D4AA';
-      devButton.style.color = 'white';
-      devButton.style.border = 'none';
-      devButton.style.borderRadius = '6px';
-      devButton.style.zIndex = 9999;
-
-      devButton.onclick = () => {
-        const html = generatePDFHTML();
-        const win = window.open('', '_blank');
-        win.document.write(html || '<p>Error: no PDF HTML generated</p>');
-      };
-
-      document.body.appendChild(devButton);
-    })
-    .catch(err => console.error('❌ Failed to load results_template.json for dev mode', err));
-}
