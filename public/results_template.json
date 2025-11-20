@@ -249,10 +249,10 @@
         "label": "Menstruación (1–7)",
         "about": "Descanso y regeneración. Período de liberación y limpieza interna que requiere calor y nutrición profunda.",
         "foods": [
-          "Caldos ricos en minerales (huesos de animales de pastoreo, verduras)",
-          "Verduras cocidas al vapor con limón y sal marina",
-          "Proteína de fácil digestión (huevo orgánico, pescado salvaje, legumbres bien cocidas)",
-          "Hierro hémico + vitamina C (carne magra de pastoreo con cítricos; lentejas con jitomate)",
+          "Caldos ricos en minerales (huesos, verduras)",
+          "Verduras al vapor con limón y sal marina",
+          "Proteína de fácil digestión (huevo, pescado, legumbres)",
+          "Hierro hémico + vitamina C (carne magra con cítricos; lentejas con jitomate)",
           "Granos integrales tibios (avena sin gluten, arroz integral) para energía sostenida",
           "Infusiones tibias antiinflamatorias (jengibre, canela, manzanilla)"
         ],
@@ -396,8 +396,6 @@
         "menstruacion": {
           "about_add": "Enfriar el sistema para reducir inflamación e irritabilidad menstrual.",
           "foods_add": [
-            "Verduras crucíferas al vapor con limón fresco",
-            "Agua de pepino y menta, agua de jamaica sin azúcar",
             "Frutos rojos y cítricos para antioxidantes refrescantes"
           ],
           "do_add": [
@@ -441,7 +439,6 @@
         "menstruacion": {
           "about_add": "Calentar internamente para aliviar contracciones y mejorar circulación.",
           "foods_add": [
-            "Caldos de hueso nutritivos, té de jengibre con miel",
             "Desayunos calientes como avena con canela"
           ],
           "do_add": [
@@ -455,7 +452,6 @@
         "folicular": {
           "foods_add": [
             "Especias calentantes: canela, cardamomo, jengibre",
-            "Desayunos tibios regulares",
             "Verduras cocidas vs. ensaladas crudas"
           ],
           "do_add": [
@@ -486,7 +482,6 @@
           "about_add": "Facilitar drenaje linfático y evitar estancamiento de fluidos.",
           "foods_add": [
             "Vegetales amargos (rúcula, diente de león), té depurativo",
-            "Proteína magra con moderación en sal",
             "Eliminar azúcares líquidos y procesados"
           ],
           "do_add": [
@@ -528,9 +523,8 @@
         "menstruacion": {
           "about_add": "Nutrir y humectar profundamente los tejidos internos.",
           "foods_add": [
-            "Caldos gelatinosos, frutas jugosas (pera, uva, melón)",
-            "Aceite de oliva extra virgen de primera calidad",
-            "Pescados grasos (sardinas, salmón) y semillas remojadas"
+            "Aceite de oliva extra virgen y aguacate",
+            "Pescados grasos (sardinas, salmón) y semillas"
           ],
           "do_add": [
             "Hidratación con electrolitos naturales (agua de coco, sal marina)"
@@ -614,7 +608,6 @@
     "about_add": "Activar suavemente el tono y la circulación sin agotar el cuerpo.",
     "foods_add": [
       "Caldos tibios con jengibre o cúrcuma para estimular suavemente",
-      "Proteínas ligeras (pescado, huevo, legumbres suaves)",
       "Verduras cocidas con un toque de especias aromáticas (romero, cardamomo)"
     ],
     "do_add": [
