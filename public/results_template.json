@@ -215,7 +215,7 @@
     }
   },
   "unique_system": {
-    "title": "¿Qué hace único nuestro sistema?",
+    "title": "🧬 ¿Qué hace único nuestro sistema?",
     "differentiators": [
       {
         "title": "Basado en herbología tradicional",
@@ -250,11 +250,10 @@
         "about": "Descanso y regeneración. Período de liberación y limpieza interna que requiere calor y nutrición profunda.",
         "foods": [
           "Caldos ricos en minerales (huesos, verduras)",
-          "Verduras al vapor con limón y sal marina",
-          "Proteína de fácil digestión (huevo, pescado, legumbres)",
-          "Hierro hémico + vitamina C (carne magra con cítricos; lentejas con jitomate)",
+          "Proteínas de fácil digestión (huevos, pescado, legumbres)",
+          "Hierro hémico + vitamina C (carne magra, lentejas, jitomate)",
           "Granos integrales tibios (avena sin gluten, arroz integral) para energía sostenida",
-          "Infusiones tibias antiinflamatorias (jengibre, canela, manzanilla)"
+          "Infusiones antiinflamatorias (jengibre, canela, manzanilla)"
         ],
         "do": [
           "Priorizar sueño reparador de 8-9 horas para regeneración hormonal",
@@ -396,6 +395,7 @@
         "menstruacion": {
           "about_add": "Enfriar el sistema para reducir inflamación e irritabilidad menstrual.",
           "foods_add": [
+            "Verduras crucíferas al vapor con limón fresco",
             "Frutos rojos y cítricos para antioxidantes refrescantes"
           ],
           "do_add": [
@@ -452,6 +452,7 @@
         "folicular": {
           "foods_add": [
             "Especias calentantes: canela, cardamomo, jengibre",
+            "Desayunos tibios regulares",
             "Verduras cocidas vs. ensaladas crudas"
           ],
           "do_add": [
@@ -481,7 +482,7 @@
         "menstruacion": {
           "about_add": "Facilitar drenaje linfático y evitar estancamiento de fluidos.",
           "foods_add": [
-            "Vegetales amargos (rúcula, diente de león), té depurativo",
+            "Vegetales amargos, tés depurativos",
             "Eliminar azúcares líquidos y procesados"
           ],
           "do_add": [
@@ -565,7 +566,7 @@
         "menstruacion": {
           "about_add": "Relajar musculatura pélvica y reducir espasmos para flujo libre.",
           "foods_add": [
-            "Magnesio natural (vegetales verdes, semillas, cacao crudo)",
+            "Magnesio natural (vegetales verdes, semillas, cacao)",
             "Vitamina B6 (garbanzos, pistaches) + infusiones calmantes"
           ],
           "do_add": [
@@ -608,7 +609,6 @@
     "about_add": "Activar suavemente el tono y la circulación sin agotar el cuerpo.",
     "foods_add": [
       "Caldos tibios con jengibre o cúrcuma para estimular suavemente",
-      "Verduras cocidas con un toque de especias aromáticas (romero, cardamomo)"
     ],
     "do_add": [
       "Caminar o estirarse 10–15 min al día para mover energía",
