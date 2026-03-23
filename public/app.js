@@ -15,6 +15,7 @@ let calculatedPattern = null; // Store calculated pattern for webhooks
 let sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 let resultsTemplate = null;
 window.surveyLoaded = false;
+quizBtn.disabled = false;
 
 console.log('🚀 APP.JS LOADED - VERSION 5.1 - CACHE BUSTED');
 
