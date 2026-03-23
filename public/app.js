@@ -4,8 +4,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/3zh4bd36iwjcy6qgrcf4psyryfg7kucv';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/x85saa0ur1u1fac79amcvmdjlbnpixaw';
 const SAVE_RESPONSES= 'https://hook.us2.make.com/jdhp8dgnimfjq1aaaknqrl0rreeip3p7';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let questionOrder = [];
 let surveyQuestions = [];
