@@ -311,7 +311,6 @@ body, main {
 </html>`;
 }
 
-
 async function sendResponsesToGoogleSheet() {
   try {
     const pdfHTML = generatePDFHTML();
@@ -358,7 +357,6 @@ async function sendResponsesToGoogleSheet() {
     console.error('❌ Error al enviar resultados:', err);
   }
 }
-
 
 // ==================== EMAIL GATE ====================
 window.submitEmailGate = async function () {
@@ -407,7 +405,6 @@ window.submitEmailGate = async function () {
     alert('Hubo un error enviando tus resultados. Intenta de nuevo.');
   }
 };
-
 
 // ==================== WAITLIST FUNCTIONS ====================
 
@@ -513,7 +510,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (quizBtn) quizBtn.disabled = true;
   }
 });
-
 
 // ==================== WAITLIST FORM HANDLER ====================
 
@@ -643,7 +639,6 @@ function getPrevVisibleQuestionIndex(currentIndex) {
 window.finishSurvey = function () {
   showPage('email-gate-page');
 };
-
 
 // ==================== SURVEY RENDERING ====================
 
@@ -1320,8 +1315,6 @@ if (joinBtn) {
 }
 window.showResults = showResults;
 
-
-
 // ==================== PROGRESS BAR ====================
 
 function updateProgress() {
@@ -1422,7 +1415,7 @@ async function getAllCSS() {
   return allCSS;
 }
 
-const DEBUG = true;
+const DEBUG = false;
 
 if (DEBUG) {
   calculatedPattern = 'calor'; // or any valid key from your template
