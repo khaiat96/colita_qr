@@ -1,7 +1,7 @@
 // Configuration  
 const SUPABASE_URL = 'https://iszzdfyzvhmuavemxuyp.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_HvnthnYaozXJjzDRJFO0QA_28vhlIbE';
-const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/3zh4bd36iwjcy6qgrcf4psyryfg7kucv';
+const WAITLIST_WEBHOOK = 'https://hook.us2.make.com/p3k99vz7k5026ve3k3byma909ny93oia';
 const EMAIL_REPORT_WEBHOOK = 'https://hook.us2.make.com/wgwyymfwh1ykt9oythvj2n5edgo6a6cm';
 const SAVE_RESPONSES= 'https://hook.us2.make.com/jdhp8dgnimfjq1aaaknqrl0rreeip3p7';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
