@@ -321,7 +321,6 @@ async function sendResponsesToGoogleSheet() {
       timestamp: new Date().toISOString(),
       answers: answers,
       results_html: pdfHTML,
-      results_url: 'https://yourwebsite.com/results?id=${sessionId}', 
       user_email: finalEmail,
       pattern: calculatedPattern,
       disclaimer: "Esta información es educativa y no sustituye consejo médico."
