@@ -211,25 +211,6 @@ function generatePDFHTML() {
       color: #777;
     }
 
-    .colita-club {
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 32px;
-      background-color: #f7fcfc;
-    }
-
-    .colita-club .section-header {
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .colita-club .section-header h2 {
-      color: var(--color-primary);
-      font-size: 26px;
-      margin: 0;
-    }
-
     .differentiators {
       margin-top: 20px;
     }
