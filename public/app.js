@@ -275,15 +275,6 @@ body, main {
     ${patternCardHTML}
     ${whyClusterHTML}
     ${careTipsHTML}
-
-    <section class="colita-club">
-      <div class="section-header">
-        <h2> Colita de Rana Club</h2>
-      </div>
-      ${herbsHTML}
-      ${uniqueSystemHTML}
-    </section>
-
     ${phaseHTML}
     ${advisoriesHTML}
 
